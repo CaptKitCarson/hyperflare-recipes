@@ -18,7 +18,15 @@ def coordinator(monkeypatch):
     monkeypatch.setattr(dist, "get_process_group_ranks", lambda actual: [4, 7])
     monkeypatch.setattr(dist, "all_gather_object",
                         lambda states, value, *, group: states.__setitem__(slice(None), [value] * len(states)))
-    return CollectivePreparation(group)
+    owner = CollectivePreparation(group)
+
+    def exchange(value):
+        states = [None] * len(owner.ranks)
+        dist.all_gather_object(states, value, group=group)
+        return states
+
+    monkeypatch.setattr(owner, "_exchange_progress", exchange)
+    return owner
 
 
 def progress(key="reduce", ranks=(4, 7)):
@@ -321,6 +329,49 @@ def test_ranks_report_whether_a_value_matches_every_rank(monkeypatch):
     assert not owner.same_on_every_rank("NVIDIA GB10")
 
 
+def _check_progress_exchange(owner):
+    from b12x.preparation.types import CollectiveTuningRequirement, FrozenMapping
+    from ignition.preparation import forward_metadata
+
+    rank = dist.get_rank()
+
+    def value(peer, large_rank):
+        payload = FrozenMapping({"indices": (peer,), "samples": ((1. + peer, 2. + peer),),
+                                 "cancel": peer == owner.ranks[-1],
+                                 "diagnostic": "x" * (8192 if peer == large_rank else 0)})
+        return CollectiveTuningRequirement("reduce", owner.ranks, "samples/100/0/0", payload)
+
+    for large_rank in (None, *owner.ranks, None):
+        states = owner._exchange_progress(value(rank, large_rank))
+        assert states == [value(peer, large_rank) for peer in owner.ranks]
+
+    restored = forward_metadata.loads(forward_metadata.dumps(owner))
+    assert restored.ranks == owner.ranks
+    assert restored.hosts == owner.hosts
+    assert restored.local_ranks == owner.local_ranks
+
+    pending = progress(ranks=owner.ranks)
+    if rank == owner.ranks[-1]:
+        pending.ready_collectives = ()
+    assert owner(pending) is None
+    assert owner(progress(ranks=owner.ranks)) == "reduce"
+
+    closed = []
+    result = SimpleNamespace(close=lambda: closed.append(True))
+    done = SimpleNamespace(done=True, ready_collectives=(), ready_cache=None,
+                           ready_tuning=(), ready_collective_tuning=None)
+
+    def advance(**kwargs):
+        if rank == owner.ranks[-1]:
+            raise ValueError("oversized peer failure " + "x" * 8192)
+        return done
+
+    job = SimpleNamespace(advance=advance, result=lambda: result, close=result.close)
+    with pytest.raises(RuntimeError, match="oversized peer failure"):
+        owner.prepare(SimpleNamespace(begin=lambda *args, **kwargs: job), ())
+    assert closed == [True]
+
+
 def _equality_rank(rank, world, store, outcome):
     from datetime import timedelta
     import traceback
@@ -331,6 +382,7 @@ def _equality_rank(rank, world, store, outcome):
         dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank,
                                 world_size=world, timeout=timedelta(seconds=15))
         owner = CollectivePreparation(dist.group.WORLD)
+        _check_progress_exchange(owner)
         catalog = ("NVIDIA GB202", (("projection", {"shape": (64, 128), "dtype": "bf16"}, ()),))
         changed = ("NVIDIA GB202", (("projection", {"shape": (65, 128), "dtype": "bf16"}, ()),))
         results = (owner.same_on_every_rank(catalog),
@@ -340,6 +392,7 @@ def _equality_rank(rank, world, store, outcome):
         subgroup = None
         if rank in (1, 2):
             owner = CollectivePreparation(group)
+            _check_progress_exchange(owner)
             subgroup = (owner.same_on_every_rank(catalog),
                         owner.same_on_every_rank(changed if rank == 2 else catalog))
         assert not torch.cuda.is_initialized()
@@ -351,7 +404,7 @@ def _equality_rank(rank, world, store, outcome):
             dist.destroy_process_group()
 
 
-def test_gloo_value_agreement_reaches_every_rank_and_subgroup(tmp_path):
+def test_gloo_progress_and_value_agreement_reach_every_rank_and_subgroup(tmp_path):
     context = multiprocessing.get_context("spawn")
     world = 3
     outcome = context.Queue()
