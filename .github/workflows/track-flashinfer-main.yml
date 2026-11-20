@@ -1,0 +1,133 @@
+name: Track FlashInfer main
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [flashinfer-main-updated]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: track-flashinfer-main
+  cancel-in-progress: false
+
+jobs:
+  update-lock:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Check FlashInfer main
+        id: check
+        shell: python3 {0}
+        run: |
+          import os
+          import subprocess
+          import tomllib
+          from pathlib import Path
+
+          out_path = Path(os.environ["GITHUB_OUTPUT"])
+
+          def emit(key: str, value: str) -> None:
+              with out_path.open("a", encoding="utf-8") as fh:
+                  fh.write(f"{key}={value}\n")
+
+          pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+          source = (
+              pyproject.get("tool", {})
+              .get("uv", {})
+              .get("sources", {})
+              .get("flashinfer-python", {})
+          )
+          if (
+              source.get("git") != "https://github.com/local-inference-lab/flashinfer.git"
+              or source.get("branch") != "main"
+          ):
+              print("pyproject.toml does not track local-inference-lab/flashinfer main; skipping.")
+              emit("needs_update", "false")
+              raise SystemExit(0)
+
+          lock = tomllib.loads(Path("uv.lock").read_text(encoding="utf-8"))
+          pkg = next(p for p in lock["package"] if p["name"] == "flashinfer-python")
+          locked_sha = pkg["source"]["git"].rsplit("#", 1)[1]
+
+          ls_remote = subprocess.check_output(
+              [
+                  "git",
+                  "ls-remote",
+                  "https://github.com/local-inference-lab/flashinfer.git",
+                  "refs/heads/main",
+              ],
+              text=True,
+          ).strip()
+          if not ls_remote:
+              raise SystemExit("failed to resolve refs/heads/main on local-inference-lab/flashinfer")
+          upstream_sha = ls_remote.split()[0]
+
+          print(f"locked={locked_sha} upstream={upstream_sha}")
+          emit("locked_sha", locked_sha)
+          emit("upstream_sha", upstream_sha)
+          emit("needs_update", "true" if locked_sha != upstream_sha else "false")
+
+      - uses: actions/setup-python@v5
+        if: steps.check.outputs.needs_update == 'true'
+        with:
+          python-version: '3.12'
+
+      - uses: astral-sh/setup-uv@v6
+        if: steps.check.outputs.needs_update == 'true'
+
+      - name: Update uv.lock and push
+        if: steps.check.outputs.needs_update == 'true'
+        env:
+          BUILD_NVEP: "0"
+          FLASHINFER_BUILD_NO_PIP: "1"
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          read_locked_sha() {
+            python3 -c '
+          import tomllib
+          from pathlib import Path
+          lock = tomllib.loads(Path("uv.lock").read_text(encoding="utf-8"))
+          pkg = next(p for p in lock["package"] if p["name"] == "flashinfer-python")
+          print(pkg["source"]["git"].rsplit("#", 1)[1])
+          '
+          }
+
+          for attempt in 1 2 3; do
+            if [[ "$attempt" -gt 1 ]]; then
+              git fetch origin main
+              git reset --hard origin/main
+            fi
+
+            old_sha=$(read_locked_sha)
+            uv lock --upgrade-package flashinfer-python
+            uv lock --check --offline
+
+            if git diff --quiet uv.lock; then
+              echo "uv.lock already matches upstream FlashInfer main."
+              exit 0
+            fi
+
+            new_sha=$(read_locked_sha)
+            short_sha=${new_sha:0:8}
+            git add uv.lock
+            git commit -m "Update uv.lock to FlashInfer ${short_sha}" -m "Advance flashinfer-python in uv.lock along local-inference-lab/flashinfer main from ${old_sha} to ${new_sha}." -m "Validation: uv lock --check --offline."
+
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Push attempt ${attempt} failed; retrying against latest origin/main."
+          done
+
+          echo "Failed to push updated uv.lock after 3 attempts." >&2
+          exit 1
