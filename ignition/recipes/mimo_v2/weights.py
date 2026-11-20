@@ -11,8 +11,10 @@ from ignition.components.weights import DirectWeightLoader, MLPWeights, _aligned
 from ignition.components.block_fp8 import BlockFP8Weight
 
 from .config import ModelConfig
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('qkv', 'output', 'sink', 'input_norm', 'post_attention_norm', 'mlp', 'router', 'correction', 'experts'))
 @dataclass(frozen=True)
 class LayerWeights:
     qkv: BlockFP8Weight

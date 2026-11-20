@@ -19,7 +19,7 @@ from safetensors import safe_open
 from ignition.components.linear import UnquantizedProjection
 from ignition.preparation.checkpoint import CheckpointManifest
 from ignition.progress import phase
-from ignition.preparation.qwen38 import PLE_PREFIX, TEXT_PREFIX
+from .checkpoint_schema import PLE_PREFIX, TEXT_PREFIX
 from ignition.preparation.scratch import planned_scratch, prime_owners
 from ignition.preparation.tuning import declare, register_finalizer
 

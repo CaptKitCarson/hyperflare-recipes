@@ -19,13 +19,14 @@ from typing import TYPE_CHECKING
 
 from ignition.preparation.checkpoint import IndexedCheckpoint
 from ignition.preparation.persistent import persistent_empty, persistent_zeros, persistent_copy
-from ignition.preparation.rebuild_manifest import declare_container_fields
+from ignition.preparation.rebuild_manifest import declare_container_fields, weight_container
 from ignition.progress import phase
 from ignition.preparation.quantization import linear_format, projection_group_format, quantized_layers
 
-# Weight-bearing fields of b12x containers. Every other field of these types is
-# runtime state: scale-expansion scratch buffers, planner representations, cached
-# plans, and mutability counters, whose bytes are never stored as weights.
+# Weight-bearing fields of external b12x containers. Every other field of these
+# types is runtime state: scale-expansion scratch buffers, planner representations,
+# cached plans, and mutability counters, whose bytes are never stored as weights.
+# Ignition's own weight containers declare their fields directly with @weight_container.
 for _container, _fields in (
     ('b12x.moe.fused_moe.weights.PackedWeights',
      ('w13', 'w2', 'w13_block_scales', 'w2_block_scales')),
@@ -37,39 +38,6 @@ for _container, _fields in (
      ('a1_gscale', 'w1_fp4', 'w1_blockscale', 'w1_alphas',
       'a2_gscale', 'w2_fp4', 'w2_blockscale', 'w2_alphas')),
     ('b12x.moe.fused_moe.weights.PreparedExperts', ('_impl',)),
-    # Shared Ignition weight containers: only these fields hold stored weights.
-    ('ignition.components.weights.MLPWeights', ('gate_up', 'down')),
-    ('ignition.components.weights.GroupedLinearWeights', ('parts',)),
-    ('ignition.components.dflash2_weights.DraftLayerWeights',
-     ('qkv', 'output', 'query_norm', 'key_norm', 'input_norm', 'post_attention_norm',
-      'mlp', 'attention_conv', 'mlp_conv')),
-    ('ignition.components.dflash2_weights.DraftWeights',
-     ('projection', 'hidden_norm', 'context_kv', 'norm', 'layers', 'selector')),
-    ('ignition.recipes.kimi31.dflash_weights.LayerWeights',
-     ('attention', 'input_norm', 'post_attention_norm', 'mlp', 'attention_conv', 'mlp_conv')),
-    ('ignition.recipes.kimi31.dflash_weights.DraftWeights',
-     ('projection', 'hidden_norm', 'context_kv', 'norm', 'layers', 'selector', 'head')),
-    # Recipe weight containers reached inside a declared layer/component.
-    ('ignition.recipes.deepseek41.weights.ExpertWeights',
-     ('router', 'correction', 'experts', 'shared', 'vision_correction')),
-    ('ignition.recipes.deepseek41.weights.LayerWeights',
-     ('attention', 'experts', 'residual', 'engram')),
-    ('ignition.recipes.deepseek41.weights.DSparkWeights',
-     ('layers', 'main_projection', 'context_kv', 'main_norm', 'norm',
-      'markov_embedding', 'markov_head', 'confidence_head', 'draft_head')),
-    ('ignition.recipes.deepseek4.weights.ExpertWeights',
-     ('router', 'correction', 'vision_correction', 'token_experts', 'experts', 'shared')),
-    ('ignition.recipes.deepseek4.weights.LayerWeights',
-     ('attention', 'experts', 'residual')),
-    ('ignition.recipes.deepseek4.weights.DSparkWeights',
-     ('layers', 'main_projection', 'context_kv', 'main_norm', 'norm', 'head_mix',
-      'markov_embedding', 'markov_head', 'draft_head')),
-    ('ignition.recipes.glm53.weights.LayerWeights', ('attention', 'mlp', 'residual')),
-    ('ignition.recipes.glm53.weights.MoEWeights', ('router', 'correction', 'experts', 'shared')),
-    ('ignition.recipes.glm53.weights.MTPWeights', ('attention', 'mlp', 'tensors', 'draft_head')),
-    ('ignition.recipes.qwen38.moe.QwenMoeWeights', ('router', 'experts', 'shared')),
-    ('ignition.recipes.qwen38.moe.SharedExpertWeights', ('gate_up', 'down', 'gate')),
-    ('ignition.recipes.qwen38.decoder.DecoderLayerWeights', ('attention', 'moe')),
     # b12x packed linear weight objects hold the stored projection bytes.
     ('b12x.gemm.blockscaled._linear.MXFP8LinearWeight', ('weight',)),
     ('b12x.gemm.blockscaled._linear.TensorFP8LinearWeight',
@@ -78,71 +46,6 @@ for _container, _fields in (
     ('b12x.gemm.blockscaled._a16.NVFP4LinearWeight',
      ('values', 'scale_mma', 'global_scale', 'activation_global_scale')),
     ('b12x.gemm.blockscaled._iq2_xs.BlockQuantLinearWeight', ('values', 'metadata')),
-    ('ignition.recipes.step5.weights.LayerWeights',
-     ('qkvg', 'output', 'q_norm', 'k_norm', 'input_norm', 'post_attention_norm',
-      'mlp', 'router', 'correction', 'experts', 'indexer')),
-    ('ignition.recipes.gemma4.weights.BF16ExpertsWeight', ('gate_up_proj', 'down_proj')),
-    ('ignition.recipes.gemma4.weights.NVFP4ExpertsWeight',
-     ('gate_up_weight', 'gate_up_scale', 'gate_up_scale_2', 'down_weight', 'down_scale', 'down_scale_2')),
-    ('ignition.recipes.gemma4.weights.PLEWeights', ('embedding', 'projection', 'norm')),
-    ('ignition.recipes.gemma4.weights.DraftWeights',
-     ('pre_projection', 'post_projection', 'norm', 'head', 'layers', 'centroids', 'token_ordering')),
-    ('ignition.recipes.glm53.vision.VisionWeights', ('parameters', 'projections', 'downsample')),
-    ('ignition.recipes.kimi3.dspark_weights.DraftLayerWeights',
-     ('qkv', 'output', 'query_norm', 'key_norm', 'input_norm', 'post_attention_norm', 'mlp')),
-    ('ignition.recipes.kimi3.dspark_weights.DraftWeights',
-     ('projection', 'hidden_norm', 'context_kv', 'norm', 'embedding', 'head',
-      'markov_embedding', 'markov_head', 'layers')),
-    ('ignition.recipes.kimi31.dspark_weights.DraftLayerWeights',
-     ('attention', 'input_norm', 'post_attention_norm', 'mlp')),
-    ('ignition.recipes.kimi31.dspark_weights.DraftWeights',
-     ('projection', 'hidden_norm', 'context_kv', 'norm', 'embedding', 'head',
-      'markov_embedding', 'markov_head', 'layers')),
-    ('ignition.recipes.inkling2.attention.AttentionWeights',
-     ('projections', 'query_clip_scale', 'relative_clip_scale', 'relative_projection',
-      'relative_rows', 'key_convolution', 'value_convolution', 'output')),
-    ('ignition.recipes.inkling2.weights.LayerWeights',
-     ('attention', 'experts', 'router', 'correction', 'attention_convolution',
-      'mlp_convolution', 'input_norms', 'mlp_norm', 'attention_query', 'mlp_query')),
-    ('ignition.recipes.inkling2.dspark_weights.DraftLayerWeights',
-     ('qkv', 'context_kv', 'output', 'query_norm', 'key_norm', 'context_key_norm',
-      'context_norm', 'input_norm', 'post_attention_norm', 'mlp')),
-    ('ignition.recipes.inkling2.dspark_weights.RecurrentWeights',
-     ('embedding', 'state_weight', 'context_weight', 'bias', 'head', 'head_bias', 'context_norm')),
-    ('ignition.recipes.inkling2.dspark_weights.DraftWeights',
-     ('alpha', 'mask_embedding', 'norm', 'layers', 'recurrent')),
-    ('ignition.recipes.inkling2.vision.VisionWeights', ('parameters',)),
-    ('ignition.recipes.kimi3.vision.VisionWeights', ('tensors',)),
-    ('ignition.recipes.minimax_m3.draft.DraftLayerWeights',
-     ('qkv', 'output', 'query_norm', 'key_norm', 'input_norm', 'post_attention_norm', 'mlp')),
-    ('ignition.recipes.minimax_m3.draft.DraftWeights',
-     ('projection', 'hidden_norm', 'context_kv', 'norm', 'embedding', 'head',
-      'markov_embedding', 'markov_head', 'confidence_head', 'confidence_bias', 'layers')),
-    ('ignition.recipes.minimax_m3.vision.VisionWeights', ('patch', 'norm', 'layers', 'projector', 'merger')),
-    ('ignition.recipes.mimo_v2.weights.LayerWeights',
-     ('qkv', 'output', 'sink', 'input_norm', 'post_attention_norm', 'mlp',
-      'router', 'correction', 'experts')),
-    ('ignition.recipes.mimo_v2.draft_weights.DraftLayerWeights',
-     ('qkv', 'output', 'query_norm', 'key_norm', 'sink', 'input_norm',
-      'post_attention_norm', 'mlp')),
-    ('ignition.recipes.mimo_v2.draft_weights.DraftWeights',
-     ('projection', 'hidden_norm', 'context_kv', 'norm', 'mask_embedding', 'layers')),
-    ('ignition.recipes.mimo_v2.vision_weights.VisionLayerWeights',
-     ('norm1', 'norm2', 'qkv', 'qkv_bias', 'output', 'output_bias', 'sink',
-      'mlp', 'gate_up_bias', 'down_bias')),
-    ('ignition.recipes.mimo_v2.vision_weights.VisionWeights',
-     ('patch', 'layers', 'norm', 'merge_up', 'merge_down')),
-    ('ignition.recipes.minimax_m3.weights.LayerWeights',
-     ('qkv_index', 'output', 'q_norm', 'k_norm', 'index_q_norm', 'index_k_norm',
-      'input_norm', 'post_attention_norm', 'mlp', 'router', 'correction', 'experts')),
-    ('ignition.recipes.nemotron_h.vision.VisionWeights', ('tensors', 'patch')),
-    ('ignition.recipes.nemotron_h.draft_weights.DraftWeights',
-     ('projection', 'hidden_norm', 'norm', 'context_kv', 'layers', 'lattice')),
-    ('ignition.recipes.qwen38.vision.VisionWeights', ('parameters', 'projections')),
-    ('ignition.recipes.qwen38.mtp_weights.MTPWeights',
-     ('module', 'attention', 'moe', 'embedding', 'lm_head', 'draft_head')),
-    ('ignition.recipes.step5.vision_weights.VisionWeights',
-     ('patch', 'position', 'norm', 'layers', 'first', 'second', 'projector')),
 ):
     declare_container_fields(_container, _fields)
 
@@ -151,12 +54,14 @@ if TYPE_CHECKING:
     from b12x.gemm.blockscaled import Weight
 
 
+@weight_container(('gate_up', 'down'))
 @dataclass(frozen=True)
 class MLPWeights:
     gate_up: Weight | torch.Tensor
     down: Weight | torch.Tensor
 
 
+@weight_container(('parts',))
 @dataclass(frozen=True)
 class GroupedLinearWeights:
     """Consecutive output partitions whose checkpoint formats prevent one GEMM."""

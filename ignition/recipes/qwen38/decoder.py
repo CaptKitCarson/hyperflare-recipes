@@ -16,7 +16,7 @@ from ignition.planning import SUPPORTED_ARCHITECTURES, SUPPORTED_CAPABILITIES
 from ignition.preparation.checkpoint import CheckpointManifest
 from ignition.preparation.host_memory import device_memory_info
 from ignition.preparation.persistent import allocated_tensor_bytes
-from ignition.preparation.qwen38 import TEXT_PREFIX
+from .checkpoint_schema import TEXT_PREFIX
 from ignition.preparation.scratch import ScratchArena
 
 from .hyperconnection import packed_down_projection, hyperconnection_extents
@@ -24,8 +24,10 @@ from .model import create_model_tree
 from .moe import QwenMoeWeights
 from .vision import VisionWeights
 from .weights import QwenWeightLoader
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('attention', 'moe'))
 @dataclass(frozen=True)
 class DecoderLayerWeights:
     attention: dict[str, object]

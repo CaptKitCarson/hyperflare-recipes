@@ -64,6 +64,7 @@ from .weights import ModelWeights
 from .vision import PreparedVision, VisionMetadata, VisionScratch
 from .vision_state import FEATURES, PATCH_CAPACITIES, PreparedVisionGeneration, VisionInputs
 from ignition.components.vision_state import PrefillVisionInputs, VisionState
+from ignition.preparation.bootstrap import BasePreparationConfig
 
 
 _COMPILED_KINDS = ("prefill", "scored_prefill", "decode", "resume", "speculative", "vision", "init", "restore", "snapshot")
@@ -85,33 +86,18 @@ def races_context_transport(config, world_size, device):
 
 
 @dataclass(frozen=True)
-class PreparationConfig:
-    collective_tuning: str = "static"
-    collective_ladder: dict | None = None
+class PreparationConfig(BasePreparationConfig):
     prompt_logprobs: bool = False
-    compile_workers: int | None = None
-    native_dense_activations: bool = False
-    lock_gpu_clocks: bool = False
-    autotune_effort: str = "default"
-    tuning_replica: TuningReplica | None = None
     devices: tuple[int, ...] = (0, 1)
     # Each rank's host when ranks run on separate hosts; devices are then host-local ordinals.
     hosts: tuple[str, ...] | None = None
     roce_ring: bool = False
     roce_chain: bool = False
-    context: int = 262144
-    prefill_chunk_size: int = 4096
-    max_active: int = 4
     image_concurrency: int | None = None
     language_model_only: bool = False
     pages: int | None = None
     # Without fixed pages, KV pages fill the memory measured free after graph capture, at least this many.
     minimum_pages: int | None = None
-    snapshot_budget_bytes: int = 4 << 30
-    headroom_bytes: int = 4 << 30
-    compile_decoder: bool = True
-    retain_graphs: bool = False
-    kernel_cache: Path | None = None
     # The annotated chat template, resolved once before the ranks start so that a failed download surfaces
     # from the process that reports preparation errors; None makes a rank resolve it from the snapshot.
     chat_template: dict | None = None
@@ -125,10 +111,6 @@ class PreparationConfig:
     # Run shared experts, KDA gate projections, and decode query chains on an auxiliary stream;
     # without overlap every branch runs serially on the main stream.
     stream_overlap: bool = True
-    speculative_widths: tuple[int, ...] = (1, 2, 3, 4, 5, 6)
-    speculative_fixed_width: int | None = None
-    speculative_token_capacity: int | None = None
-    mtp_only: bool = False
 
     def __post_init__(self):
         if self.mtp_only and (not self.mtp
@@ -282,8 +264,11 @@ def prepare_rank(snapshot: Path, config: PreparationConfig, *, rank, group, prog
 
     def memory(stage):
         free = torch.cuda.mem_get_info(device)[0]
-        with open("/proc/self/statm") as statm:
-            rss = int(statm.read().split()[1]) * os.sysconf("SC_PAGE_SIZE")
+        statm_path = Path("/proc/self/statm")
+        if statm_path.is_file() and hasattr(os, "sysconf"):
+            rss = int(statm_path.read_text().split()[1]) * os.sysconf("SC_PAGE_SIZE")
+        else:
+            rss = 0
         report(f"{stage}: free={free >> 20} MiB, allocated={torch.cuda.memory_allocated(device) >> 20} MiB, "
                f"reserved={torch.cuda.memory_reserved(device) >> 20} MiB, rss={rss >> 20} MiB")
 
@@ -305,9 +290,6 @@ def prepare_rank(snapshot: Path, config: PreparationConfig, *, rank, group, prog
     expert_activation = config.expert_activation
     if expert_activation == "auto":
         expert_activation = "a4" if is_sm103(device) else "a16"
-    if expert_activation == "a16":
-        # b12x retains activation scales for A4 prefill launches only while preparing with this switch.
-        os.environ["B12X_W4A16_A4_PREFILL"] = "1"
     # Loading, construction and tuning free most of what they allocate; a transient core pool returns
     # that memory to the device once tuning completes, before graph measurement sizes the KV pages.
     transient = contextlib.ExitStack()

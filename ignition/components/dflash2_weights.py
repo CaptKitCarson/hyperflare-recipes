@@ -14,12 +14,14 @@ import torch
 from ignition.components.weights import DirectWeightLoader, MLPWeights, quantize_bf16_linear_as_mxfp8
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.persistent import persistent_cat
+from ignition.preparation.rebuild_manifest import weight_container
 
 
 if TYPE_CHECKING:
     from b12x.gemm.blockscaled import Weight
 
 
+@weight_container(('qkv', 'output', 'query_norm', 'key_norm', 'input_norm', 'post_attention_norm', 'mlp', 'attention_conv', 'mlp_conv'))
 @dataclass(frozen=True)
 class DraftLayerWeights:
     qkv: Weight | torch.Tensor
@@ -33,6 +35,7 @@ class DraftLayerWeights:
     mlp_conv: dict
 
 
+@weight_container(('projection', 'hidden_norm', 'context_kv', 'norm', 'layers', 'selector'))
 @dataclass(frozen=True)
 class DraftWeights:
     projection: Weight | torch.Tensor

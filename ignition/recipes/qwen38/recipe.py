@@ -7,7 +7,7 @@
 from types import MappingProxyType
 from pathlib import Path
 
-from ignition.preparation.qwen38 import ARCHITECTURE, MODEL_ID, REVISION
+from .checkpoint_schema import ARCHITECTURE, MODEL_ID, REVISION
 from .draft_config import WEIGHT_BYTES
 from ignition.recipes.declaration import Checkpoint, RankCosts, RankUsage, Recipe, SamplingDefaults, SamplingRange, Speculation, SpeculativeMethod
 
@@ -121,5 +121,6 @@ RECIPE = Recipe(
         }), draft_bytes=WEIGHT_BYTES),
     }),
     online_mxfp8=True, draft_head_quantizations=("mxfp8", "nvfp4"),
+    moe_decode_a16_intermediate_width=640, shard_hyperconnections=True,
     max_images=4, image_bytes=32 << 20, mixed_prefill=True,
 )

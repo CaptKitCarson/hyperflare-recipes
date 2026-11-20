@@ -21,12 +21,14 @@ from ignition.preparation.persistent import persistent_copy
 from ignition.components.vision_delivery import PreparedFeaturePublication
 from ignition.components.weights import DirectWeightLoader
 from ignition.preparation.persistent import persistent_cat
+from ignition.preparation.rebuild_manifest import weight_container
 
 PATCH_CAPACITIES = (256, 1024, 2304)
 FEATURES = 2304
 patches_per_feature = 4
 
 
+@weight_container(('patch', 'norm', 'layers', 'projector', 'merger'))
 @dataclass(frozen=True)
 class VisionWeights:
     config: dict

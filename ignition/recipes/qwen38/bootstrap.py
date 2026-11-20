@@ -44,7 +44,7 @@ from ignition.preparation.fixtures.recurrent import register_benchmark_state
 from ignition.preparation.frontend import annotated_template_asset, prepare_frontend
 from ignition.preparation.model import PreparedModel
 from ignition.preparation.rank_group import minimum_across_ranks
-from ignition.preparation.qwen38 import (
+from .checkpoint_schema import (
     FRONTEND_SHA256,
     MODEL_ID,
     REVISION,
@@ -66,49 +66,31 @@ from .state import (
 )
 from .tuning import preparation_session
 from .vision import PreparedVision, VisionScratch
+from ignition.preparation.bootstrap import BasePreparationConfig
 
 
 @dataclass(frozen=True)
-class PreparationConfig:
-    collective_tuning: str = "static"
-    collective_ladder: dict | None = None
+class PreparationConfig(BasePreparationConfig):
     prompt_logprobs: bool = False
     image_concurrency: int | None = None
-    compile_workers: int | None = None
-    native_dense_activations: bool = False
     force_moe_decode_a16: bool = False
     online_mxfp8: bool = False
     draft_head_quantization: str | None = None
-    lock_gpu_clocks: bool = False
-    autotune_effort: str = "default"
-    tuning_replica: TuningReplica | None = None
     device: int = 0
     devices: tuple[int, ...] | None = None
     # Each rank's host when ranks run on separate hosts; devices are then host-local ordinals.
     hosts: tuple[str, ...] | None = None
     roce_ring: bool = False
     roce_chain: bool = False
-    compile_decoder: bool = True
-    retain_graphs: bool = False
-    max_active: int = 4
-    context: int = 262144
-    prefill_chunk_size: int = 4096
     mixed_prefill: bool = False
-    snapshot_budget_bytes: int = 4 << 30
-    headroom_bytes: int = 4 << 30
     pages: int | None = None
-    kernel_cache: Path | None = None
     mtp: bool = False
     speculative_method: str = "mtp"
     draft_snapshot: Path | None = None
-    speculative_widths: tuple[int, ...] = (1, 2, 3, 4, 5, 6)
-    speculative_fixed_width: int | None = None
-    speculative_token_capacity: int | None = None
     # Run shared experts, small-batch attention projections and selection, and GDN input projections
     # on an auxiliary stream; without overlap every branch runs serially on the main stream.
     stream_overlap: bool = True
     shard_hyperconnections: bool = False
-    mtp_only: bool = False
 
     def __post_init__(self):
         if self.mtp_only and (not self.mtp

@@ -16,12 +16,13 @@ import torch
 from ignition.components.parallel import TensorParallelShard
 from ignition.components.vocabulary import nvfp4_draft_head
 from ignition.preparation.checkpoint import CheckpointError, CheckpointManifest
-from ignition.preparation.qwen38 import TRANSFORMERS_REVISION
+from .checkpoint_schema import TRANSFORMERS_REVISION
 from ignition.preparation.persistent import persistent_cat, allocated_tensor_bytes
 
 from .moe import QwenMoeWeights, SharedExpertWeights
 from .hyperconnection import packed_down_projection, hyperconnection_extents
 from .weights import QwenWeightLoader, _expert_ids, _expert_scale_vectors
+from ignition.preparation.rebuild_manifest import weight_container
 
 
 def _global_scales(sources, expert_ids):
@@ -115,6 +116,7 @@ def create_mtp_modules(manifest: CheckpointManifest):
     return module
 
 
+@weight_container(('module', 'attention', 'moe', 'embedding', 'lm_head', 'draft_head'))
 @dataclass(frozen=True)
 class MTPWeights:
     module: torch.nn.Module

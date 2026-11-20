@@ -727,19 +727,31 @@ def test_declared_container_fields_exist_on_their_dataclasses():
     """
     from dataclasses import fields, is_dataclass
     import importlib
+    from pathlib import Path
 
-    import ignition.components.weights  # noqa: F401  (registers the shared declarations)
+    import ignition.components.weights  # noqa: F401  (registers shared b12x declarations)
     from ignition.preparation.rebuild_manifest import CONTAINER_FIELDS
 
+    # Recipe containers register themselves on import via @weight_container, so
+    # import every module under ignition/ that declares a weight container.
+    root = Path(ignition.__file__).resolve().parent
+    for path in sorted(root.rglob("*.py")):
+        if "@weight_container(" in path.read_text(encoding="utf-8"):
+            rel = path.relative_to(root.parent).with_suffix("")
+            importlib.import_module(".".join(rel.parts))
+
     missing = {}
+    ignition_containers = 0
     for key, declared in CONTAINER_FIELDS.items():
         module, _, name = key.rpartition('.')
         if not module.startswith('ignition.'):
             continue
+        ignition_containers += 1
         cls = getattr(importlib.import_module(module), name)
         if not is_dataclass(cls):
             continue
         absent = [field for field in declared if field not in {f.name for f in fields(cls)}]
         if absent:
             missing[key] = absent
+    assert ignition_containers >= 49
     assert not missing, missing

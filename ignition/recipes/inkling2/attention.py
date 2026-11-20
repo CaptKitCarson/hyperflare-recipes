@@ -28,6 +28,7 @@ from ignition.preparation.persistent import persistent_empty
 
 from .arithmetic import l2_clip, log_scaling
 from .pool import KV_DTYPE, PAGE_TOKENS
+from ignition.preparation.rebuild_manifest import weight_container
 
 RELATIVE_RANK = 16
 
@@ -61,6 +62,7 @@ class Columns:
         return parts
 
 
+@weight_container(('projections', 'query_clip_scale', 'relative_clip_scale', 'relative_projection', 'relative_rows', 'key_convolution', 'value_convolution', 'output'))
 @dataclass(frozen=True)
 class AttentionWeights:
     """One rank's attention tensors of one layer in serving layouts.

@@ -260,6 +260,23 @@ class Recipe:
     draft_head_quantizations: tuple[str, ...] = ()
     draft_body_quantizations: tuple[str, ...] = ()
     markov_head_quantizations: tuple[str, ...] = ()
+    # Supported (world_size, context_parallel_size) hybrid context-parallel topologies.
+    hybrid_context_parallel: tuple[tuple[int, int], ...] = ()
+    # Optional (max_bytes, max_pages) graph-memory credit for hybrid context-parallel topologies.
+    hybrid_context_parallel_graph_credits: Mapping[tuple[int, int], tuple[int, int]] = field(
+        default_factory=lambda: MappingProxyType({}))
+    # Tensor-parallel world sizes that prepare standalone benchmark graph subsets.
+    benchmark_world_sizes: tuple[int, ...] = ()
+    # Whether standalone benchmark preparation can run the multi-width speculation study.
+    speculation_study: bool = False
+    # Total expert intermediate width when W4A16 SM120/121 expert decode override is supported.
+    moe_decode_a16_intermediate_width: int | None = None
+    # Whether tensor-parallel preparation can shard hyperconnection residuals across ranks.
+    shard_hyperconnections: bool = False
+    # Whether preparation supports joint decode/prefill kernel tuning.
+    joint_tuning: bool = False
+    # Tensor-parallel world sizes that support vocabulary-parallel speculative sampling.
+    vocabulary_parallel_world_sizes: tuple[int, ...] = ()
 
     def mixed_shapes(self, concurrency, chunk, speculation):
         from ignition.components.capacity import mixed_shapes, serving_modes

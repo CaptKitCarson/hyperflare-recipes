@@ -13,6 +13,7 @@ import torch
 from ignition.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.persistent import persistent_cat, persistent_copy
+from ignition.preparation.rebuild_manifest import weight_container
 
 
 class DraftWeightLoader(DirectWeightLoader):
@@ -75,6 +76,7 @@ class DraftWeightLoader(DirectWeightLoader):
         return weights
 
 
+@weight_container(('projection', 'hidden_norm', 'norm', 'context_kv', 'layers', 'lattice'))
 @dataclass(frozen=True)
 class DraftWeights:
     projection: object

@@ -57,6 +57,7 @@ from .weights import ModelWeights
 from .vision import PATCH_CAPACITIES, FEATURES, HIDDEN, PreparedVision, VisionInputs, VisionScratch
 from .vision_state import PreparedVisionGeneration
 from ignition.components.vision_state import PrefillVisionInputs, VisionState
+from ignition.preparation.bootstrap import BasePreparationConfig
 
 
 # Most rows of one all-reduce; larger prefill reductions run in chunks of this many rows.
@@ -82,25 +83,11 @@ def target_tuning_identity(config, headers, world_size, *, online_mxfp8_scope="a
 
 
 @dataclass(frozen=True)
-class PreparationConfig:
-    collective_tuning: str = "static"
-    collective_ladder: dict | None = None
+class PreparationConfig(BasePreparationConfig):
     prompt_logprobs: bool = False
     image_concurrency: int | None = None
-    compile_workers: int | None = None
-    native_dense_activations: bool = False
-    lock_gpu_clocks: bool = False
-    autotune_effort: str = "default"
-    tuning_replica: TuningReplica | None = None
     devices: tuple[int, ...] = tuple(range(16))
     context: int = 1048576
-    prefill_chunk_size: int = 4096
-    max_active: int = 4
-    snapshot_budget_bytes: int = 4 << 30
-    headroom_bytes: int = 4 << 30
-    compile_decoder: bool = True
-    retain_graphs: bool = False
-    kernel_cache: Path | None = None
     benchmark_selection: BenchmarkSelection | None = None
     # Learned draft checkpoint selected by the recipe's speculation method.
     draft_checkpoint: Path | None = None
@@ -108,8 +95,6 @@ class PreparationConfig:
     draft_body_quantization: str | None = None
     # Verification widths count the pending input and up to seven drafts.
     speculative_widths: tuple[int, ...] = tuple(range(1, 9))
-    speculative_fixed_width: int | None = None
-    speculative_token_capacity: int | None = None
     speculative_graph_budget: int = 64
     # Store eligible attention, shared-expert, latent MoE, and DSpark projections as MXFP8.
     online_mxfp8: bool = False
@@ -124,7 +109,6 @@ class PreparationConfig:
     # Recipe-owned serving metadata travels with each rank's preparation configuration.
     sampling_defaults: dict | None = None
     frontend_template: str | None = None
-    mtp_only: bool = False
 
     def __post_init__(self):
         if self.mtp_only and (not self.drafting

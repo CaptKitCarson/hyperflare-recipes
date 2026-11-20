@@ -26,6 +26,7 @@ from ignition.components.speculation import SpeculativeRngState
 from ignition.components.state_transfer import StateCommands
 from ignition.components.vision_state import PrefillVisionInputs, VisionState
 from ignition.preparation.capture import capture_forwards
+from ignition.preparation.rebuild_manifest import declare_weights
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.collectives import (CollectivePreparation, create_all_gather_runtime,
     create_all_reduce_runtime, create_dma_all_reduce_runtime, create_roce_runtime)
@@ -46,6 +47,7 @@ from .decoder import PreparedDecoder, Scratch
 from .pool import ContinuationPool, continuation_layout, page_bytes
 from .weights import ModelWeights
 from .vision import FEATURES, PATCH_CAPACITIES, PreparedVision, PreparedVisionGeneration, VisionInputs, VisionScratch
+from ignition.preparation.bootstrap import BasePreparationConfig
 
 
 def _target_decoder(weights, tables, scratch, metadata, pool, **kwargs):
@@ -53,26 +55,14 @@ def _target_decoder(weights, tables, scratch, metadata, pool, **kwargs):
 
 
 @dataclass(frozen=True)
-class PreparationConfig:
-    collective_tuning: str = "static"
-    collective_ladder: dict | None = None
+class PreparationConfig(BasePreparationConfig):
     image_concurrency: int | None = None
-    compile_workers: int | None = None
-    native_dense_activations: bool = False
-    lock_gpu_clocks: bool = False
-    autotune_effort: str = "default"
-    tuning_replica: TuningReplica | None = None
     devices: tuple[int, ...] = (0, 1, 2, 3)
     hosts: tuple[str, ...] | None = None
     roce_ring: bool = False
+    roce_chain: bool = False
     context: int = 1048576
-    prefill_chunk_size: int = 4096
     max_active: int = 32
-    snapshot_budget_bytes: int = 4 << 30
-    headroom_bytes: int = 4 << 30
-    compile_decoder: bool = True
-    retain_graphs: bool = False
-    kernel_cache: Path | None = None
     stream_overlap: bool = True
     expert_scale_compression: str | None = None
     dspark: bool = True
@@ -80,13 +70,10 @@ class PreparationConfig:
     diagnostic_graphs: tuple[str, ...] | None = None
     diagnostic_support_graphs: tuple[str, ...] = ()
     diagnostic_cache_pages: int | None = None
-    speculative_widths: tuple[int, ...] = (1, 2, 3, 4, 5, 6)
-    speculative_fixed_width: int | None = None
     speculative_token_capacity: int | None = 128
     speculative_graph_budget: int = 64
     packed_verification: bool | None = None
     draft_prefix_selection: str | None = None
-    mtp_only: bool = False
 
     def __post_init__(self):
         if self.mtp_only and (not self.dspark
@@ -98,8 +85,10 @@ class PreparationConfig:
                 or len(set(zip(self.hosts or ("",) * 4, self.devices))) != 4
                 or any(type(device) is not int or device < 0 for device in self.devices)):
             raise ValueError("MiniMax M3 preparation requires four distinct host/device placements")
-        if self.roce_ring and self.hosts is None:
-            raise ValueError("RoCE ring requires ranks on separate hosts")
+        from ignition.planning import host_shape_error
+        error = host_shape_error(self.roce_ring, self.roce_chain, None if self.hosts is None else len(self.hosts))
+        if error is not None:
+            raise ValueError(error)
         request_capacity(self.max_active)
         if not PAGE_TOKENS <= self.context <= 1048576 or self.context % PAGE_TOKENS:
             raise ValueError("MiniMax M3 context must be 128-aligned in [128,1048576]")
@@ -220,7 +209,7 @@ def prepare_rank(snapshot, config, *, rank, group, progress=None, core_storage):
                 group, device, max_tokens=sample_rows,
                 pipe_tokens=max(tokens, PATCH_CAPACITIES[-1] if config.vision else 0),
                 hidden_size=weights.config.hidden, gather_bytes=gather_bytes,
-                ring=config.roce_ring, core_storage=core_storage)
+                ring=config.roce_ring, ring_open=config.roce_chain, core_storage=core_storage)
             vision_collective = collective if config.vision else None
         else:
             collective = create_all_reduce_runtime(group, device, collective_tuning=config.collective_tuning, max_tokens=max(decode_tokens, draft_tokens), hidden_size=weights.config.hidden,
@@ -492,7 +481,8 @@ def prepare_rank(snapshot, config, *, rank, group, progress=None, core_storage):
             disposable.append(forward.context.scratch_tensors())
         if hasattr(forward, "encoder"):
             disposable.append(forward.encoder.scratch_tensors())
-    return PreparedModel(device=config.devices[rank], graphs=graphs, buffers=buffers, signatures={name: signatures[name] for name in graphs},
+    return PreparedModel(rebuild_weights=declare_weights(weights, components=("embedding", "norm", "head", "draft", "vision")),
+        device=config.devices[rank], graphs=graphs, buffers=buffers, signatures={name: signatures[name] for name in graphs},
         max_active=config.max_active, session=session, server_config=server_config, memory_report=memory,
         forwards={name: compiled.get(name, forwards[name]) for name in graphs},
         export_zero_ranges=(*storage_ranges(disposable), *completion.zero_ranges()),

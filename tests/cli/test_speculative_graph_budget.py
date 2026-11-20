@@ -188,7 +188,7 @@ def test_vocabulary_parallel_sampling_is_an_explicit_preparation_choice():
     for flags in (("--no-mtp",), ("--mtp-draft-tokens", "0")):
         with pytest.raises((UsageError, ValueError), match="cannot accompany|positive learned"):
             selected(*flags, "--vocabulary-parallel-sampling")
-    with pytest.raises(UsageError, match="DeepSeek V4.1"):
+    with pytest.raises(UsageError, match="--vocabulary-parallel-sampling is not supported"):
         derive(speculation=settings)
 
 

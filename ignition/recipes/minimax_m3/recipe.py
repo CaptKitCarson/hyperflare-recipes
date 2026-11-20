@@ -14,6 +14,8 @@ def prepare(snapshot, plan, *, compile_forwards, kernel_cache, progress, retain_
 
     from .bootstrap import PreparationConfig, prepare_rank
 
+    if plan.prompt_logprobs:
+        raise ValueError("MiniMax M3 does not support --prompt-logprobs")
     speculation = plan.speculation
     drafting = {} if speculation is None else dict(speculative_widths=speculation.widths,
         speculative_fixed_width=speculation.fixed_width, speculative_token_capacity=plan.speculative_token_capacity,
@@ -25,8 +27,8 @@ def prepare(snapshot, plan, *, compile_forwards, kernel_cache, progress, retain_
         lock_gpu_clocks=plan.lock_gpu_clocks and plan.autotune_effort != "off",
         image_concurrency=plan.image_concurrency if not plan.language_model_only else None,
         devices=tuple(range(plan.world_size)) if ranks is None else (0,) * plan.world_size,
-        hosts=None if ranks is None else ranks.hosts, roce_ring=plan.roce_ring,
-        context=plan.context, max_active=plan.concurrency,
+        hosts=None if ranks is None else ranks.hosts, roce_ring=plan.roce_ring, roce_chain=plan.roce_chain,
+        context=plan.recipe.context, max_active=plan.concurrency,
         prefill_chunk_size=plan.prefill_chunk, snapshot_budget_bytes=plan.snapshots * plan.costs.state_row_bytes,
         headroom_bytes=plan.headroom_bytes + plan.reserve_bytes, compile_decoder=compile_forwards,
         retain_graphs=retain_graphs, kernel_cache=kernel_cache, stream_overlap=plan.stream_overlap,

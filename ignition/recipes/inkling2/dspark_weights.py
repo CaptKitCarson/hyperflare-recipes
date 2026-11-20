@@ -13,6 +13,7 @@ import torch
 from ignition.components.weights import DirectWeightLoader, MLPWeights
 from ignition.preparation.checkpoint import IndexedCheckpoint, _read_header
 from ignition.preparation.persistent import persistent_copy, persistent_empty
+from ignition.preparation.rebuild_manifest import weight_container
 
 
 def mtp_quantization(configuration, names):
@@ -60,6 +61,7 @@ class DraftCheckpoint(IndexedCheckpoint):
         return None
 
 
+@weight_container(('qkv', 'context_kv', 'output', 'query_norm', 'key_norm', 'context_key_norm', 'context_norm', 'input_norm', 'post_attention_norm', 'mlp'))
 @dataclass(frozen=True)
 class DraftLayerWeights:
     qkv: torch.Tensor
@@ -74,6 +76,7 @@ class DraftLayerWeights:
     mlp: MLPWeights
 
 
+@weight_container(('embedding', 'state_weight', 'context_weight', 'bias', 'head', 'head_bias', 'context_norm'))
 @dataclass(frozen=True)
 class RecurrentWeights:
     embedding: torch.Tensor
@@ -103,6 +106,7 @@ def fold_recurrent_head(head, hidden_out, hidden_bias, *, chunk=4096):
     return weight, bias
 
 
+@weight_container(('alpha', 'mask_embedding', 'norm', 'layers', 'recurrent'))
 @dataclass(frozen=True)
 class DraftWeights:
     alpha: torch.Tensor

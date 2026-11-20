@@ -109,6 +109,8 @@ RECIPE = Recipe(
     speculation=Speculation(draft_tokens=5, token_capacity=128), max_draft_tokens=7, verification_rows=0,
     # Shared experts, KDA gate projections, and decode query chains run on an auxiliary stream.
     stream_overlap=True, max_images=4, image_bytes=32 << 20, language_model_only=True,
+    # b12x retains activation scales for A4 prefill launches in W4A16 expert paths when set.
+    b12x_environment=MappingProxyType({"B12X_W4A16_A4_PREFILL": "1"}),
     ranks=MappingProxyType({
         # DGX Station can hold GLM on one GPU; TP1 must remain a supported rank count.
         # One rank holds every head: twice TP2's recurrent rows less the replicated part.

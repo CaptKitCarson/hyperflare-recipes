@@ -13,6 +13,7 @@ from ignition.components.linear import UnquantizedProjection
 from ignition.components.rotary import apply_cached_rotary, prepare_cached_rotary
 from ignition.components.varlen_attention import PreparedVarlenAttention
 from ignition.preparation.persistent import persistent_cat, persistent_copy
+from ignition.preparation.rebuild_manifest import weight_container
 
 
 @dataclass(frozen=True)
@@ -81,6 +82,7 @@ class VisionScratch:
                             for name in self.__dataclass_fields__))
 
 
+@weight_container(('parameters',))
 @dataclass(frozen=True)
 class VisionWeights:
     parameters: dict[str, torch.Tensor]

@@ -9,8 +9,10 @@ import torch
 
 from ignition.components.weights import DirectWeightLoader, MLPWeights
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('qkv', 'output', 'query_norm', 'key_norm', 'sink', 'input_norm', 'post_attention_norm', 'mlp'))
 @dataclass(frozen=True)
 class DraftLayerWeights:
     qkv: torch.Tensor
@@ -23,6 +25,7 @@ class DraftLayerWeights:
     mlp: MLPWeights
 
 
+@weight_container(('projection', 'hidden_norm', 'context_kv', 'norm', 'mask_embedding', 'layers'))
 @dataclass(frozen=True)
 class DraftWeights:
     projection: torch.Tensor

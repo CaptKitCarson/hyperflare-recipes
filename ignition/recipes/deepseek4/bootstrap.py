@@ -60,44 +60,27 @@ from .pool import PAGE_TOKENS, ContinuationPool, continuation_layout, page_bytes
 from ignition.components.deepseek_vision import (PreparedVision, VisionInputs, VisionScratch,
     PrefillVisionInputs, PreparedVisionGeneration, VisionState)
 from .weights import ModelWeights
+from ignition.preparation.bootstrap import BasePreparationConfig
 
 PATCH_CAPACITIES = (576, 1152, 2304, 3456)
 
 
 @dataclass(frozen=True)
-class PreparationConfig:
-    collective_tuning: str = "static"
-    collective_ladder: dict | None = None
+class PreparationConfig(BasePreparationConfig):
     prompt_logprobs: bool = False
     image_concurrency: int | None = None
-    compile_workers: int | None = None
-    native_dense_activations: bool = False
-    lock_gpu_clocks: bool = False
-    autotune_effort: str = "default"
-    tuning_replica: TuningReplica | None = None
     devices: tuple[int, ...] = (0, 1, 2, 3)
     # Device ordinals are host-local when each rank runs on its own Spark.
     hosts: tuple[str, ...] | None = None
     roce_ring: bool = False
     roce_chain: bool = False
     context: int = 1048576
-    prefill_chunk_size: int = 4096
-    max_active: int = 4
-    snapshot_budget_bytes: int = 4 << 30
-    headroom_bytes: int = 4 << 30
-    compile_decoder: bool = True
-    retain_graphs: bool = False
-    kernel_cache: Path | None = None
     dspark: bool = True
     draft_head_quantization: str | None = None
     markov_head_quantization: str | None = None
-    speculative_widths: tuple[int, ...] = (1, 2, 3, 4, 5, 6)
-    speculative_fixed_width: int | None = None
-    speculative_token_capacity: int | None = None
     speculative_graph_budget: int = 64
     # Run single-row decode's shared expert on an auxiliary stream; without overlap it runs serially.
     stream_overlap: bool = True
-    mtp_only: bool = False
 
     def __post_init__(self):
         if self.mtp_only and (not self.dspark

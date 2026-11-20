@@ -6,7 +6,6 @@
 
 from types import MappingProxyType
 
-from ignition.planning import HEADROOM_BYTES
 from ignition.recipes.declaration import Checkpoint, RankCosts, RankUsage, Recipe, SamplingDefaults, SamplingRange, Speculation
 
 
@@ -34,10 +33,10 @@ def prepare(snapshot, plan, *, compile_forwards, kernel_cache, progress, retain_
         image_concurrency=plan.image_concurrency,
         devices=tuple(range(plan.world_size)) if ranks is None else (0,) * plan.world_size,
         hosts=None if ranks is None else ranks.hosts, roce_ring=plan.roce_ring, roce_chain=plan.roce_chain, compile_decoder=compile_forwards,
-        retain_graphs=retain_graphs, max_active=plan.concurrency, context=plan.context,
+        retain_graphs=retain_graphs, max_active=plan.concurrency, context=plan.recipe.context,
         prefill_chunk_size=plan.prefill_chunk, minimum_pages=plan.minimum_pages,
         snapshot_budget_bytes=plan.snapshots * plan.costs.state_row_bytes,
-        headroom_bytes=HEADROOM_BYTES + plan.reserve_bytes, kernel_cache=kernel_cache,
+        headroom_bytes=plan.headroom_bytes + plan.reserve_bytes, kernel_cache=kernel_cache,
         dspark=speculation is not None,
         stream_overlap=plan.stream_overlap, expert_scale_compression=plan.expert_scale_compression,
         mla_compute_mode=plan.mla_compute_mode, **drafting)
@@ -68,6 +67,7 @@ RECIPE = Recipe(
     max_draft_tokens=7, max_images=4, image_bytes=32 << 20,
     # Single-row decode runs the shared expert on an auxiliary stream.
     stream_overlap=True,
+    joint_tuning=True, vocabulary_parallel_world_sizes=(4, 6),
     ranks=MappingProxyType({world: RankCosts(3_043_840, 113_920, 8 << 30) for world in (3, 4, 6)}),
     plain_ranks=MappingProxyType({world: RankCosts(2_841_088, 113_920, 8 << 30) for world in (3, 4, 6)}),
 )

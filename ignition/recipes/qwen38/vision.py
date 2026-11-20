@@ -18,6 +18,7 @@ from ignition.components.linear import QuantizedProjection, UnquantizedProjectio
 from ignition.components.varlen_attention import PreparedVarlenAttention
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import register_finalizer
+from ignition.preparation.rebuild_manifest import weight_container
 
 
 @dataclass(frozen=True)
@@ -72,6 +73,7 @@ class VisionScratch:
                             for name in self.__dataclass_fields__))
 
 
+@weight_container(('parameters', 'projections'))
 @dataclass(frozen=True)
 class VisionWeights:
     parameters: dict[str, torch.Tensor]

@@ -6,8 +6,10 @@
 from dataclasses import dataclass
 
 import torch
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('patch', 'position', 'norm', 'layers', 'first', 'second', 'projector'))
 @dataclass(frozen=True)
 class VisionWeights:
     config: dict

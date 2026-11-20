@@ -18,13 +18,15 @@ from ignition.components.linear import UnquantizedProjection
 from ignition.components.mlp import PreparedMLP
 from ignition.components.moe import PreparedRoutedExperts, PreparedRouter, RouterScratch
 from ignition.components.weights import MLPWeights
-from ignition.preparation.qwen38 import TEXT_PREFIX
+from .checkpoint_schema import TEXT_PREFIX
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import register_finalizer
 
 from .weights import QwenWeightLoader
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('gate_up', 'down', 'gate'))
 @dataclass(frozen=True)
 class SharedExpertWeights:
     gate_up: blockscaled.Weight | torch.Tensor
@@ -45,6 +47,7 @@ class SharedExpertWeights:
         )
 
 
+@weight_container(('router', 'experts', 'shared'))
 @dataclass(frozen=True)
 class QwenMoeWeights:
     router: torch.Tensor

@@ -49,6 +49,11 @@ RECIPE = Recipe(
         16: RankCosts(state_row_bytes=35_450_112, page_bytes=2_174_976, graph_bytes=9 << 29, page_tokens=128*16),
     }), draft_bytes=5_569_622_016)}),
     stream_overlap=True, language_model_only=True,
+    hybrid_context_parallel=((16, 8),),
+    # The DCP-only reduction shrinks from 14 MiB to 512 KiB at C4/W8. Two staging slots with
+    # 30 shards release 849,346,560 bytes; let the planner consume at most 64 pages and retain the rest.
+    hybrid_context_parallel_graph_credits=MappingProxyType({(16, 8): (849_346_560, 64)}),
+    benchmark_world_sizes=(16,),
     b12x_environment=MappingProxyType({**KIMI3.b12x_environment, "B12X_PCIE_DCP_THREADS": "0"}),
     # Graph storage is a planning allowance; actual graph memory is reported after preparation.
     ranks=MappingProxyType({16: RankCosts(state_row_bytes=33_238_272, page_bytes=2_912_256,

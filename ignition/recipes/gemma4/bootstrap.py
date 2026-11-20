@@ -53,7 +53,7 @@ from ignition.preparation.host_memory import release_unused
 from ignition.preparation.model import PreparedModel
 from ignition.preparation.rank_group import minimum_across_ranks
 from ignition.preparation.scratch import ScratchArena
-from ignition.preparation.tuning import RecordedPreparationSession
+from ignition.preparation.tuning import RecordedPreparationSession, with_autotune_effort
 from ignition.preparation.tuning_replicas import TuningReplica
 from ignition.progress import phase
 
@@ -64,36 +64,20 @@ from .decoder import PreparedDecoder, Scratch, SoftcappedResume
 from .pool import ContinuationPool, continuation_layout, page_bytes
 from .speculative import PreparedContext, PreparedRound
 from .weights import ModelWeights
+from ignition.preparation.bootstrap import BasePreparationConfig
 
 
 @dataclass(frozen=True)
-class PreparationConfig:
-    collective_tuning: str = "static"
-    collective_ladder: dict | None = None
+class PreparationConfig(BasePreparationConfig):
     prompt_logprobs: bool = False
-    compile_workers: int | None = None
-    native_dense_activations: bool = False
-    lock_gpu_clocks: bool = False
-    tuning_replica: TuningReplica | None = None
     device: int = 0
     devices: tuple[int, ...] | None = None
     hosts: tuple[str, ...] | None = None
     roce_ring: bool = False
-    context: int = 262144
-    prefill_chunk_size: int = 4096
-    max_active: int = 4
+    roce_chain: bool = False
     minimum_pages: int = 8
-    snapshot_budget_bytes: int = 4 << 30
-    headroom_bytes: int = 4 << 30
-    compile_decoder: bool = True
-    retain_graphs: bool = False
-    kernel_cache: Path | None = None
     hub_cache: Path | None = None
     draft_checkpoint: Path | None = None
-    speculative_widths: tuple[int, ...] = (1, 2, 3, 4, 5, 6)
-    speculative_fixed_width: int | None = None
-    speculative_token_capacity: int | None = None
-    mtp_only: bool = False
 
     @property
     def speculative_shapes(self):
@@ -111,10 +95,10 @@ class PreparationConfig:
         if self.mtp_only and (self.draft_checkpoint is None
                 or max(self.speculative_widths, default=1) <= 1 or self.speculative_fixed_width == 1):
             raise ValueError("--mtp-only requires enabled learned speculation with positive draft depth")
-        if self.speculative_widths and max(self.speculative_widths) > 8:
-            raise ValueError("Gemma 4 draft model supports at most seven draft tokens")
-        if self.roce_ring and (self.hosts is None or not 2 <= len(self.hosts) <= 16):
-            raise ValueError("RoCE ring requires 2..16 ranks on separate hosts")
+        from ignition.planning import host_shape_error
+        error = host_shape_error(self.roce_ring, self.roce_chain, None if self.hosts is None else len(self.hosts))
+        if error is not None:
+            raise ValueError(error)
         if self.devices is not None:
             placements = tuple(zip(self.hosts or ("",) * len(self.devices), self.devices))
             if (
@@ -153,6 +137,7 @@ class PreparationConfig:
         return max((width for _, width in self.speculative_shapes), default=1)
 
 
+@with_autotune_effort
 @torch.no_grad()
 def prepare_rank(snapshot, config, *, rank=0, group=None, progress=None, core_storage=None):
     from .recipe import RECIPE
@@ -175,7 +160,12 @@ def prepare_rank(snapshot, config, *, rank=0, group=None, progress=None, core_st
         from .config import ASSISTANT_REPOSITORIES, ModelConfig
 
         repo, rev = ASSISTANT_REPOSITORIES[ModelConfig.load(snapshot).hidden]
-        draft_checkpoint = snapshot_download(repo, revision=rev, allow_patterns=("config.json", "model.safetensors"))
+        draft_checkpoint = snapshot_download(
+            repo,
+            revision=rev,
+            cache_dir=config.hub_cache,
+            allow_patterns=("config.json", "model.safetensors"),
+        )
     weights = ModelWeights.load(
         manifest,
         device,
@@ -243,6 +233,7 @@ def prepare_rank(snapshot, config, *, rank=0, group=None, progress=None, core_st
                 hidden_size=weights.config.hidden,
                 gather_bytes=gather_bytes,
                 ring=config.roce_ring,
+                ring_open=config.roce_chain,
                 core_storage=core_storage,
             )
         elif group is not None:
@@ -283,7 +274,8 @@ def prepare_rank(snapshot, config, *, rank=0, group=None, progress=None, core_st
         ).hexdigest()
         session = RecordedPreparationSession(
             collective_tuning=config.collective_tuning, collective_ladder=config.collective_ladder,
-            compile_workers=config.compile_workers, native_dense_activations=config.native_dense_activations, lock_gpu_clocks=config.lock_gpu_clocks,
+            compile_workers=config.compile_workers, autotune_effort=config.autotune_effort,
+            native_dense_activations=config.native_dense_activations, lock_gpu_clocks=config.lock_gpu_clocks,
             tuning_replica=config.tuning_replica,
             device=device,
             checkpoint=identity,

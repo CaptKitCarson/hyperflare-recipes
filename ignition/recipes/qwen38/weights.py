@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 from ignition.components.parallel import TensorParallelShard
 from ignition.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import CheckpointManifest
-from ignition.preparation.qwen38 import TEXT_PREFIX
+from .checkpoint_schema import TEXT_PREFIX
 
 if TYPE_CHECKING:
     import torch

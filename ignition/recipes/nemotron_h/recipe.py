@@ -30,7 +30,7 @@ def prepare(snapshot, plan, *, compile_forwards, kernel_cache, progress, retain_
         compile_workers=plan.compile_workers, autotune_effort=plan.autotune_effort, tuning_replica=plan.tuning_replica,
         native_dense_activations=plan.native_dense_activations, benchmark_selection=plan.benchmark_selection,
         lock_gpu_clocks=plan.lock_gpu_clocks and plan.autotune_effort != "off",
-        max_active=plan.concurrency, image_concurrency=plan.image_concurrency, context=plan.context,
+        max_active=plan.concurrency, image_concurrency=plan.image_concurrency, context=plan.recipe.context,
         stream_overlap=plan.stream_overlap,
         prefill_chunk_size=plan.prefill_chunk, snapshot_budget_bytes=plan.snapshots * plan.costs.state_row_bytes,
         headroom_bytes=plan.headroom_bytes + plan.reserve_bytes, compile_decoder=compile_forwards,
@@ -55,6 +55,7 @@ RECIPE = Recipe(
     speculation=Speculation(draft_tokens=7, token_capacity=128, packed_verification=True, graph_budget=64), max_draft_tokens=7, verification_rows=0,
     max_images=4, image_bytes=32 << 20,
     stream_overlap=True,
+    benchmark_world_sizes=(1,),
     ranks=MappingProxyType({1: RankCosts(107_365_120, 524_288, 4 << 30)}),
     plain_ranks=MappingProxyType({1: RankCosts(86_876_416, 524_288, 4 << 30)}),
 )

@@ -42,35 +42,18 @@ from .decoder import PreparedDecoder, PreparedResume, Scratch
 from .frontend import prepare_frontend, runtime_assets
 from .pool import PAGE_TOKENS, ContinuationPool, continuation_layout, page_bytes
 from .weights import ModelWeights
+from ignition.preparation.bootstrap import BasePreparationConfig
 
 
 @dataclass(frozen=True)
-class PreparationConfig:
-    collective_tuning: str = "static"
-    collective_ladder: dict | None = None
+class PreparationConfig(BasePreparationConfig):
     prompt_logprobs: bool = False
-    compile_workers: int | None = None
-    native_dense_activations: bool = False
-    lock_gpu_clocks: bool = False
-    autotune_effort: str = "default"
-    tuning_replica: TuningReplica | None = None
     devices: tuple[int, ...] = tuple(range(8))
-    context: int = 262144
-    prefill_chunk_size: int = 4096
-    max_active: int = 4
-    snapshot_budget_bytes: int = 4 << 30
-    headroom_bytes: int = 4 << 30
-    compile_decoder: bool = True
-    retain_graphs: bool = False
-    kernel_cache: Path | None = None
     stream_overlap: bool = True
     dflash: bool = False
     draft_snapshot: Path | None = None
     speculative_widths: tuple[int, ...] = tuple(range(1, 9))
-    speculative_fixed_width: int | None = None
-    speculative_token_capacity: int | None = None
     speculative_graph_budget: int = 64
-    mtp_only: bool = False
 
     def __post_init__(self):
         if self.mtp_only and (not self.dflash

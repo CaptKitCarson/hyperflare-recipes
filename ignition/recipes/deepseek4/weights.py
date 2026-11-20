@@ -13,8 +13,10 @@ from ignition.components.weights import MLPWeights
 from ignition.preparation.persistent import persistent_cat, allocated_tensor_bytes
 
 from .config import ModelConfig
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('router', 'correction', 'vision_correction', 'token_experts', 'experts', 'shared'))
 @dataclass(frozen=True)
 class ExpertWeights:
     router: torch.Tensor
@@ -25,6 +27,7 @@ class ExpertWeights:
     shared: MLPWeights
 
 
+@weight_container(('attention', 'experts', 'residual'))
 @dataclass(frozen=True)
 class LayerWeights:
     attention: dict
@@ -32,6 +35,7 @@ class LayerWeights:
     residual: dict
 
 
+@weight_container(('layers', 'main_projection', 'context_kv', 'main_norm', 'norm', 'head_mix', 'markov_embedding', 'markov_head', 'draft_head'))
 @dataclass(frozen=True)
 class DSparkWeights:
     layers: tuple[LayerWeights, ...]

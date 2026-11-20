@@ -6,7 +6,6 @@
 
 from types import MappingProxyType
 
-from ignition.planning import HEADROOM_BYTES
 from ignition.recipes.declaration import (
     Checkpoint,
     RankCosts,
@@ -47,10 +46,10 @@ def prepare(
         compile_decoder=compile_forwards,
         retain_graphs=retain_graphs,
         max_active=plan.concurrency, image_concurrency=plan.image_concurrency,
-        context=plan.context,
+        context=plan.recipe.context,
         prefill_chunk_size=plan.prefill_chunk,
         snapshot_budget_bytes=plan.snapshots * plan.costs.state_row_bytes,
-        headroom_bytes=HEADROOM_BYTES + plan.reserve_bytes,
+        headroom_bytes=plan.headroom_bytes + plan.reserve_bytes,
         kernel_cache=kernel_cache,
         dspark=speculation is not None,
         stream_overlap=plan.stream_overlap,

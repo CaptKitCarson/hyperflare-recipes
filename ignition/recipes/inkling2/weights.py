@@ -13,12 +13,14 @@ from ignition.preparation.persistent import persistent_copy, persistent_zeros
 
 from .attention import AttentionWeights, attention_weights
 from .config import ModelConfig, TEXT_PREFIX
+from ignition.preparation.rebuild_manifest import weight_container
 
 
 def scaled_query(query, hidden):
     return persistent_copy(query.float().reshape(-1, hidden) * hidden ** -0.5)
 
 
+@weight_container(('attention', 'experts', 'router', 'correction', 'attention_convolution', 'mlp_convolution', 'input_norms', 'mlp_norm', 'attention_query', 'mlp_query'))
 @dataclass(frozen=True)
 class LayerWeights:
     attention: AttentionWeights

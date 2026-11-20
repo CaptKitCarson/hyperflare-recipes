@@ -180,7 +180,7 @@ def test_joint_tuning_is_opt_in_and_serialized_without_changing_shapes(monkeypat
     from ignition.preparation import rebuild_manifest, runtime_core_pb2 as proto
 
     monkeypatch.setattr("ignition.preparation.source_identity.source_identity", lambda: "test-source")
-    ordinary = derive(model=replace(SOLO, name="deepseek41"))
+    ordinary = derive(model=replace(SOLO, joint_tuning=True))
     assert not ordinary.joint_tuning
     joint = replace(ordinary, joint_tuning=True)
     assert joint.to_dict()["joint_tuning"] is True
@@ -189,7 +189,7 @@ def test_joint_tuning_is_opt_in_and_serialized_without_changing_shapes(monkeypat
         manifest = rebuild_manifest.from_plan(SimpleNamespace(directory=None), plan, compiled_forwards=True)
         encoded = json_format.ParseDict(manifest, proto.RebuildManifest())
         assert proto.RebuildManifest.FromString(encoded.SerializeToString()).joint_tuning == plan.joint_tuning
-    with pytest.raises(UsageError, match="DeepSeek V4.1"):
+    with pytest.raises(UsageError, match="--joint-tuning is not supported"):
         replace(derive(), joint_tuning=True)
     with pytest.raises(UsageError, match="autotune-effort"):
         replace(joint, autotune_effort="off")
@@ -801,7 +801,7 @@ def test_sharded_hyperconnections_require_qwen_tp_and_survive_rebuild_serializat
     from ignition.preparation import rebuild_manifest, runtime_core_pb2 as proto
 
     monkeypatch.setattr("ignition.preparation.source_identity.source_identity", lambda: "test-source")
-    ordinary = derive(model=replace(SOLO, name="qwen38"), gpus=(gpu(0, 95), gpu(1, 95)), selected=(0, 1))
+    ordinary = derive(model=replace(SOLO, shard_hyperconnections=True), gpus=(gpu(0, 95), gpu(1, 95)), selected=(0, 1))
     assert not ordinary.shard_hyperconnections
     sharded = replace(ordinary, shard_hyperconnections=True)
     assert sharded.to_dict()["shard_hyperconnections"] is True
@@ -810,10 +810,10 @@ def test_sharded_hyperconnections_require_qwen_tp_and_survive_rebuild_serializat
         manifest = rebuild_manifest.from_plan(SimpleNamespace(directory=None), plan, compiled_forwards=True)
         encoded = json_format.ParseDict(manifest, proto.RebuildManifest())
         assert proto.RebuildManifest.FromString(encoded.SerializeToString()).shard_hyperconnections == plan.shard_hyperconnections
-    with pytest.raises(UsageError, match="Qwen3.8 Flash"):
+    with pytest.raises(UsageError, match="--shard-hyperconnections is not supported"):
         replace(derive(), shard_hyperconnections=True)
     with pytest.raises(UsageError, match="tensor parallelism"):
-        replace(derive(model=replace(SOLO, name="qwen38")), shard_hyperconnections=True)
+        replace(derive(model=replace(SOLO, shard_hyperconnections=True)), shard_hyperconnections=True)
 
 
 @pytest.mark.parametrize("mode", ["static", "runtime"])
@@ -902,7 +902,7 @@ def test_moe_decode_a16_geometry_and_rebuild_metadata(monkeypatch):
     from ignition.preparation import rebuild_manifest, runtime_core_pb2 as proto
 
     monkeypatch.setattr("ignition.preparation.source_identity.source_identity", lambda: "test-source")
-    ordinary = derive(model=replace(SOLO, name="qwen38"))
+    ordinary = derive(model=replace(SOLO, moe_decode_a16_intermediate_width=640))
     for enabled in (False, True):
         plan = replace(ordinary, force_moe_decode_a16=enabled)
         assert plan.to_dict()["force_moe_decode_a16"] is enabled
@@ -910,7 +910,7 @@ def test_moe_decode_a16_geometry_and_rebuild_metadata(monkeypatch):
         encoded = json_format.ParseDict(manifest, proto.RebuildManifest())
         assert proto.RebuildManifest.FromString(encoded.SerializeToString()).force_moe_decode_a16 is enabled
     assert not proto.RebuildManifest().force_moe_decode_a16
-    with pytest.raises(UsageError, match="Qwen3.8 Flash NVFP4"):
+    with pytest.raises(UsageError, match="--force-moe-decode-a16 is not supported"):
         replace(derive(), force_moe_decode_a16=True)
     with pytest.raises(UsageError, match="SM120/121"):
         replace(ordinary, gpus=(gpu(0, 95, (10, 3)),), force_moe_decode_a16=True)
@@ -918,3 +918,126 @@ def test_moe_decode_a16_geometry_and_rebuild_metadata(monkeypatch):
         replace(ordinary, gpus=tuple(gpu(i, 95) for i in range(4)), force_moe_decode_a16=True)
     with pytest.raises(UsageError, match="mixed-prefill"):
         replace(ordinary, mixed_prefill=True, force_moe_decode_a16=True)
+
+
+def test_glm53_declares_w4a16_a4_prefill_in_b12x_environment():
+    from ignition.recipes.glm53.recipe import RECIPE
+
+    assert RECIPE.b12x_environment.get("B12X_W4A16_A4_PREFILL") == "1"
+
+
+def test_recipe_prepare_forwards_plan_context_headroom_and_options(monkeypatch, tmp_path):
+    from types import SimpleNamespace
+    import sys
+
+    def stub_bootstrap(recipe_name):
+        module_name = f"ignition.recipes.{recipe_name}.bootstrap"
+        captured = {}
+
+        class CapturingConfig:
+            def __init__(self, **kwargs):
+                captured.update(kwargs)
+                raise RuntimeError("captured")
+
+        fake = SimpleNamespace(PreparationConfig=CapturingConfig, prepare=lambda *a, **k: None, prepare_rank=lambda *a, **k: None)
+        monkeypatch.setitem(sys.modules, module_name, fake)
+        return captured
+
+    from ignition.planning import HEADROOM_BYTES
+    from ignition.recipes.gemma4.recipe import RECIPE as GEMMA4
+    from ignition.recipes.minimax_m3.recipe import RECIPE as MINIMAX
+    from ignition.recipes.deepseek4.recipe import RECIPE as DS4
+    from ignition.recipes.deepseek41.recipe import RECIPE as DS41
+    from ignition.recipes.mimo_v2.recipe import RECIPE as MIMO
+
+    # Gemma4 forwards autotune_effort, roce_chain, and plan.recipe.context.
+    gemma_plan = replace(
+        derive(model=GEMMA4, gpus=tuple(replace(gpu(i, 200), total_bytes=200 * GIB) for i in range(2)),
+               selected=(0, 1), speculation=None),
+        autotune_effort="off",
+        roce_ring=True,
+        roce_chain=True,
+    )
+    captured = stub_bootstrap("gemma4")
+    with pytest.raises(RuntimeError, match="captured"):
+        GEMMA4.prepare(tmp_path, gemma_plan, compile_forwards=True, kernel_cache=None, progress=None,
+                       ranks=SimpleNamespace(hosts=("a", "b")))
+    assert captured["autotune_effort"] == "off"
+    assert captured["roce_chain"] is True
+    assert captured["context"] == GEMMA4.context
+
+    # MiniMax M3 rejects prompt_logprobs explicitly and forwards roce_chain + recipe context.
+    minimax_gpus = tuple(replace(gpu(i, 256), total_bytes=256 * GIB) for i in range(4))
+    minimax_plan = replace(
+        derive(model=MINIMAX, gpus=minimax_gpus, selected=(0, 1, 2, 3), speculation=None),
+        prompt_logprobs=True,
+    )
+    stub_bootstrap("minimax_m3")
+    with pytest.raises(ValueError, match="prompt-logprobs"):
+        MINIMAX.prepare(tmp_path, minimax_plan, compile_forwards=True, kernel_cache=None, progress=None)
+
+    minimax_chain_plan = replace(
+        derive(model=MINIMAX, gpus=minimax_gpus, selected=(0, 1, 2, 3), speculation=None),
+        roce_ring=True,
+        roce_chain=True,
+    )
+    captured = stub_bootstrap("minimax_m3")
+    with pytest.raises(RuntimeError, match="captured"):
+        MINIMAX.prepare(tmp_path, minimax_chain_plan, compile_forwards=True, kernel_cache=None, progress=None,
+                        ranks=SimpleNamespace(hosts=("a", "b", "c", "d")))
+    assert captured["roce_chain"] is True
+    assert captured["context"] == MINIMAX.context
+
+    # DeepSeek V4, V4.1, and MiMo V2 honor plan.headroom_bytes and plan.recipe.context.
+    for recipe, world in ((DS4, 4), (DS41, 4), (MIMO, 4)):
+        devices = tuple(replace(gpu(i, 256), total_bytes=256 * GIB) for i in range(world))
+        plan = derive(model=recipe, gpus=devices, selected=tuple(range(world)),
+                      speculation=None, prefill_chunk=8192)
+        assert plan.headroom_bytes > HEADROOM_BYTES
+        captured = stub_bootstrap(recipe.name)
+        with pytest.raises(RuntimeError, match="captured"):
+            recipe.prepare(tmp_path, plan, compile_forwards=True, kernel_cache=None, progress=None)
+        assert captured["headroom_bytes"] == plan.headroom_bytes + plan.reserve_bytes
+        assert captured["context"] == recipe.context
+
+
+@pytest.mark.parametrize("recipe", recipes(), ids=lambda recipe: recipe.name)
+def test_every_recipe_inherits_base_config_and_forwards_shared_plan_fields(monkeypatch, tmp_path, recipe):
+    from importlib import import_module
+    from ignition.preparation.bootstrap import BasePreparationConfig
+
+    bootstrap_name = "kimi3" if recipe.name == "kimi31" else recipe.name
+    bootstrap = import_module(f"ignition.recipes.{bootstrap_name}.bootstrap")
+    assert issubclass(bootstrap.PreparationConfig, BasePreparationConfig)
+
+    world = min(recipe.tensor_parallel)
+    devices = tuple(replace(gpu(i, 4096), total_bytes=4096 * GIB) for i in range(world))
+    plan = replace(
+        derive(model=recipe, gpus=devices, selected=tuple(range(world)),
+               speculation=None, prefill_chunk=8192),
+        autotune_effort="audit",
+        compile_workers=3,
+        native_dense_activations=True,
+        lock_gpu_clocks=True,
+    )
+    captured = {}
+
+    class Captured(Exception):
+        pass
+
+    def capture_config(**kwargs):
+        captured.update(kwargs)
+        raise Captured
+
+    monkeypatch.setattr(bootstrap, "PreparationConfig", capture_config)
+    with pytest.raises(Captured):
+        recipe.prepare(tmp_path, plan, compile_forwards=True, kernel_cache=None, progress=None)
+
+    assert captured["context"] == recipe.context
+    assert captured["headroom_bytes"] == plan.headroom_bytes + plan.reserve_bytes
+    assert captured["autotune_effort"] == "audit"
+    assert captured["compile_workers"] == 3
+    assert captured["native_dense_activations"] is True
+    assert captured["lock_gpu_clocks"] is True
+    assert captured["max_active"] == plan.concurrency
+    assert captured["prefill_chunk_size"] == 8192

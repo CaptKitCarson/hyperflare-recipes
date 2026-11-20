@@ -15,6 +15,7 @@ from ignition.components.linear import UnquantizedProjection
 from ignition.components.varlen_attention import PreparedVarlenAttention
 from ignition.preparation.examples import declaration_tensor
 from ignition.components.weights import DirectWeightLoader
+from ignition.preparation.rebuild_manifest import weight_container
 
 PATCH_CAPACITIES = (1024, 4096, 13312)
 FEATURES = 13312
@@ -53,6 +54,7 @@ class VisionConfig:
         return cls(radio, raw["projector_hidden_size"], HIDDEN)
 
 
+@weight_container(('tensors', 'patch'))
 @dataclass(frozen=True)
 class VisionWeights:
     config: VisionConfig

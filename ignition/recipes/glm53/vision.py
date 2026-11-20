@@ -16,6 +16,7 @@ from transformers.models.glm5_next.modeling_glm5_next import (
 from ignition.components.linear import prepare_projection, UnquantizedProjection
 from ignition.components.varlen_attention import PreparedVarlenAttention
 from ignition.preparation.persistent import persistent_copy
+from ignition.preparation.rebuild_manifest import weight_container
 
 
 @dataclass(frozen=True)
@@ -71,6 +72,7 @@ class VisionScratch:
                             for name in self.__dataclass_fields__))
 
 
+@weight_container(('parameters', 'projections', 'downsample'))
 @dataclass(frozen=True)
 class VisionWeights:
     parameters: dict[str, torch.Tensor]

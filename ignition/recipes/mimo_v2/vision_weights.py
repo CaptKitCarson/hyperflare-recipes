@@ -8,8 +8,10 @@ from dataclasses import dataclass
 import torch
 
 from ignition.components.weights import DirectWeightLoader, MLPWeights
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('norm1', 'norm2', 'qkv', 'qkv_bias', 'output', 'output_bias', 'sink', 'mlp', 'gate_up_bias', 'down_bias'))
 @dataclass(frozen=True)
 class VisionLayerWeights:
     norm1: torch.Tensor
@@ -24,6 +26,7 @@ class VisionLayerWeights:
     down_bias: torch.Tensor
 
 
+@weight_container(('patch', 'layers', 'norm', 'merge_up', 'merge_down'))
 @dataclass(frozen=True)
 class VisionWeights:
     config: dict

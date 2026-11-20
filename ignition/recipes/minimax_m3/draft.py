@@ -26,6 +26,7 @@ from ignition.preparation.persistent import persistent_zeros, persistent_copy
 from .config import ModelConfig
 from .decoder import projection
 from .weights import MiniMaxWeightLoader
+from ignition.preparation.rebuild_manifest import weight_container
 
 PREFIX = "language_model.model.dspark"
 FP8 = torch.float8_e4m3fn
@@ -112,6 +113,7 @@ class _DraftLoader(MiniMaxWeightLoader):
     _selected_names = DirectWeightLoader._selected_names
 
 
+@weight_container(('qkv', 'output', 'query_norm', 'key_norm', 'input_norm', 'post_attention_norm', 'mlp'))
 @dataclass(frozen=True)
 class DraftLayerWeights:
     qkv: object
@@ -123,6 +125,7 @@ class DraftLayerWeights:
     mlp: MLPWeights
 
 
+@weight_container(('projection', 'hidden_norm', 'context_kv', 'norm', 'embedding', 'head', 'markov_embedding', 'markov_head', 'confidence_head', 'confidence_bias', 'layers'))
 @dataclass(frozen=True)
 class DraftWeights:
     projection: torch.Tensor

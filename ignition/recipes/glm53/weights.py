@@ -15,6 +15,7 @@ from ignition.planning import SUPPORTED_ARCHITECTURES, SUPPORTED_CAPABILITIES
 from ignition.components.weights import DirectWeightLoader, MLPWeights
 from ignition.preparation.checkpoint import IndexedCheckpoint
 from ignition.preparation.persistent import persistent_cat, allocated_tensor_bytes
+from ignition.preparation.rebuild_manifest import weight_container
 
 if TYPE_CHECKING:
     import torch
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 TEXT_PREFIX = "model.language_model"
 
 
+@weight_container(('router', 'correction', 'experts', 'shared'))
 @dataclass(frozen=True)
 class MoEWeights:
     router: torch.Tensor
@@ -33,6 +35,7 @@ class MoEWeights:
     experts_a4_prefill: bool = False
 
 
+@weight_container(('attention', 'mlp', 'residual'))
 @dataclass(frozen=True)
 class LayerWeights:
     attention: dict[str, object]
@@ -40,6 +43,7 @@ class LayerWeights:
     residual: dict[str, torch.Tensor]
 
 
+@weight_container(('attention', 'mlp', 'tensors', 'draft_head'))
 @dataclass(frozen=True)
 class MTPWeights:
     attention: dict[str, object]

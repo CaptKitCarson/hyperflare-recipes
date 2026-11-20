@@ -16,6 +16,7 @@ from ignition.preparation.persistent import persistent_copy, persistent_empty, p
 from ignition.preparation.tensor_metadata import record_numeric_tensor
 
 from .config import DraftConfig, ModelConfig
+from ignition.preparation.rebuild_manifest import weight_container
 
 
 def _linear_shape(weight) -> tuple[int, int]:
@@ -25,12 +26,14 @@ def _linear_shape(weight) -> tuple[int, int]:
     return int(packed.out_features), int(packed.in_features)
 
 
+@weight_container(('gate_up_proj', 'down_proj'))
 @dataclass(frozen=True)
 class BF16ExpertsWeight:
     gate_up_proj: torch.Tensor
     down_proj: torch.Tensor
 
 
+@weight_container(('gate_up_weight', 'gate_up_scale', 'gate_up_scale_2', 'down_weight', 'down_scale', 'down_scale_2'))
 @dataclass(frozen=True)
 class NVFP4ExpertsWeight:
     gate_up_weight: torch.Tensor
@@ -41,6 +44,7 @@ class NVFP4ExpertsWeight:
     down_scale_2: torch.Tensor
 
 
+@weight_container(('embedding', 'projection', 'norm'))
 @dataclass(frozen=True)
 class PLEWeights:
     embedding: torch.Tensor
@@ -48,6 +52,7 @@ class PLEWeights:
     norm: torch.Tensor
 
 
+@weight_container(('pre_projection', 'post_projection', 'norm', 'head', 'layers', 'centroids', 'token_ordering'))
 @dataclass(frozen=True)
 class DraftWeights:
     pre_projection: torch.Tensor

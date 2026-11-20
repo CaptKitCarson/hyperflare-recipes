@@ -17,8 +17,10 @@ from ignition.components.weights import (
 )
 
 from .config import ModelConfig
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('qkvg', 'output', 'q_norm', 'k_norm', 'input_norm', 'post_attention_norm', 'mlp', 'router', 'correction', 'experts', 'indexer'))
 @dataclass(frozen=True)
 class LayerWeights:
     qkvg: torch.Tensor

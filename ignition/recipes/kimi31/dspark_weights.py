@@ -13,11 +13,13 @@ import torch
 from ignition.components.weights import DirectWeightLoader, MLPWeights
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.persistent import persistent_cat, persistent_empty
+from ignition.preparation.rebuild_manifest import weight_container
 
 if TYPE_CHECKING:
     from b12x.gemm.blockscaled import Weight
 
 
+@weight_container(('attention', 'input_norm', 'post_attention_norm', 'mlp'))
 @dataclass(frozen=True)
 class DraftLayerWeights:
     attention: dict
@@ -26,6 +28,7 @@ class DraftLayerWeights:
     mlp: MLPWeights
 
 
+@weight_container(('projection', 'hidden_norm', 'context_kv', 'norm', 'embedding', 'head', 'markov_embedding', 'markov_head', 'layers'))
 @dataclass(frozen=True)
 class DraftWeights:
     """One rank's MLA draft with the target embedding and output head shared.

@@ -15,8 +15,10 @@ from ignition.components.markov_sampling import fp8_markov_head
 from ignition.preparation.persistent import persistent_copy, allocated_tensor_bytes
 
 from .config import ModelConfig
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('router', 'correction', 'experts', 'shared', 'vision_correction'))
 @dataclass(frozen=True)
 class ExpertWeights:
     router: torch.Tensor
@@ -26,6 +28,7 @@ class ExpertWeights:
     vision_correction: torch.Tensor | None = None
 
 
+@weight_container(('attention', 'experts', 'residual', 'engram'))
 @dataclass(frozen=True)
 class LayerWeights:
     attention: dict
@@ -34,6 +37,7 @@ class LayerWeights:
     engram: dict | None
 
 
+@weight_container(('layers', 'main_projection', 'context_kv', 'main_norm', 'norm', 'markov_embedding', 'markov_head', 'confidence_head', 'draft_head'))
 @dataclass(frozen=True)
 class DSparkWeights:
     layers: tuple[LayerWeights, ...]

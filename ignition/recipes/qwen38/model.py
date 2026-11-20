@@ -11,7 +11,7 @@ import json
 from typing import TYPE_CHECKING
 
 from ignition.preparation.checkpoint import CheckpointError, CheckpointManifest
-from ignition.preparation.qwen38 import TRANSFORMERS_REVISION
+from .checkpoint_schema import TRANSFORMERS_REVISION
 
 if TYPE_CHECKING:
     from transformers import Qwen4ExpForConditionalGeneration

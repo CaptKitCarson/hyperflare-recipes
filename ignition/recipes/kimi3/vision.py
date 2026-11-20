@@ -18,12 +18,14 @@ from ignition.components.varlen_attention import PreparedVarlenAttention
 from ignition.components.weights import DirectWeightLoader
 from ignition.preparation.examples import declaration_tensor
 from ignition.preparation.persistent import persistent_copy
+from ignition.preparation.rebuild_manifest import weight_container
 
 PATCH_CAPACITIES = (256, 1024, 4096, 16384, 65536)
 FEATURES = 16384
 HIDDEN = 7168
 
 
+@weight_container(('tensors',))
 @dataclass(frozen=True)
 class VisionWeights:
     tensors: dict[str, torch.Tensor]

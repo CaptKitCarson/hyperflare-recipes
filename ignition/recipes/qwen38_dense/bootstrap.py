@@ -50,37 +50,22 @@ from .decoder import PreparedDecoder, Scratch
 from .pool import ContinuationPool, continuation_layout, page_bytes
 from .weights import ModelWeights
 from .dflash import SpeculativePreparation
+from ignition.preparation.bootstrap import BasePreparationConfig
 
 
 @dataclass(frozen=True)
-class PreparationConfig:
-    collective_tuning: str = "static"
-    collective_ladder: dict | None = None
+class PreparationConfig(BasePreparationConfig):
     prompt_logprobs: bool = False
-    compile_workers: int | None = None
-    native_dense_activations: bool = False
     online_mxfp8: bool = False
     draft_head_quantization: str | None = None
-    lock_gpu_clocks: bool = False
-    autotune_effort: str = "default"
-    tuning_replica: TuningReplica | None = None
     device: int = 0
-    context: int = 262144
-    prefill_chunk_size: int = 4096
     max_active: int = 32
-    snapshot_budget_bytes: int = 4 << 30
-    headroom_bytes: int = 4 << 30
-    compile_decoder: bool = True
-    retain_graphs: bool = False
-    kernel_cache: Path | None = None
     benchmark_selection: BenchmarkSelection | None = None
     mtp: bool = True
     draft_snapshot: Path | None = None
     speculative_graph_budget: int = 64
     speculative_widths: tuple[int, ...] = (1, 2, 3, 4, 5, 6, 7, 8)
-    speculative_fixed_width: int | None = None
     speculative_token_capacity: int | None = 128
-    mtp_only: bool = False
 
     def __post_init__(self):
         if self.mtp_only and (not self.mtp

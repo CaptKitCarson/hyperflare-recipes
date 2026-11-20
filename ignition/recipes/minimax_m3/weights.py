@@ -13,8 +13,10 @@ from ignition.components.weights import DirectWeightLoader, MLPWeights
 from ignition.preparation.persistent import persistent_empty, persistent_zeros, allocated_tensor_bytes
 
 from .config import ModelConfig, TEXT_PREFIX
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('qkv_index', 'output', 'q_norm', 'k_norm', 'index_q_norm', 'index_k_norm', 'input_norm', 'post_attention_norm', 'mlp', 'router', 'correction', 'experts'))
 @dataclass(frozen=True)
 class LayerWeights:
     qkv_index: object

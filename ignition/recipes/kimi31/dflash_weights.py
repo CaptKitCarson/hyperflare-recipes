@@ -10,8 +10,10 @@ import torch
 from ignition.components.weights import DirectWeightLoader, MLPWeights, quantize_bf16_linear_as_mxfp8
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.persistent import persistent_cat, persistent_empty
+from ignition.preparation.rebuild_manifest import weight_container
 
 
+@weight_container(('attention', 'input_norm', 'post_attention_norm', 'mlp', 'attention_conv', 'mlp_conv'))
 @dataclass(frozen=True)
 class LayerWeights:
     attention: dict
@@ -22,6 +24,7 @@ class LayerWeights:
     mlp_conv: dict
 
 
+@weight_container(('projection', 'hidden_norm', 'context_kv', 'norm', 'layers', 'selector', 'head'))
 @dataclass(frozen=True)
 class DraftWeights:
     projection: object
