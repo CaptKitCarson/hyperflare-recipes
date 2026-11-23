@@ -30,6 +30,8 @@ class PreparedGroupedOutputProjection:
             self.heads_per_group = int(heads_per_group)
             self.nope_dim = int(nope_dim)
             self.rope_dim = int(rope_dim)
+            if not self._fused_inv_rope and self.rope_dim != 64:
+                raise ValueError("unfused inverse-RoPE fallback requires rope_dim == 64")
             if self._fused_inv_rope:
                 invocation = {
                     "operation": "inv_rope",
