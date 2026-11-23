@@ -220,7 +220,7 @@ class PreparationConfig(BasePreparationConfig):
     @property
     def all_reduce_tokens(self):
         return max(self.decode_tokens, self.request_capacity * self.draft_tokens,
-                   *(capacity for capacity in self.prefill_capacities if capacity < 128))
+                   *(capacity for capacity in self.prefill_capacities if capacity < 512))
 
     @property
     def completion_token_capacity(self):
@@ -302,8 +302,9 @@ def _collective_runtimes(config, group, device, *, coordinator, core_storage, ve
         return runtime, runtime, runtime, runtime if layouts else None, runtime if config.dspark else None
     ipc = core_storage.peer_storage
     collective = create_all_reduce_runtime(group, device, collective_tuning=config.collective_tuning, max_tokens=config.all_reduce_tokens, hidden_size=5120, ipc=ipc)
+    dma_tokens = ((config.prefill_chunk_size * 6 + 4) // 5 + 63) // 64 * 64
     prefill = create_dma_all_reduce_runtime(group, device,
-        max_tokens=config.prefill_chunk_size, hidden_size=5120, ipc=ipc)
+        max_tokens=dma_tokens, hidden_size=5120, ipc=ipc)
     _, local_vocab = TensorParallelShard(0, len(config.devices)).padded_partition(129280, alignment=64)
     vocabulary = create_all_gather_runtime(group, device, max_rows=sample_rows,
         columns=local_vocab * len(config.devices) * 2, ipc=ipc)
@@ -485,7 +486,8 @@ def prepare_rank(snapshot, config, *, rank, group, progress=None, core_storage=N
                     decoder = decoder_factory(mode_weights, tables, scratch[name], metadata[name], pool,
                         mode=mode,
                         scoring=scoring if kind == "scored_prefill" else None,
-                        runtime=prefill_collective if mode == "prefill" and capacity >= 128 else collective,
+                        runtime=prefill_collective if mode == "prefill" and capacity >= 512 else collective,
+                        suffix_runtime=collective if mode == "prefill" and capacity >= 512 else None,
                         vocabulary_runtime=vocabulary_collective,
                         coordinator=coordinator, session=session, name=name, workspace=arena)
                     batch = PreparedBatch(inputs, requests, metadata[name], mode=mode, shard=shard, pool=pool,

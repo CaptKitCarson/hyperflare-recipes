@@ -183,4 +183,9 @@ class DeepSeekWeightLoader(BlockFP8WeightLoader):
                 ((head * 256, (head + 1) * 256) for head in range(shard.rank, 24, shard.world_size))),
                 "weight": persistent_copy(self.load_tensor(prefix + ".engram.q_weight", dtype=torch.float32, temporary=True)
                           * self.load_tensor(prefix + ".engram.k_weight", dtype=torch.float32, temporary=True))}
+            if shard.world_size > 1:
+                engram["projection_full"] = self.load_linear_columns(prefix + ".engram.wkv",
+                    ((head * 256, (head + 1) * 256)
+                     for r in range(shard.world_size)
+                     for head in range(r, 24, shard.world_size)))
         return LayerWeights(result, routed, residual, engram)

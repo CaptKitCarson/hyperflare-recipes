@@ -91,7 +91,7 @@ def catalog_contexts(forwards, signatures):
                 found = True
                 yield context_name, signature, decoder, index
             if not found:
-                raise ValueError(f"joint tuning has no restorable attention context for {context_name}")
+                continue
 
 
 class CatalogContextualSelection:
