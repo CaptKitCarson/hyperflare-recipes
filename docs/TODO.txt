@@ -1,0 +1,353 @@
+[ ] Compare Inkling 2 effort-zero generation with the canonical target using
+    the static NVFP4 checkpoint. Native TP4 emits analysis in content_text and
+    violates exact-output prompts; a long-prefix lookup also intermittently
+    reaches its 1024-token output limit. The TML prompt matches tml-renderers 0.4.1.
+    Preserve the failing zero-effort cases in tests/server/test_inkling2.py.
+
+[ ] Qualify Inkling 2 numerical agreement at long contexts and on fully
+    populated large vision graphs. Canonical vision comparisons cover at most
+    256 live patches.
+
+[ ] Compare Inkling 2 output across four DGX Sparks, where cross-host hidden
+    reductions round partial sums to BF16, against single-host FP32 reductions.
+    Also run the unverified Inkling 2 combinations: effort-zero cases of
+    tests/server/test_inkling2.py on Sparks, single-host SM120 preparation
+    after the multi-host changes and at 32 concurrent requests, and --roce-ring
+    and --roce-chain routing. Planning at 32 requests and 8192-token chunks
+    predicts 22.9 GiB of KV pages per rank where native loading allocates
+    12.4 GiB; correct the declared rank costs from a measured GB10 memory
+    report.
+
+[ ] Reconcile device-counted record gathers across context-parallel prefill paths
+    with the PCIe byte gather in local-inference-lab/flashinfer#114. Check the
+    shared RoCEnante gather contract and the GLM-5.3 and Kimi K3 peer-cache
+    reads. On DCP2/4, compare pack, gather, and placement against direct peer
+    reads for identical context windows. Verify record order and byte equality
+    as live counts change across graph replays before choosing a transport.
+
+[ ] Validate GLM TP4/TP8 A16 expert preparation through export and native replay.
+    Verify DirectWeightLoader.load_nvfp4_experts keeps only final scale layouts
+    in persistent storage when loading expanded CSF scales.
+
+[ ] Preserve explicit A16 activation arithmetic in SM103 MXFP8 projections.
+    QuantizedProjection does not pass activation_mode to sm103_projection.query_for;
+    PackedProjectionQuery.mode chooses quantized activations from output width.
+    Trace affected recipes and validate on SM103 before changing the shared path.
+
+[ ] Resolve CUBLAS_STATUS_ALLOC_FAILED during Kimi K3.1 Pro TP16 DFlash2
+    prefill4096 warmup after forward compilation, with concurrency 8,
+    speculative token capacity 64, DCP8, CSF scales, and KDA-input MXFP8.
+    Cached-forward warmup recovers from 128 MiB allocation failures with less
+    than 35 MiB free. Validate cold compilation through capture at these capacities.
+
+[ ] Validate automatic core assembly after a Kimi K3.1 Pro TP16 DFlash2 export
+    with concurrency 8, a 64-token speculative budget, DCP8, and 129 graphs
+    per rank. Capture exhausted host memory on a 251 GiB host without swap.
+
+[ ] Evaluate combined MXFP8 GDN QKV/Z/B/A projections for Qwen3.8 Flash Next
+    through the shared loading and execution path that Qwen3.8 dense uses
+    (in_proj_qkvzba in hyperflare_recipes/components/gated_delta.py). Preserve TP
+    partitioning and compare complete graph latency against the separate QKV/Z
+    and B/A projections with stream overlap.
+
+[ ] Integrate the shared fused head normalization/RoPE and output gating that
+    Qwen3.8 dense uses (hyperflare_recipes/components/head_norm_rope.py and head_gate.py)
+    into Qwen3.8 Flash Next's QSA wrapper where arithmetic and layouts match.
+    Preserve sparse selection, cache-only execution, and TP behavior; validate
+    replay and graph latency.
+
+[ ] Validate full-width INT64 expert IDs in b12x W4A16 route packing,
+    reductions, and MoE calibration. These paths narrow IDs before range
+    checks; add captured replay coverage for IDs outside the INT32 range.
+
+[ ] Find the cause of GLM-5.3 Flash device error 6 (INVALID_SPECULATION) at
+    TP4 with 16 concurrent requests on DGX Spark: KDA layers 29, 40, and 44
+    produce NaN outputs. Validate the page-table-extent sparse indexer on Spark
+    in the same run; it is validated on SM120 only. Drive the workload with
+    scripts/repro_glm_batched_speculation.py.
+
+[ ] Qualify capacity-blocked host restores and demand recency for individual checkpoints
+    through exported Kimi K3.1 cores under concurrent long prompts, immediate
+    continuations, and aliased snapshot pressure. Compare reused tokens, request
+    latency, throughput, snapshot backing pages, and storage skips with equivalent
+    clocks and cache budgets; include prompt-end and message-boundary follow-ups.
+    Remove after native serving confirms restoration progress and retention behavior;
+    CPU scheduler and worker tests do not establish serving performance.
+
+[ ] Investigate Step 5 seeded request repeatability: repeated completions with
+    seeds 119 or 1234 and unchanged sampling defaults produce different text using
+    step5-tp4-mtp3-c16-fp8kv-signed.safetensors, including prompt-cache hits.
+
+[ ] Validate compiler-owned temporaries in complete GLM and Kimi exports. Migrate
+    Step, Muse, and MiMo from graph-buffer pools, then validate complete exports.
+    Exercise native text/image transitions, speculative rollback, and full graph
+    catalogs with tensor parallelism. Measure fixed memory and KV capacity. See
+    performance-work.md#cross-model-scratch-planning.
+
+[ ] Fix Int32 partial-output address overflow in FlashInfer dense MLA split
+    stores for Kimi prefill4096; use element offsets that cover the allocated
+    tensor. Validate with Compute Sanitizer and the unchanged attention reference.
+
+[ ] Resolve CUDA_ERROR_ILLEGAL_ADDRESS when serving a 6112-token prompt from
+    Kimi K3.1 Pro core gb202-tp16-202611111208, exported with concurrency 2 and
+    prefill capacity 4096. Short text and image requests complete. Repeat the
+    long prompt in a fresh native serving process before closing this item.
+
+[ ] Resolve Step TP8 package publication exceeding the 128 MiB envelope limit
+    after all 111 graphs capture. Preserve bounded package loading and validate
+    the complete package through native serving.
+
+[ ] Size DeepSeek V4 and MiMo one-shot all-reduce channels from their actual
+    callers; prefills of at least 1024 rows use separate DMA channels. Preserve
+    MiMo's full-prefill context-gather capacity when separating those bounds.
+
+[ ] Scope TP4 Simple peer-push all-reduce in FlashInfer/b12x: four-rank payload
+    ownership, publication ordering, scratch/epoch reuse, and preparation-time
+    autotuning against existing collectives. Cover graph replay, concurrent
+    channels, rollover, and complete-collective latency on the target topology.
+
+[ ] Test Kimi K3.1 latent-column reduce-scatter plus one FP32 RMS-statistic
+    all-reduce per token before other MoE collective changes. Compare against
+    the latent all-reduce at TP16, prefill 4096, context 0. Preserve BF16
+    normalization rounding and validate numerical agreement and complete graph
+    latency. The candidate reduces latent replication but adds a serial
+    collective stage.
+
+[ ] Honor --expert-scale-compression native in Kimi K3 and K3.1 preparation
+    and report the default encoding accurately. The shared loader always uses
+    CSF, and the declared resident weight estimate already includes compression.
+    Wire the option through loading and add native-scale memory costs and tests.
+
+[ ] Review fusion of pooled DeepSeek V4.1 indexer lengths: captured graphs split
+    clamp from amax and retain explicit copy kernels. Measure complete GPU steps
+    before changing shared storage lowering.
+
+[ ] Measure direct expert-sum output writes in DeepSeek V4 and Qwen3.8 MoE;
+    pooled add-then-copy expressions can retain an extra device copy. Check
+    Step 5 separately because its expert sum uses FP32 intermediates.
+
+[ ] Validate vision and speculative temporary storage in complete exported cores
+    across Qwen, GLM, DeepSeek V4, MiMo, Step, and Nemotron. Measure
+    fixed memory and KV capacity with full catalogs and tensor parallelism;
+    exercise alternating text/image graphs, proposal/verification, and rollback.
+    See performance-work.md#cross-model-scratch-planning.
+
+[ ] Validate cooperative Inductor reductions in full vision-enabled exports of
+    kimi-k3-mxfp4-csf, step5-preview-nvfp4, mimo-v2.6-pro-mopd, glm-5.3-flash,
+    and nemotron-bolt-24gb. Exercise every vision capacity, TP kernel agreement,
+    frozen preparation-cache reload, and native image replay. RADIO at
+    single rank and TP2 and a full Qwen3.8 export are validated. Nemotron
+    compiles its complete catalog and replays RADIO at 1024 patches; other
+    vision capacities need native checks. The other listed full-model
+    vision paths are untested. See model-preparation.md#environment-setup.
+
+[ ] Investigate Qwen Flash Next vision's canonical-reference accuracy failure
+    with Qwen3.8-Flash-Next-NVFP4-MXFP8-CSF-QAD: relative L2 0.09977 exceeds
+    0.03 with both bound and invocation-local temporaries. Native image requests
+    pass but do not establish the encoder's numerical reference.
+
+[ ] Resolve checkpoint reference failures before claiming full numerical
+    validation: GLM KDA prefix relative L2 0.02715 exceeds 0.01, Nemotron B8
+    context 0.010005 exceeds 0.01, and Step sparse attention layer 91 error
+    0.008425 exceeds 0.008. Each failure also reproduces with bound temporary storage.
+
+[ ] Check DeepSeek V4/V4.1 continuation-row requirements during speculation.
+    parallel_draft.py consumes request_state_rows[:, 0], while their graph
+    contracts reserve one row per verification token. Validate native proposal,
+    verification, and rollback before reducing the declared execution rows.
+
+[ ] Add Nemotron Bolt video preprocessing, timestamps, and frame-feature pruning.
+
+[ ] Measure DeepSeek V4's sharded Markov projection against replicated weights;
+    DeepSeek V4.1 uses replication to remove per-draft vocabulary gathers.
+
+[ ] Account for useful prompt tokens when estimating prefill graph duration.
+    On Kimi K3.1 Pro TP16, a 128-token tail on the 3,584-token graph takes
+    1.51 s. Helios uses that estimate for a full 3,584-token chunk that takes
+    7.81 s and displaces a 4,096-token graph taking 1.76 s. Exercise both
+    loads on the same graph when validating cost updates and selection.
+
+[ ] Validate embedding readiness timestamps in full Qwen3.8 PLE serving and
+    cross-node RoCEnante TP cores for Qwen3.8 and DeepSeek V4.1.
+
+[ ] Profile cached CSF FC1 metadata in FlashInfer for register pressure, spills,
+    occupancy, and complete DeepSeek V4.1 graph latency.
+
+[ ] Investigate DeepSeek V4.1 grouped MoE CSF plan selection with representative
+    routes: compare inline reconstruction and separate expansion in complete
+    graphs before adding a preparation override. See performance-work.md.
+
+[ ] Run DeepSeek V4 packed-context native replay with its checkpoint and measure
+    exported V4/V4.1 cores with packed context projections. Compare GLM's
+    shared-expert launch order when the configured checkpoint shards are available.
+
+[ ] Invalidate b12x preparation discovery's cached compiler context when
+    Inductor selects a different libdevice in the same process. Repeated GPU
+    test preparation can restore program keys for the preceding library.
+
+[ ] Investigate Nemotron repeated-image prefix reuse in
+    tests/server/test_nemotron.py::test_image_cache_identity: native serving of
+    NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB reports 281 cached tokens for a repeated
+    287-token prompt; image answers and token identity assertions pass.
+
+[ ] Validate native debug-serve asset descriptors for Step-5, MiniMax M3,
+    MiMo V2, Qwen3.8 dense, and DeepSeek V4.1. Their tokenizer descriptors omit
+    sha256 before PreparedModel.start_server; launches remain untested.
+
+[ ] Validate the shared MXFP8 projection FP32 split-reduction default on Qwen3.8
+    MoE, GLM KDA/MLA, and other attention consumers with their checkpoints.
+    BF16 atomic reduction exceeds the shared operator bounds at Qwen3.8 dense
+    layer 1 output; the other consumers have no checkpoint coverage.
+
+[ ] Validate complete RadixArk/Kimi-K3.1-Dflash2-Preview speculative rounds,
+    acceptance quality, and native core serving. Component and draft-body
+    checks do not cover proposal sampling, verification, and acceptance together.
+
+[ ] Compare Kimi K3.1 output-sharded latent prefill and staged history gathers
+    against selected-record prefill. Validate dynamic KV peer mappings through
+    fresh core export and native loading. See model-preparation.md.
+
+[ ] Diagnose the TP16 eager-versus-compiled serial output mismatch in
+    tests/recipes/test_kimi31_query_overlap_tp16_cuda.py at 8192-token history.
+    Both candidate exchanges differ in nine output bytes on the repeated
+    17-token context; cache contents, query bytes, and selected IDs match exactly.
+
+[ ] Add a shared check that zeroes every export-disposable range before
+    replaying each captured graph, and run it for every recipe's graph catalog.
+    tests/recipes/test_glm53_indexer_cuda.py does this for one operator. See
+    preparation-development.md.
+
+[ ] Measure the compact GDN recurrence's capacity and write-traffic savings in
+    complete speculative rounds against full checkpoint columns. See
+    mtp-design.md.
+
+[ ] Qualify Qwen3.8 Flash at TP4 end to end: export and native serving through
+    flare run. See model-preparation.md.
+
+[ ] Qualify DeepSeek V4.1 --vocabulary-parallel-sampling above one concurrent
+    request at TP4. Close when complete-model serving passes at the recipe's
+    default concurrency.
+
+[ ] Correct the QSA tuning label in hyperflare_recipes/recipes/qwen38/tuning.py, which
+    reads "fixed attention_splits=16" while the QSA declaration uses the
+    library's default partition policy (core-design.md).
+
+[ ] Qualify GLM full-model numerical acceptance for its sparse-selection and
+    atomic-reduction paths: component bounds on matched operands and measured
+    repeatability. See core-design.md.
+
+[ ] Qualify glm-5.3-flash-nvfp4 at TP1 and TP2 and on SM103 and SM121; only TP4 on
+    SM120 has been qualified. Run the CUDA-gated tests (FLARE_RUN_CUDA_TESTS=1) in
+    tests/recipes/test_glm53_weights.py, test_glm53_mla_cuda.py,
+    test_glm53_nvidia_weights.py, test_glm53_moe_overlap.py and
+    test_glm53_vision.py, and tests/components/test_weight_formats_cuda.py, then
+    export, serve, run image requests and compare first-token log probabilities
+    with a reference. At TP1 and TP2 the loader allocates 453 MB and 226 MB of
+    compressed-scale scratch (allocate_expert_scale_scratch) that this checkpoint,
+    which stores plain scales, never reads; skip it when no layer is declared with
+    compressed scales. Close when each configuration exports with every warmup and
+    capture and passes those checks.
+
+[ ] Explain why GIF and JPEG colour answers of glm-5.3-flash-nvfp4 at TP4 are less
+    reliable than vLLM's on small solid-colour images. The vision block norms and
+    final norm run at epsilon 1e-6 (the checkpoint declares 1e-5),
+    which raised correct answers on 64x64 images at default sampling from 14 to 18
+    of 20 for GIF and from 10 to 15 of 20 for JPEG; vLLM answers 20 of 20 for
+    both. The chat template's default reasoning effort and its thinking behaviour
+    also change these answers, and in some request configurations identical
+    requests at temperature 0 return different answers. The vision tower matches
+    the Transformers reference in tests/recipes/test_glm53_vision.py. Close when
+    an identified cause restores vLLM's accuracy and run-to-run repeatability on
+    these images.
+
+[ ] Repair the CUDA test cases that fail on upstream main and with this series:
+    test_glm_mla_checkpoint_native_replay[4-decode-1-True] fails
+    runs_concurrently (the TP4 one-row decode graph shows no overlap of the query
+    chain and the indexer; cause unknown);
+    test_cp_prefill_query_reuse_matches_separate_values_across_slices[2] calls
+    PreparedGlmMLA.attend_gathered_context with its old signature; the two
+    test_native_mxfp8_dense_graph cases raise KernelResolutionFrozenError; and
+    six test_actual_dense_and_attention_shards cases with NVIDIA's snapshot read
+    .weight of grouped projections, which have none. Close when they pass.
+
+[ ] Resolve the CUDA illegal memory access of the GLM MLA replay tests with
+    cuBLAS 13.4.1.3, which uv.lock pins. After test_autotuned_shared_routed_graph
+    [2-True-False-False-1] and the replay cases [1-decode-2-True],
+    [1-decode-1-False], [1-decode-2-False], [1-prefill-65-True] and
+    [2-decode-1-True] in one process, [2-decode-2-True] raises
+    CUBLAS_STATUS_INTERNAL_ERROR in cublasGemmStridedBatchedEx, called by torch.bmm
+    in _bmm_out (hyperflare_recipes/components/linear.py), and the CUDA error then persists
+    in the process. Upstream main fails the same sequence with NVIDIA's snapshot
+    and the locked cuBLAS, and passes it with cuBLAS 13.6.1.10. Close when the
+    locked cuBLAS passes this sequence, or the operand layout that triggers the
+    error is found.
+
+[ ] Explain the one TP4 preparation failure of glm-5.3-flash-nvfp4 at warmup 44
+    with cuBLAS 13.4.1.3, which the lock file pins. Six later preparation runs
+    with 13.4.1.3 passed every warmup, one of them at default tuning, and no
+    operand layout of the failing batched matrix multiplication was found
+    unusual. The failing call, torch.bmm in _bmm_out, is the call that fails in
+    the MLA replay sequence above with 13.4.1.3; whether it is the same defect
+    is not established. Close when the cause of both failures is found, or when
+    the locked cuBLAS no longer fails either.
+
+[ ] Run multi-rank host offload acceptance for Qwen TP2, GLM TP4, and DeepSeek
+    TP4 with Engram tables in disk mode, using qualify/host_cache.py. Close
+    when every rank shows identical results and transfer byte counts match the
+    cache geometry.
+
+[ ] Repair runtime collective-policy fixtures in tests/cli/test_planning.py.
+    test_every_recipe_passes_collective_policy_to_preparation rewrites a TP4
+    ladder to DeepSeek V4.1 TP3 or Muse Spark TP8; b12x rejects those gather
+    and word-exchange candidates before the preparation handoff is tested.
+
+[ ] Run tests/frontend/test_muse_spark.py against the Muse Spark checkpoint. Its
+    expected token IDs for request text that spells added tokens (`<|eot|>`,
+    `<image>`, `<|start|>`, `<|eom|>`) come from tests/frontend/literal_reference.py,
+    as for the Nemotron and Step-5 fixtures, which asserts that every spelled
+    token the template names is special. The test has not been run because the
+    checkpoint is gated and unavailable to the test environment. Close when the
+    test passes against the checkpoint.
+
+[ ] Make the GLM-5.3 ring gather cost follow the context length. It runs every
+    window of the prepared slab at any context length, so with the ring selected a
+    prefill chunk whose whole context is below a few hundred positions is slower
+    than peer pull by up to about 1 ms at a 1,048,576-position slab. Close when
+    the ring's per-chunk cost at 5 and 64 positions is within 0.2 ms of peer pull,
+    or the race scores short contexts separately and binds a length-dependent
+    choice.
+
+[ ] Qualify the GLM-5.3 prefill context transport race at TP2, on GPUs behind
+    PCIe switches or in host-bridge arrangements other than the qualified host's,
+    on SM121, and by loading a core exported before the race existed.
+    docs/model-preparation.md lists the qualified cell. Close when each of these
+    configurations passes on hardware and the document lists it.
+
+[ ] Qualify GLM-5.3 windowed context packing and gathering over RoCE.
+    The PCIe byte gather admits only DCP2 and DCP4. Close when a two-host
+    GLM-5.3 export and prefill replay pass, with the result stated in
+    docs/multi-host.md.
+
+[ ] Fix test_glm_mla_checkpoint_native_replay, which fails in all 18 cases with
+    the NVIDIA GLM-5.3 Flash snapshot, at TP1, TP2 and TP4, on the base commit and
+    with the prefill context transport race. The failure is a defect in the test:
+    PreparedGlmMLA.forward never writes scratch.attended, so the test compares an
+    all-zero tensor with the recomputed attention output. Serving numerics are
+    unaffected, because the graph's attention output equals the recompute bit for
+    bit and the later stages (expanded, output) match. The test fix, which skips
+    the attended comparison, is proposed separately. With the calibrated snapshot
+    the test fails earlier, in PreparedGlmMLA.__init__, where q_b_proj is a plain
+    tensor. The TP4 overlap decode case also fails runs_concurrently, and its cause
+    is not found. Close when the test passes in every case or each remaining
+    failure has a stated cause.
+
+[ ] Qualify Qwen3.8 27B QAD (`qwen3.8-27b-qad`) image input. The checkpoint
+    shares the `qwen38_dense` recipe and defaults to four image slots, but only
+    `qwen3.8-27b` (`nvidia/Qwen3.8-27B-NVFP4`) has been exported and served with
+    images. Remove this entry when a `qwen3.8-27b-qad` image core has been
+    exported and served.
+
+[ ] Qualify Qwen3.8 27B vision projections that carry bias on SM103.
+    `recipes/qwen38/vision.py` binds checkpoint BF16 projections through
+    `UnquantizedProjection`, whose bias keeps them off the SM103 dense GEMM path
+    in `hyperflare_recipes/components/linear.py`; SM103 execution is unqualified.
