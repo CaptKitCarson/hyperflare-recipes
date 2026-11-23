@@ -121,7 +121,7 @@ def _mhc_weights(weights, kind, norm):
 
 
 class PreparedDecoderBoundary:
-    """Produce complete global KV, then gather the decoder's bounded replay rows."""
+    """Produce complete global KV, then optionally gather the decoder's bounded replay rows."""
 
     def __init__(self, index, weights, source, target, packing, pool, rotary, *, carry,
                  session, name, workspace, window_metadata, source_indices):
@@ -136,13 +136,44 @@ class PreparedDecoderBoundary:
         self.global_kv = PreparedGlobalKV(index, weights.attention, source.attention_hc.normalized, source.attention,
             source_indices.metadata, pool, rotary, session=session, name=name + ".global_kv",
             indices=source_indices)
+        self.indexer = None
+        if packing is None:
+            from hyperflare_recipes.components.mxfp4_indexer import PreparedMXFP4Indexer
 
-    def __call__(self, incoming, pre_mix, metadata, indices, indexer):
-        suffix = self.packing.begin(metadata)
+            query_rows = min(source.attention.index_query.shape[0], 128)
+            geometry = source_indices.compressed(self.global_kv.ratio)
+            candidates = {}
+            if (index == text.get("candidate_source_layer_id")
+                    and source.attention.candidates.shape[0] >= query_rows):
+                candidates = dict(
+                    candidates_out=source.attention.candidates[:query_rows],
+                    counts_out=source.attention.candidate_counts[:query_rows],
+                )
+            self.indexer = PreparedMXFP4Indexer(
+                source.attention.index_query[:query_rows],
+                source.attention.index_weights[:query_rows],
+                pool.pages[f"layer{index}.index_page"],
+                source_indices.metadata.token_page_table[:query_rows],
+                geometry.lengths[:query_rows],
+                geometry.active_width,
+                source.attention.selected[:query_rows],
+                page_size=128 // self.global_kv.ratio,
+                session=session,
+                name=name + ".index0",
+                workspace=workspace,
+                mode="prefill",
+                **candidates,
+            ).functional(session=session)
+
+    def __call__(self, incoming, pre_mix, metadata, indices, indexer=None):
+        suffix = None if self.packing is None else self.packing.begin(metadata)
         attn_mix = torch.empty_like(pre_mix)
         residual, post, comb, normalized = self.mhc(*incoming, pre_mix=pre_mix, pre_out=attn_mix)
-        self.global_kv(normalized, indexer, metadata, indices.compressed(self.global_kv.ratio),
+        self.global_kv(normalized, self.indexer if indexer is None else indexer, metadata,
+            indices.compressed(self.global_kv.ratio),
             angles=indices.angles[(True, self.global_kv.ratio)])
+        if suffix is None:
+            return None, None, None
         return suffix, tuple(suffix.gather(value) for value in (residual, post, comb, normalized)), suffix.gather(attn_mix)
 
 
@@ -556,16 +587,24 @@ class PreparedDecoder:
     def __init__(self, weights, tables, scratch, metadata, pool, *, mode, runtime,
                  vocabulary_runtime, coordinator, session, name, workspace,
                  vision=None, mla_compute_mode="auto", scoring=None, vocabulary_parallel=False, examples=None,
-                 suffix_runtime=None):
+                 suffix_runtime=None, encoder_only=False):
         if scratch.local_logits.dtype != torch.float32 or scratch.logits.dtype != torch.float32:
             raise ValueError("DeepSeek target vocabulary logits require FP32 storage")
         self.weights, self.scratch, self.metadata, self.pool = weights, scratch, metadata, pool
         self.mode = mode
+        self.encoder_only = bool(encoder_only)
         self.vision = vision if mode == "prefill" else None
         self.table_requests = PreparedTableRequests(tables, metadata, pool, session=session, name=name + ".table_requests")
         decoder_start = weights.config.decoder_start
+        if self.encoder_only:
+            if mode != "prefill" or decoder_start is None or scoring is not None:
+                raise ValueError("encoder-only prefill requires a non-scored prefill with a decoder boundary")
+            if (any(layer.engram is not None for layer in weights.layers[decoder_start:])
+                    or any(source.layer > decoder_start for source in weights.config.sources)):
+                raise ValueError("encoder-only prefill requires Engram and compressed KV sources before its boundary")
         self.packing = None
-        if mode == "prefill" and metadata.positions.numel() > 128 and decoder_start is not None and scoring is None:
+        if (not self.encoder_only and mode == "prefill" and metadata.positions.numel() > 128
+                and decoder_start is not None and scoring is None):
             if (any(layer.engram is not None for layer in weights.layers[decoder_start:])
                     or any(source.layer > decoder_start for source in weights.config.sources)):
                 raise ValueError("decoder suffix replay requires Engram and compressed KV sources before its boundary")
@@ -575,11 +614,11 @@ class PreparedDecoder:
             128, scratch.hidden.shape[0], weights.shard.world_size, scratch.embedding.device)
         if suffix_runtime is not None and not _runtime_accepts(suffix_runtime, self.output_scratch.attention.output):
             suffix_runtime = None
-        self.aux_layers = () if weights.draft is None else weights.config.draft.target_layers
+        self.aux_layers = () if (self.encoder_only or weights.draft is None) else weights.config.draft.target_layers
         if self.packing is not None and any(layer <= decoder_start for layer in self.aux_layers):
             raise ValueError("bounded decoder feedback requires draft target layers after its global-KV boundary")
-        self.auxiliary_shape = (self.output_metadata.token_ids.numel(), len(self.aux_layers) * 5120)
-        self.auxiliary = torch.zeros(self.auxiliary_shape, dtype=torch.bfloat16, device=metadata.positions.device)
+        self.auxiliary_shape = (0, 0) if self.encoder_only else (self.output_metadata.token_ids.numel(), len(self.aux_layers) * 5120)
+        self.auxiliary = None if self.encoder_only else torch.zeros(self.auxiliary_shape, dtype=torch.bfloat16, device=metadata.positions.device)
         self.safe_tokens = torch.zeros_like(metadata.token_ids) if self.vision is not None else metadata.token_ids
         self.embedding = PreparedEmbedding(weights.embedding, self.safe_tokens, scratch.embedding,
             num_rows=metadata.live_counts[:1], session=session, name=name + ".embedding").functional(session=session, dynamic_inputs=True)
@@ -592,7 +631,7 @@ class PreparedDecoder:
                 token_capacity=metadata.max_query_tokens,
                 window_tokens=128, record_bytes=528)
         ratios = weights.config.text["compress_ratios"][:len(weights.layers)]
-        prefix_ratios = ratios if self.packing is None else ratios[:decoder_start + 1]
+        prefix_ratios = ratios if (self.packing is None and not self.encoder_only) else ratios[:decoder_start + 1]
         self.window_metadata = AttentionIndices(metadata, mode=mode,
             tokens=metadata.positions.numel(),
             page_size=128 if mode == "decode" else 128 + metadata.max_query_tokens, width=128,
@@ -623,7 +662,8 @@ class PreparedDecoder:
         self.engram_overlaps = {}
         self.engram_consumers = {}
         self.engram_projects = {}
-        for index, layer in enumerate(weights.layers):
+        active_layers = weights.layers[:decoder_start] if self.encoder_only else weights.layers
+        for index, layer in enumerate(active_layers):
             boundary = replay_start = None
             layer_scratch, layer_metadata = scratch, metadata
             layer_runtime = _layer_runtime(index)
@@ -647,12 +687,12 @@ class PreparedDecoder:
                 else:
                     pipelined_attn = "mla_wo"
             pipelined_attn_hc = prev_defer_mlp_b
-            next_has_boundary = self.packing is not None and index + 1 == decoder_start
-            defer_mlp_b = (pipelined_ffn and defer and index + 1 < len(weights.layers)
+            next_has_boundary = (self.packing is not None or self.encoder_only) and index + 1 == decoder_start
+            defer_mlp_b = (pipelined_ffn and defer and index + 1 < len(active_layers)
                            and layer_pipelined[index + 1] and not next_has_boundary)
             overlap_engram = (can_overlap and _is_dma_runtime(layer_runtime)
                               and layer.engram is not None and weights.shard.world_size > 1
-                              and index >= 8 and (self.packing is None or index < decoder_start))
+                              and index >= 8 and ((self.packing is None and not self.encoder_only) or index < decoder_start))
             prepared_layer = PreparedLayer(index, layer, tables, layer_scratch, layer_metadata, pool, self.rotary,
                 shard=weights.shard, mode=mode, runtime=layer_runtime,
                 coordinator=coordinator, session=session, name=f"{name}.layer{index}", workspace=workspace,
@@ -717,11 +757,22 @@ class PreparedDecoder:
             self.layers.append(prepared_layer)
             carry = defer
             prev_defer_mlp_b = defer_mlp_b
-        self.scoring = None if scoring is None else scoring.prepare(scratch.embedding, weights.head,
-            vocabulary=129280, session=session, coordinator=coordinator, name=name + ".prompt",
-            logits_dtype=torch.float32)
-        self._prepare_head(vocabulary_parallel=vocabulary_parallel, vocabulary_runtime=vocabulary_runtime,
-            coordinator=coordinator, session=session, name=name, workspace=workspace)
+        self.encoder_boundary = None
+        if self.encoder_only:
+            self.encoder_boundary = PreparedDecoderBoundary(
+                decoder_start, weights.layers[decoder_start], scratch, None, None,
+                pool, self.rotary, carry=carry, session=session,
+                name=f"{name}.layer{decoder_start}", workspace=workspace,
+                window_metadata=None, source_indices=self.window_metadata,
+            )
+            self.scoring = self.head = self.head_hidden = self.local_logits = None
+            self.compact_head = False
+        else:
+            self.scoring = None if scoring is None else scoring.prepare(scratch.embedding, weights.head,
+                vocabulary=129280, session=session, coordinator=coordinator, name=name + ".prompt",
+                logits_dtype=torch.float32)
+            self._prepare_head(vocabulary_parallel=vocabulary_parallel, vocabulary_runtime=vocabulary_runtime,
+                coordinator=coordinator, session=session, name=name, workspace=workspace)
         self.window_metadata.functional()
         if self.suffix_window_metadata is not None:
             self.suffix_window_metadata.functional()
@@ -768,7 +819,7 @@ class PreparedDecoder:
         selection = (torch.full((embedding.shape[0], 512), -1, dtype=torch.int32, device=embedding.device), None, None)
         staging = (None if self.staging_shape is None else torch.empty(
             self.staging_shape, dtype=torch.uint8, device=embedding.device))
-        auxiliary = torch.empty(self.auxiliary_shape, dtype=torch.bfloat16, device=embedding.device)
+        auxiliary = None if self.encoder_only else torch.empty(self.auxiliary_shape, dtype=torch.bfloat16, device=embedding.device)
         suffix, records = None, []
         has_image_mask = any(layer.has_image_mask for layer in self.layers)
         image_mask = metadata.token_ids >= 129280 if has_image_mask else None
@@ -812,6 +863,10 @@ class PreparedDecoder:
                 image_mask=image_mask, engram_projected=engram_projected, engram_gathered=engram_gathered,
                 engram_overlap=engram_overlap, engram_project=engram_project)
             records.append(record)
+        if self.encoder_only:
+            self.encoder_boundary(incoming, pre_mix, metadata, indices)
+            self.table_requests.commit(source_metadata.lengths, raw_history, source_metadata)
+            return None, None, None, (staging, tuple(records), raw_history)
         residual, = incoming
         samples = metadata.sample_indices
         head_residual = residual if self.compact_head else residual[samples]
