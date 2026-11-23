@@ -68,6 +68,13 @@ def test_oneshot_capacity_excludes_prefills_assigned_to_dma(capacity, dspark, dr
     assert config.all_reduce_tokens == expected
 
 
+def test_oneshot_capacity_tracks_draft_requirement_below_dma_cutoff():
+    config = PreparationConfig(max_active=32, dspark=True,
+        speculative_widths=tuple(range(1, 7)), speculative_token_capacity=64,
+        prefill_chunk_size=64)
+    assert config.all_reduce_tokens == 160
+
+
 def test_short_prefill_still_fits_the_oneshot_channel():
     config = PreparationConfig(max_active=1, dspark=False, prefill_chunk_size=64)
     assert config.all_reduce_tokens == 64

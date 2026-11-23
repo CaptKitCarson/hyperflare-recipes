@@ -326,13 +326,20 @@ def prepare_rank(snapshot, config, *, rank, group, progress=None, core_storage=N
     with phase(progress, "Inspect checkpoint"):
         manifest = inspect_indexed_checkpoint(snapshot)
     metadata_path = manifest.metadata_path
+    coordinator = CollectivePreparation(group)
+    load_engram_full = (
+        shard.world_size > 1
+        and not coordinator.spans_hosts
+        and max(config.prefill_capacities, default=0) >= 512
+    )
     with core_storage.transient():
         weights = ModelWeights.load(manifest, device, shard=shard, progress=progress, dspark=config.dspark,
                                     confidence=config.draft_tokens > 0,
                                     expert_scale_compression=config.expert_scale_compression,
                                     draft_head_quantization=config.draft_head_quantization,
                                     markov_head_quantization=config.markov_head_quantization,
-                                    vocabulary_parallel_sampling=config.vocabulary_parallel_sampling)
+                                    vocabulary_parallel_sampling=config.vocabulary_parallel_sampling,
+                                    engram_full_projection=load_engram_full)
         release_unused()
     if progress is not None:
         progress("Target head: BF16 checkpoint weights with FP32 accumulation and logits")
@@ -366,7 +373,6 @@ def prepare_rank(snapshot, config, *, rank, group, progress=None, core_storage=N
         admission = AdmissionBuffers.allocate(device, vocab_size=129280, capacity=slots)
         commands = StateCommands.allocate(device, capacity=slots)
         completion = CompletionOutputs.allocate((2, slots, VECTOR_TOKENS_FIELD + config.completion_token_capacity), device=device)
-        coordinator = CollectivePreparation(group)
         verification_samples = (slots * max(config.speculative_widths)
                                 if config.packed_verification else config.decode_tokens)
         collective, prefill_collective, vocabulary_collective, result_collective, draft_vocabulary_collective = _collective_runtimes(

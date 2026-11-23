@@ -18,25 +18,29 @@ class PreparedGroupedOutputProjection:
                  positions=None, cos_sin_cache=None):
         self.weights, self.output, self.workspace = weights, output, workspace
         self.inv_rope = bool(inv_rope)
+        self._fused_inv_rope = self.inv_rope and hasattr(wo_projection, "run_inv_rope_out")
         if self.inv_rope:
             if (heads_per_group is None or positions is None or cos_sin_cache is None
                     or source.ndim != 3
                     or source.shape[1:] != (weights.groups * heads_per_group, nope_dim + rope_dim)
                     or heads_per_group * (nope_dim + rope_dim) != weights.group_width):
                 raise ValueError("inverse-RoPE attention output geometry does not match packed WO weights")
-            invocation = {
-                "operation": "inv_rope",
-                "heads_per_group": int(heads_per_group),
-                "nope_dim": int(nope_dim),
-                "rope_dim": int(rope_dim),
-                "positions_dtype": str(positions.dtype).removeprefix("torch."),
-                "cos_sin_dtype": str(cos_sin_cache.dtype).removeprefix("torch."),
-            }
             self.positions = positions
             self.cos_sin_cache = cos_sin_cache
             self.heads_per_group = int(heads_per_group)
             self.nope_dim = int(nope_dim)
             self.rope_dim = int(rope_dim)
+            if self._fused_inv_rope:
+                invocation = {
+                    "operation": "inv_rope",
+                    "heads_per_group": int(heads_per_group),
+                    "nope_dim": int(nope_dim),
+                    "rope_dim": int(rope_dim),
+                    "positions_dtype": str(positions.dtype).removeprefix("torch."),
+                    "cos_sin_dtype": str(cos_sin_cache.dtype).removeprefix("torch."),
+                }
+            else:
+                invocation = {}
         else:
             if source.shape[1:] != (weights.groups, weights.group_width):
                 raise ValueError("attention output must match the packed projection groups and head width")
@@ -47,12 +51,15 @@ class PreparedGroupedOutputProjection:
             invocation=invocation,
         )
         self.operands = [tensor for packed in (weights.wo_a, weights.wo_b)
-                         for tensor in (packed.values, packed.scale_rows.view(torch.uint8),
-                                        packed.scale_mma.view(torch.uint8))]
+                         for tensor in (
+                             packed.values,
+                             *((packed.scale_rows.view(torch.uint8),) if packed.scale_rows is not None else ()),
+                             packed.scale_mma.view(torch.uint8),
+                         )]
         for tensor in self.operands:
             record_numeric_tensor(tensor)
 
-        if self.inv_rope:
+        if self._fused_inv_rope:
             def call(state, values, pos, cs, out, *, produce=None, owners=()):
                 scratch = planned_scratch(state._scratch_state.scratch_specs(), workspace)
                 binding = state.bind_inv_rope(o=values, positions=pos, cos_sin_cache=cs,
@@ -75,6 +82,9 @@ class PreparedGroupedOutputProjection:
                 prepare_call=lambda state: call(state, source, positions, cos_sin_cache, output),
                 benchmark_call=benchmark),))
         else:
+            plain_source = (source.view(source.shape[0], weights.groups, weights.group_width)
+                            if self.inv_rope else source)
+
             def call(state, values, out, *, produce=None, owners=()):
                 scratch = planned_scratch(state._scratch_state.scratch_specs(), workspace)
                 binding = state.bind(source_tgd=values, weights=weights, scratch=scratch, out=out)
@@ -82,13 +92,14 @@ class PreparedGroupedOutputProjection:
                     owners=(*owners, weights, *prime_owners(workspace, scratch, binding)))
 
             def benchmark(state):
-                generator = torch.Generator(device=source.device).manual_seed(4121)
-                seed = torch.randn(source.shape, dtype=source.dtype, device=source.device, generator=generator) * .125
-                values, out = torch.empty_like(source), torch.empty_like(output)
+                generator = torch.Generator(device=plain_source.device).manual_seed(4121)
+                seed = torch.randn(plain_source.shape, dtype=plain_source.dtype,
+                                   device=plain_source.device, generator=generator) * .125
+                values, out = torch.empty_like(plain_source), torch.empty_like(output)
                 return call(state, values, out, produce=lambda: values.copy_(seed), owners=(values, out, seed))
 
             declare(session, (self.plan.request(name=name,
-                prepare_call=lambda state: call(state, source, output), benchmark_call=benchmark),))
+                prepare_call=lambda state: call(state, plain_source, output), benchmark_call=benchmark),))
         register_finalizer(session, self.rebind, workspace=workspace)
 
     def rebind(self):
@@ -111,10 +122,25 @@ class PreparedGroupedOutputProjection:
             shape, stride, dtype = self.output_layout
             output = torch.empty_strided(shape, stride, dtype=dtype, device=source.device)
             scratch, = (torch.empty(shape, dtype=dtype, device=source.device) for shape, dtype in self.scratch_layout)
-        if self.inv_rope:
+        if self._fused_inv_rope:
             pos = self.positions if positions is None else positions
             cs = self.cos_sin_cache if cos_sin_cache is None else cos_sin_cache
             wo_projection.run_inv_rope_out(source, pos, cs, self.weights, out=output, scratch=scratch, plan=self.plan)
+        elif self.inv_rope:
+            from hyperflare_recipes.components.rotary import _rotate_grouped
+
+            pos = self.positions if positions is None else positions
+            cs = self.cos_sin_cache if cos_sin_cache is None else cos_sin_cache
+            angles = cs if pos is None else cs.index_select(0, pos.long())
+            rotated = source.clone()
+            heads = rotated.shape[1]
+            per_cta = 8 if heads % 8 == 0 else 4
+            torch.library.wrap_triton(_rotate_grouped)[(rotated.shape[0], (heads + per_cta - 1) // per_cta)](
+                rotated, angles, rotated.stride(0), rotated.stride(1), self.nope_dim, heads,
+                -1, angles.ndim == 2, per_cta, num_warps=1)
+            wo_projection.run_out(
+                rotated.view(rotated.shape[0], self.weights.groups, self.weights.group_width),
+                self.weights, out=output, scratch=scratch, plan=self.plan)
         else:
             wo_projection.run_out(source, self.weights, out=output, scratch=scratch, plan=self.plan)
         return output

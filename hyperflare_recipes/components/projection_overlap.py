@@ -17,9 +17,6 @@ _TC_GEMV_ROPE_RUNNERS: dict[tuple[int, int, int], tuple[object, object]] = {}
 
 def register_tc_gemv_rope(plan, *, head_dim: int, rope_dim: int = 64) -> bool:
     """Precompile a fused-RoPE MXFP8 TC-GEMV runner if `plan` selected tc_gemv."""
-    from b12x._lib.compile_plan import load_programs
-    from b12x.gemm.blockscaled._mxfp8_tc_gemv import compile_mxfp8_tc_gemv_rope
-
     state = getattr(plan, "_prepared", None)
     if state is None:
         return False
@@ -30,6 +27,11 @@ def register_tc_gemv_rope(plan, *, head_dim: int, rope_dim: int = 64) -> bool:
             or getattr(query, "recipe", None) != "mxfp8"):
         return False
     if head_dim < 128 or (head_dim & (head_dim - 1)) != 0 or rope_dim != 64:
+        return False
+    try:
+        from b12x._lib.compile_plan import load_programs
+        from b12x.gemm.blockscaled._mxfp8_tc_gemv import compile_mxfp8_tc_gemv_rope
+    except ImportError:
         return False
     device = state.device
     runner = compile_mxfp8_tc_gemv_rope(
@@ -54,8 +56,9 @@ def _run_mxfp8_with_rope(source, values, scales, gain, activation_scale, scale_k
     entry = _TC_GEMV_ROPE_RUNNERS.get((plan_handle, head_dim, rope_dim))
     if entry is not None:
         runner, tc_flags = entry
+        stream_handle = stream.cuda_stream if hasattr(stream, "cuda_stream") else stream
         runner(source, values, scales, output, angles,
-               workspace if workspace.numel() > 0 else None, tc_flags, stream)
+               workspace if workspace.numel() > 0 else None, tc_flags, stream_handle)
         return
     from hyperflare_recipes.components.sm103_projection import packed_out_workspace
 

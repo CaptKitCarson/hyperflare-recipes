@@ -221,6 +221,12 @@ class PreparedEngram:
             layer=layer, token_map=tables.token_map, geometry=tables.geometry,
             session=session, name=name + ".lookup", runtime=tables.readiness_runtime, coordinator=coordinator).functional(session=session)
         from b12x.comm import pcie
+        # For prefills >= 512 tokens on local PCIe DMA runtimes, gather the 6144-col
+        # Engram activations first and run one full projection (`projection_full`).
+        # Note: the full projection accumulates across all 24 heads in FP32 before a
+        # single BF16 round, whereas the sharded <512-token path rounds each rank's
+        # partial sum to BF16 before the all-reduce. The two paths share identical
+        # weights/precision but are not bit-identical across the 512-token boundary.
         self.use_all_gather = (
             self.sharded
             and isinstance(runtime, pcie.DmaAllReduce)

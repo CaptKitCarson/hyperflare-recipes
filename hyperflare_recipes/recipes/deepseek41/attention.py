@@ -564,7 +564,9 @@ class PreparedAttention:
         overlap_indexer = False
         if (mode in ("decode", "verify", "draft") and not (mode == "decode" and tokens == 1)
                 and isinstance(workspace, ScratchArena) and workspace.overlap
-                and self.angles is not None and self.angles.split):
+                and self.angles is not None and self.angles.split
+                and not (self.projections["q_b"].encoded is not None
+                         and self.projections["q_b"].quantizer_plan is not None)):
             overlap_indexer = (self.global_kv is not None and bool(self.selectors)
                                and self.index_angles is not None and self.index_angles.split
                                and self.index_query.encoded is None)

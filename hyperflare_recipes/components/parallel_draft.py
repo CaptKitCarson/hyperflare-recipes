@@ -550,8 +550,14 @@ class PreparedParallelDraftRound:
             query_limits = o.inputs.query_lengths[:b]
             target_probabilities, target_valid, _ = target.run(logits.view(b, w, -1), proposal.drafts,
                 tile_masses=target_tile_masses, token_limits=query_limits)
-            draft_masses = (proposal.tile_masses if proposal.tile_masses is not None
-                            else torch.empty(self.draft_mass_shape, dtype=torch.float32, device=logits.device))
+            if proposal.tile_masses is None:
+                if w > 1:
+                    raise ValueError(
+                        "vocabulary-parallel verification requires proposal.tile_masses when width > 1"
+                    )
+                draft_masses = torch.empty(self.draft_mass_shape, dtype=torch.float32, device=logits.device)
+            else:
+                draft_masses = proposal.tile_masses
             acceptance = verify.run(probabilities, proposal.drafts, target_probabilities, proposal.valid, target_valid,
                 token_limits=query_limits, draft_tile_masses=draft_masses, target_tile_masses=target_tile_masses)
         else:
