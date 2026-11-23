@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(os.environ.get('FLARE_RUN_CUDA_TESTS') != '1', r
 @pytest.mark.parametrize('vocab', [31, 1025, 4096, 248320])
 @pytest.mark.parametrize('compiled', [False, True])
 def test_prompt_reduction(vocab, compiled):
-    from ignition.components.prompt_logprobs import PromptOutputs, PreparedPromptReduction
+    from hyperflare_recipes.components.prompt_logprobs import PromptOutputs, PreparedPromptReduction
     rows, start = 5, 16
     torch.manual_seed(42)
     logits = torch.randn((rows, vocab), device='cuda', dtype=torch.bfloat16)
@@ -78,7 +78,7 @@ def test_prompt_reduction(vocab, compiled):
 
 @pytest.mark.parametrize('world', [2, 4])
 def test_prompt_partial_combination_excludes_padding_and_counts_cross_shard_ties(world):
-    from ignition.components.prompt_logprobs import PromptOutputs, PreparedPromptReduction
+    from hyperflare_recipes.components.prompt_logprobs import PromptOutputs, PreparedPromptReduction
     vocab, rows = 1025, 3
     width = (vocab + world * 64 - 1) // (world * 64) * 64
     torch.manual_seed(7)
@@ -100,7 +100,7 @@ def test_prompt_partial_combination_excludes_padding_and_counts_cross_shard_ties
         parts.append(op)
         shards.append(shard)
     # Simulate the bit-preserving collective between the two reduction phases.
-    from ignition.components.prompt_logprobs import _global_stats, _finish, PROMPT_FIELDS
+    from hyperflare_recipes.components.prompt_logprobs import _global_stats, _finish, PROMPT_FIELDS
     from ignition.components.completion import MAX_TOP_LOGPROBS
     from ignition.preparation.triton import prepare_triton
     gathered = torch.zeros((rows, world * 64), device='cuda', dtype=torch.int32)
@@ -128,7 +128,7 @@ def test_prompt_partial_combination_excludes_padding_and_counts_cross_shard_ties
 @pytest.mark.parametrize('logits_dtype', [torch.bfloat16, torch.float32])
 @torch.no_grad()
 def test_blocked_projection_capture_crosses_row_blocks_with_fixed_peak_memory(logits_dtype):
-    from ignition.components.prompt_logprobs import PromptScoring, BLOCK_ROWS
+    from hyperflare_recipes.components.prompt_logprobs import PromptScoring, BLOCK_ROWS
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.tuning import RecordedPreparationSession
 
@@ -183,7 +183,7 @@ def test_blocked_projection_capture_crosses_row_blocks_with_fixed_peak_memory(lo
 def _prompt_tp_rank(rank, rendezvous):
     from datetime import timedelta
     import torch.distributed as dist
-    from ignition.components.prompt_logprobs import PromptOutputs, PreparedPromptReduction
+    from hyperflare_recipes.components.prompt_logprobs import PromptOutputs, PreparedPromptReduction
     from ignition.preparation.collectives import CollectivePreparation, create_all_gather_runtime
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.tuning import RecordedPreparationSession
@@ -253,7 +253,7 @@ def test_two_rank_partial_exchange_capture_replay(tmp_path):
 
 
 def test_prompt_reported_value_ties_and_negative_infinity_targets():
-    from ignition.components.prompt_logprobs import PromptOutputs, PreparedPromptReduction
+    from hyperflare_recipes.components.prompt_logprobs import PromptOutputs, PreparedPromptReduction
     for logits, target in [
         (torch.arange(4096, dtype=torch.float32, device='cuda')[None] * 1e-12, 4095),
         (torch.tensor([[0., -float('inf'), -float('inf')]], device='cuda'), 2),

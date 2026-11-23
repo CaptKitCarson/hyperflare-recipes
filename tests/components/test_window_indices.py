@@ -9,13 +9,13 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.window_indices import PreparedWindowIndices
-from ignition.recipes.deepseek4.attention import AttentionIndices
-from ignition.recipes.deepseek41.decoder import PreparedDecoderBoundary
-from ignition.recipes.deepseek41.decoder_prefill import PreparedDecoderSuffix
-from ignition.recipes.deepseek41.attention import PreparedAttention
-from ignition.recipes.deepseek41.attention import AttentionIndices as DeepSeek41Indices
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.window_indices import PreparedWindowIndices
+from hyperflare_recipes.recipes.deepseek4.attention import AttentionIndices
+from hyperflare_recipes.recipes.deepseek41.decoder import PreparedDecoderBoundary
+from hyperflare_recipes.recipes.deepseek41.decoder_prefill import PreparedDecoderSuffix
+from hyperflare_recipes.recipes.deepseek41.attention import PreparedAttention
+from hyperflare_recipes.recipes.deepseek41.attention import AttentionIndices as DeepSeek41Indices
 from .window_indices_reference import LiteralDeepSeek4WindowIndices, LiteralDeepSeek41WindowIndices
 
 
@@ -191,7 +191,7 @@ def test_attention_rejects_incompatible_shared_window_indices(mismatch):
 
 
 def test_standalone_attention_refreshes_its_own_window_metadata(monkeypatch):
-    from ignition.recipes.deepseek41 import attention
+    from hyperflare_recipes.recipes.deepseek41 import attention
     metadata = Metadata.allocate(24, 8, 1, "cpu", max_query_tokens=6)
     config = SimpleNamespace(text={"compress_ratios": [0], "rms_norm_eps": 1e-6, "candidate_source_layer_id": 0}, source=lambda layer: None)
     pool = SimpleNamespace(config=config, window=lambda *args, **kwargs: torch.zeros((10, 128 * 528), dtype=torch.uint8))

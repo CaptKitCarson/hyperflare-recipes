@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 from huggingface_hub.constants import HF_HUB_CACHE
 
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
@@ -112,7 +112,7 @@ def _rank(rank, rendezvous, snapshot):
     from transformers.models.minimax_m3_vl.image_processing_minimax_m3_vl import (
         MiniMaxM3VLImageProcessor,
     )
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.collectives import (
         CollectivePreparation,
@@ -121,7 +121,7 @@ def _rank(rank, rendezvous, snapshot):
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.minimax_m3.vision import (
+    from hyperflare_recipes.recipes.minimax_m3.vision import (
         VisionWeights,
         VisionScratch,
         VisionInputs,

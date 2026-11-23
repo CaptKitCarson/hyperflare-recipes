@@ -7,8 +7,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.kimi3.decoder import DecoderStorage, Scratch
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.kimi3.decoder import DecoderStorage, Scratch
 
 
 def test_decoder_rank_constants_follow_hidden_and_latent_partitions():
@@ -33,8 +33,8 @@ def test_declaration_shapes_reuse_examples_without_aliasing_live_roles():
 
 def test_hidden_declaration_destinations_share_storage_without_operand_aliasing(monkeypatch):
     from ignition.preparation.examples import declaration_tensor
-    from ignition.recipes.kimi3 import attention, decoder, kda
-    from ignition.recipes.kimi31 import dspark
+    from hyperflare_recipes.recipes.kimi3 import attention, decoder, kda
+    from hyperflare_recipes.recipes.kimi31 import dspark
 
     operands = {}
 

@@ -8,7 +8,7 @@ import os
 import pytest
 import torch
 
-from ignition.components.mla_norm_quant import PreparedMLANormQuant
+from hyperflare_recipes.components.mla_norm_quant import PreparedMLANormQuant
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.tuning import RecordedPreparationSession

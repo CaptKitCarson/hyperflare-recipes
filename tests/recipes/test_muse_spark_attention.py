@@ -9,10 +9,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.muse_spark.attention import AttentionScratch, PreparedAttention
-from ignition.recipes.muse_spark.pool import ContinuationPool, PAGE_TOKENS, page_bytes
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.muse_spark.attention import AttentionScratch, PreparedAttention
+from hyperflare_recipes.recipes.muse_spark.pool import ContinuationPool, PAGE_TOKENS, page_bytes
 
 
 class Geometry:

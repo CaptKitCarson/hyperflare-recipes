@@ -60,7 +60,7 @@ def _backing(initial, prefix=4096, padding=8192):
 
 def _case(lengths, packed_inputs=False):
     """Random packed verification inputs and b12x's checkpointed decode of them."""
-    from ignition.components.recurrent import DeltaMetadata
+    from hyperflare_recipes.components.recurrent import DeltaMetadata
 
     generator = torch.Generator(device="cuda").manual_seed(sum(lengths))
     rows, tokens, columns = len(lengths), sum(lengths), 8
@@ -101,8 +101,8 @@ def _case(lengths, packed_inputs=False):
 
 
 def _recurrence(case, state, records):
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
-    from ignition.components.gdn_recovery import PreparedRecoveredRecurrence
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gdn_recovery import PreparedRecoveredRecurrence
 
     tokens = case["tokens"]
     recurrence = torch.full((tokens, VALUE_HEADS * 128), float("nan"), device="cuda").bfloat16()
@@ -123,7 +123,7 @@ def _recurrence(case, state, records):
 @pytest.mark.parametrize(("prefix", "padding", "alignment"), [(4096, 8192, 4), (4100, 8192, 1), (4096, 8196, 1)])
 @pytest.mark.parametrize("packed_inputs", [False, True])
 def test_recorded_verification_and_commit_match_checkpointing_decode(lengths, accepted, prefix, padding, alignment, packed_inputs):
-    from ignition.components.gdn_recovery import GDNLayerRecords, PreparedGDNCommit
+    from hyperflare_recipes.components.gdn_recovery import GDNLayerRecords, PreparedGDNCommit
 
     case = _case(lengths, packed_inputs)
     initial, metadata, model_slots = case["initial"], case["metadata"], case["model_slots"]
@@ -171,7 +171,7 @@ def test_compilation_sees_every_recovery_store():
     """Forward compilation keeps a user kernel only for the operands its stores reach."""
     from torch._higher_order_ops.triton_kernel_wrap import get_mutated_tensors, kernel_side_table
 
-    from ignition.components import gdn_recovery
+    from hyperflare_recipes.components import gdn_recovery
 
     def mutated(kernel, names, options):
         constants = {name: value for name, value in options.items()}
@@ -200,9 +200,9 @@ def test_compilation_sees_every_recovery_store():
 
 @pytest.mark.parametrize("width", [13, 16])
 def test_wide_recovery_all_prefixes_with_poisoned_record_tail(width):
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
-    from ignition.components.gdn_recovery import GDNLayerRecords, PreparedGDNCommit, PreparedRecoveredRecurrence
-    from ignition.components.recurrent import DeltaMetadata
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gdn_recovery import GDNLayerRecords, PreparedGDNCommit, PreparedRecoveredRecurrence
+    from hyperflare_recipes.components.recurrent import DeltaMetadata
 
     base = _case((8,))
     mixed, a, b, z = (torch.cat((base[name], base[name]), dim=0)[:width].contiguous()
@@ -266,9 +266,9 @@ def test_wide_recovery_all_prefixes_with_poisoned_record_tail(width):
 
 
 def test_reused_graph_width_transitions_preserve_recurrent_history():
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
-    from ignition.components.gdn_recovery import GDNLayerRecords, PreparedGDNCommit, PreparedRecoveredRecurrence
-    from ignition.components.recurrent import DeltaMetadata
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gdn_recovery import GDNLayerRecords, PreparedGDNCommit, PreparedRecoveredRecurrence
+    from hyperflare_recipes.components.recurrent import DeltaMetadata
 
     base = _case((8,), packed_inputs=True)
     device = torch.device("cuda")

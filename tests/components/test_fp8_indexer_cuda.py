@@ -9,7 +9,7 @@ import pytest
 import torch
 from b12x.attention.dsa_indexer.reference import unpack_index_k_cache_reference
 
-from ignition.components.fp8_indexer import PreparedFP8Indexer
+from hyperflare_recipes.components.fp8_indexer import PreparedFP8Indexer
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession

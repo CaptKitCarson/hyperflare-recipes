@@ -4,7 +4,7 @@ import pytest
 import torch
 
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
-from ignition.components.speculation import PreparedSpeculativeStateCommit, SpeculativeAcceptance
+from hyperflare_recipes.components.speculation import PreparedSpeculativeStateCommit, SpeculativeAcceptance
 
 
 @pytest.mark.parametrize("width", [8, 13, 16])
@@ -44,7 +44,7 @@ def test_private_commit_every_accepted_prefix(width, clipping):
 
 def test_native_width_requires_matching_completion_capacity():
     from ignition.components.completion import CompletionOutputs
-    from ignition.components.speculation import PreparedSpeculativeCommit
+    from hyperflare_recipes.components.speculation import PreparedSpeculativeCommit
     from ignition.preparation.execution import GraphSignature
     from tests.preparation.test_execution import _execution
 
@@ -81,7 +81,7 @@ def test_private_sampling_capture_all_prefixes_and_clipping(width):
 
     if os.environ.get("FLARE_RUN_CUDA_TESTS") != "1":
         pytest.skip("requires an explicitly assigned CUDA device")
-    from ignition.components.speculation import PreparedStochasticVerification, SpeculativeRngState
+    from hyperflare_recipes.components.speculation import PreparedStochasticVerification, SpeculativeRngState
     from ignition.preparation.compilation import compile_forward
 
     state = DeviceRequestState.allocate("cuda", vocab_size=248320, capacity=1)

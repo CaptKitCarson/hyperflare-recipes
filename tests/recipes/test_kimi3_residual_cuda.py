@@ -47,11 +47,11 @@ def _assert_rounding_close(actual, expected):
 
 @torch.no_grad()
 def test_checkpoint_residual_mixing_and_graph_replay():
-    from ignition.components.weights import DirectWeightLoader
+    from hyperflare_recipes.components.weights import DirectWeightLoader
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.kimi3.model import rms_norm
-    from ignition.recipes.kimi3.residual import ADD, REPLACE, ResidualStream, score_weight
+    from hyperflare_recipes.recipes.kimi3.model import rms_norm
+    from hyperflare_recipes.recipes.kimi3.residual import ADD, REPLACE, ResidualStream, score_weight
 
     checkpoint = next((path for path in CHECKPOINTS if path.is_dir()), None)
     if checkpoint is None:

@@ -7,8 +7,8 @@ import weakref
 import torch
 from b12x.gemm import blockscaled
 
-from ignition.components import linear
-from ignition.components.vocabulary import PreparedVocabularyProjection
+from hyperflare_recipes.components import linear
+from hyperflare_recipes.components.vocabulary import PreparedVocabularyProjection
 from ignition.preparation.scratch import ScratchArena
 
 

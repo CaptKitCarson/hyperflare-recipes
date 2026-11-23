@@ -10,8 +10,8 @@ import pytest
 from ignition.cli import _parser, preparation
 from ignition.cli.config import Configuration
 from ignition.errors import UsageError
-from ignition.recipes import resolve
-from ignition.recipes.declaration import Speculation
+from hyperflare_recipes.recipes import resolve
+from ignition.declaration import Speculation
 
 
 def selected(*flags, alias="deepseek-v4.1-flash", configuration=None):

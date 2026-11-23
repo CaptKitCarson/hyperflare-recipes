@@ -8,7 +8,7 @@ import os
 import pytest
 import torch
 
-from ignition.components.ring_commit import PreparedRingCommit
+from hyperflare_recipes.components.ring_commit import PreparedRingCommit
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 
@@ -110,7 +110,7 @@ def test_compiled_ring_commits_share_state_and_preserve_producer_consumer_lifeti
 def test_b12x_cache_writers_feed_batched_commits_before_staging_reuse():
     from b12x.attention._shared.mla.compressed_reference import pack_deepseek_v41_cache_reference
     from b12x.preparation import PreparationSession
-    from ignition.components.compressed_mla import PreparedCompressedCacheWriter
+    from hyperflare_recipes.components.compressed_mla import PreparedCompressedCacheWriter
 
     device = torch.device("cuda", 0)
     torch.manual_seed(4148)

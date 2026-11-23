@@ -5,8 +5,8 @@
 
 import torch
 
-from ignition.recipes.deepseek41.config import ModelConfig
-from ignition.recipes.deepseek41.pool import ContinuationPool, PAGE_TOKENS, page_bytes
+from hyperflare_recipes.recipes.deepseek41.config import ModelConfig
+from hyperflare_recipes.recipes.deepseek41.pool import ContinuationPool, PAGE_TOKENS, page_bytes
 
 
 def config():
@@ -31,7 +31,7 @@ def test_shared_sources_preserve_compression_geometry():
 
 
 def test_contract_registers_compressed_planes_from_their_storage_owner():
-    from ignition.recipes.deepseek41.contract import prepare
+    from hyperflare_recipes.recipes.deepseek41.contract import prepare
 
     pool = ContinuationPool.allocate(config(), 2, 3, "cpu")
     buffers = {}

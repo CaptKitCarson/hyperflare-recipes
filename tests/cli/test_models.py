@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 from ignition.errors import FetchError, UsageError
-from ignition.recipes import aliases, recipes, resolve
+from hyperflare_recipes.recipes import aliases, recipes, resolve
 
 ROOT = Path(__file__).resolve().parents[2]
 HUB = Path.home() / ".cache/huggingface/hub"
@@ -20,7 +20,7 @@ HUB = Path.home() / ".cache/huggingface/hub"
 
 def test_declarations_import_without_model_dependencies():
     result = subprocess.run(
-        [sys.executable, "-c", "import sys; from ignition.recipes import aliases; from ignition import planning;"
+        [sys.executable, "-c", "import sys; from hyperflare_recipes.recipes import aliases; from ignition import planning;"
          " import ignition.cli.preparation; assert aliases() == ('qwen3.8-flash', 'qwen3.8-27b', 'qwen3.8-27b-qad', 'glm-5.3-flash', 'glm-5.3-flash-nvfp4', 'deepseek-v4.1-flash', 'deepseek-v4-flash', 'mimo-v2.6-pro-mopd', 'mimo-v2.6-flash-rl', 'kimi-k3-mxfp4-csf', 'kimi-k3', 'kimi-k3-dspark', 'kimi-k3.1-pro', 'step5-preview-nvfp4', 'nemotron-bolt-24gb', 'minimax-m3-1-flash', 'gemma-4-e2b', 'gemma-4-e4b', 'gemma-4-12b', 'gemma-4-26b-a4b', 'gemma-4-31b', 'gemma-4-e4b-nvfp4', 'gemma-4-12b-nvfp4', 'gemma-4-26b-a4b-nvfp4', 'gemma-4-31b-nvfp4', 'muse-spark-open-nvfp4', 'inkling-2-mini', 'inkling-2-small-nvfp4');"
          " assert not {'torch', 'transformers', 'flare_heliopause'} & set(sys.modules)"],
         cwd=ROOT, check=False, capture_output=True, text=True)
@@ -255,7 +255,7 @@ def test_declared_ranges_are_consistent():
 
 def test_local_checkpoint_alias_uses_actual_directory(tmp_path, monkeypatch):
     from dataclasses import replace
-    import ignition.recipes as catalog
+    import hyperflare_recipes.recipes as catalog
     recipe = next(r for r in recipes() if r.name == "kimi3")
     checkpoint = replace(recipe.checkpoints[0], repository=str(tmp_path))
     monkeypatch.setattr(catalog, 'recipes', lambda: (replace(recipe, checkpoints=(checkpoint,)),))
@@ -267,7 +267,7 @@ def test_local_checkpoint_alias_uses_actual_directory(tmp_path, monkeypatch):
 
 def test_alias_preserves_selected_checkpoint_when_directory_is_shared(tmp_path, monkeypatch):
     from dataclasses import replace
-    import ignition.recipes as catalog
+    import hyperflare_recipes.recipes as catalog
 
     recipe = next(r for r in recipes() if r.name == "kimi3")
     checkpoints = tuple(replace(c, repository=str(tmp_path)) for c in recipe.checkpoints[:2])

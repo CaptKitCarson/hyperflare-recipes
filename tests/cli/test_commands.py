@@ -9,9 +9,13 @@ from pathlib import Path
 import pytest
 
 from ignition import planning
-from ignition.cli import _parser, main, preparation
+from ignition.cli import _parser, main as _cli_main, preparation
 from ignition.errors import UsageError
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import recipes, resolve
+
+
+def main(argv=None):
+    return _cli_main(argv, recipes=recipes())
 
 GIB = 1 << 30
 

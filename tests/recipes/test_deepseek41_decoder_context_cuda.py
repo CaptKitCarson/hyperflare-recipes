@@ -12,18 +12,18 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.dspark import PreparedContext
-from ignition.components.paged_batch import Metadata
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.dspark import PreparedContext
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.deepseek41.decoder_prefill import PreparedDecoderSuffix
-from ignition.recipes.deepseek41.pool import ContinuationPool
-from ignition.recipes.deepseek41.recipe import RECIPE
-from ignition.recipes.deepseek41.weights import DeepSeekWeightLoader
+from hyperflare_recipes.recipes.deepseek41.decoder_prefill import PreparedDecoderSuffix
+from hyperflare_recipes.recipes.deepseek41.pool import ContinuationPool
+from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE
+from hyperflare_recipes.recipes.deepseek41.weights import DeepSeekWeightLoader
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                               reason="requires an explicitly assigned CUDA device")

@@ -22,14 +22,14 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @torch.no_grad()
 def test_checkpoint_mamba_block(tokens, deferred):
     from b12x.preparation import PreparationSession
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.recurrent import DeltaMetadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.recurrent import DeltaMetadata
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.nemotron_h.mamba import PreparedMamba
-    from ignition.recipes.nemotron_h.weights import NemotronWeightLoader
-    from ignition.reference.qwen38_quant import CheckpointTensors, decode_nvfp4, read_nvfp4_projection
+    from hyperflare_recipes.recipes.nemotron_h.mamba import PreparedMamba
+    from hyperflare_recipes.recipes.nemotron_h.weights import NemotronWeightLoader
+    from hyperflare_recipes.reference.qwen38_quant import CheckpointTensors, decode_nvfp4, read_nvfp4_projection
 
     path = Path(os.environ.get("FLARE_NEMOTRON_CHECKPOINT",
         "/data/models/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB"))
@@ -134,16 +134,16 @@ def test_checkpoint_verification_commits_convolution_and_recurrence(autotune, ca
     from dataclasses import replace
     import triton
     from b12x.preparation import PreparationSession
-    from ignition.components.mamba_speculation import PreparedMambaReplay
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.recurrent import DeltaMetadata, _commit_convolution
+    from hyperflare_recipes.components.mamba_speculation import PreparedMambaReplay
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.recurrent import DeltaMetadata, _commit_convolution
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.nemotron_h.draft_config import DraftConfig
-    from ignition.recipes.nemotron_h.mamba import PreparedMamba
-    from ignition.recipes.nemotron_h.pool import ContinuationPool, REPLAY_RING
-    from ignition.recipes.nemotron_h.weights import NemotronWeightLoader
+    from hyperflare_recipes.recipes.nemotron_h.draft_config import DraftConfig
+    from hyperflare_recipes.recipes.nemotron_h.mamba import PreparedMamba
+    from hyperflare_recipes.recipes.nemotron_h.pool import ContinuationPool, REPLAY_RING
+    from hyperflare_recipes.recipes.nemotron_h.weights import NemotronWeightLoader
 
     path = Path(os.environ.get("FLARE_NEMOTRON_CHECKPOINT", "/data/models/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB"))
     draft_path = Path(os.environ.get("FLARE_LILICORR_CHECKPOINT", str(path) + "-LiLiCorr"))

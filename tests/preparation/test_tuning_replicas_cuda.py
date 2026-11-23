@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 
 def _worker(directory, replica, connection):
     import torch
-    from ignition.components.linear import UnquantizedProjection
+    from hyperflare_recipes.components.linear import UnquantizedProjection
     from ignition.preparation.tuning import RecordedPreparationSession
     from ignition.preparation.tuning_replicas import TuningComplete, TuningReplica
 
@@ -87,7 +87,7 @@ def _tp_worker(directory, member, connection, replicas=2, tensor_parallel=2, che
     import torch
     import torch.distributed as dist
     from ignition.components.collectives import PreparedAllReduce
-    from ignition.components.linear import UnquantizedProjection
+    from hyperflare_recipes.components.linear import UnquantizedProjection
     from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
     from ignition.preparation.tuning import RecordedPreparationSession
     from ignition.preparation.tuning_replicas import TuningComplete, TuningReplica
@@ -297,7 +297,7 @@ def _partial_race_worker(directory, interrupt, connection):
     import torch
     from b12x.preparation import autotune_effort
     from b12x.preparation.session import PreparationJob
-    from ignition.components.linear import UnquantizedProjection
+    from hyperflare_recipes.components.linear import UnquantizedProjection
     from ignition.preparation.tuning import RecordedPreparationSession
 
     torch.cuda.set_device(0)

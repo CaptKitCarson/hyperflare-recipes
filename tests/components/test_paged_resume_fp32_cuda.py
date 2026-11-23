@@ -10,7 +10,7 @@ import pytest
 import torch
 from b12x.preparation import PreparationSession
 
-from ignition.components.paged_resume import PreparedResume
+from hyperflare_recipes.components.paged_resume import PreparedResume
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
 from ignition.preparation.compilation import compile_forward
 from tests.components.completion_support import completion_outputs

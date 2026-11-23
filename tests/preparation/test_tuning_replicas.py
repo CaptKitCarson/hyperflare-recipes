@@ -154,7 +154,7 @@ def test_tuning_replica_resolves_shared_module_recipe_by_name():
     from dataclasses import fields, replace
     from ignition.planning import Plan
     from ignition.preparation.tuning_replicas import _resolve_recipe
-    from ignition.recipes.inkling2.recipe import MINI_RECIPE, RECIPE
+    from hyperflare_recipes.recipes.inkling2.recipe import MINI_RECIPE, RECIPE
     from tests.cli.test_planning import derive, gpu
 
     assert _resolve_recipe(MINI_RECIPE.prepare, MINI_RECIPE.name) is MINI_RECIPE

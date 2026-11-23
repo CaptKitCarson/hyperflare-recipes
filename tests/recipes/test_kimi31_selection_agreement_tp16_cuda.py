@@ -14,12 +14,12 @@ pytestmark = pytest.mark.skipif(os.environ.get('FLARE_RUN_TP_CUDA_TESTS') != '1'
 
 class MergePipeline:
     def __init__(self, rows, rank, runtime, session, coordinator, buffers, *, ordered):
-        from ignition.components.candidate_rows import PreparedCandidateRows
+        from hyperflare_recipes.components.candidate_rows import PreparedCandidateRows
         from ignition.components.collectives import PreparedAllGather, PreparedBroadcast
-        from ignition.components.ordered_row_topk import PreparedOrderedRowTopK
-        from ignition.components.row_topk import PreparedRowTopK
-        from ignition.recipes.kimi3.dcp import ContextShards
-        from ignition.recipes.kimi31.indexer import SharedBuffers
+        from hyperflare_recipes.components.ordered_row_topk import PreparedOrderedRowTopK
+        from hyperflare_recipes.components.row_topk import PreparedRowTopK
+        from hyperflare_recipes.recipes.kimi3.dcp import ContextShards
+        from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
 
         device = runtime.device
         world = runtime.world_size
@@ -53,7 +53,7 @@ class MergePipeline:
                 buffers=SharedBuffers(buffers, device, prefix='broadcast.'))
 
     def __call__(self):
-        from ignition.recipes.kimi31.dcp import pack_candidates
+        from hyperflare_recipes.recipes.kimi31.dcp import pack_candidates
 
         pack_candidates(self.local_ids, self.local_scores, self.packed, self.shards)
         self.gather(self.packed.view(torch.bfloat16).view(self.packed.shape[0], -1))
@@ -94,7 +94,8 @@ def worker(rank, rendezvous, destination):
     from ignition import runtime_patches
     runtime_patches.apply()
     import torch.distributed as dist
-    from ignition.preparation.collectives import CollectivePreparation, create_head_exchange
+    from ignition.preparation.collectives import CollectivePreparation
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.tuning import RecordedPreparationSession

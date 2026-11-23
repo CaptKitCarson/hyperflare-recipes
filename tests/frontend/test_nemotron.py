@@ -19,7 +19,7 @@ def test_native_nemotron_chat_matches_checkpoint(tmp_path):
     from tokenizers import Tokenizer
     from transformers import AutoTokenizer
 
-    from ignition.recipes.nemotron_h.contract import FRONTEND
+    from hyperflare_recipes.recipes.nemotron_h.contract import FRONTEND
     from tests.frontend import literal_reference
 
     snapshot = Path(os.environ.get("FLARE_NEMOTRON_CHECKPOINT",
@@ -100,7 +100,7 @@ def test_native_nemotron_chat_matches_checkpoint(tmp_path):
                     for index, case in enumerate(encode_cases) for skip in (False, True)]
     from ignition.preparation.frontend import annotated_template_asset
     annotated = annotated_template_asset((snapshot / "chat_template.jinja").read_bytes(),
-        ROOT / "ignition/recipes/nemotron_h/assets/chat_template.patch.json")
+        ROOT / "hyperflare_recipes/recipes/nemotron_h/assets/chat_template.patch.json")
     native_assets = tmp_path / "assets"
     native_assets.mkdir()
     for name in ("tokenizer.json", "tokenizer_config.json"):

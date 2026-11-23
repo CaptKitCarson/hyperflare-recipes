@@ -12,9 +12,9 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 
 class CandidateSelection:
     def __init__(self, rows, width, topk, device, session):
-        from ignition.components.candidate_rows import PreparedCandidateRows
-        from ignition.components.row_topk import PreparedRowTopK
-        from ignition.recipes.kimi31.indexer import SharedBuffers
+        from hyperflare_recipes.components.candidate_rows import PreparedCandidateRows
+        from hyperflare_recipes.components.row_topk import PreparedRowTopK
+        from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
 
         self.packed = torch.empty((rows, width, 2), dtype=torch.float32, device=device)
         self.active = torch.empty(rows, dtype=torch.bool, device=device)
@@ -168,8 +168,8 @@ def test_candidate_compaction_tracks_live_rows_and_preserves_exceptional_layout(
 class CandidateAttention:
     def __init__(self, selection, query_dtype, device, session, arena):
         from b12x.attention import dense_mla
-        from ignition.components.dense_mla import PreparedDenseMLA
-        from ignition.components.peer_record_gather import PreparedPeerRecordGather
+        from hyperflare_recipes.components.dense_mla import PreparedDenseMLA
+        from hyperflare_recipes.components.peer_record_gather import PreparedPeerRecordGather
 
         self.selection = selection
         rows, topk = selection.selected_indices[0].shape

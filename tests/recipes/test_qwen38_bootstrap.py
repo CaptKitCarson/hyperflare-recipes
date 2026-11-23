@@ -299,8 +299,8 @@ def test_peer_resources_release_only_after_native_rank_drains(monkeypatch, fails
 
 
 def test_snapshot_budget_covers_the_selected_speculative_layout():
-    from ignition.recipes.qwen38.bootstrap import PreparationConfig
-    from ignition.recipes.qwen38.state import HybridStateLayout
+    from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38.state import HybridStateLayout
 
     ordinary = HybridStateLayout.build().row_bytes
     speculative = HybridStateLayout.build(speculative_tokens=7).row_bytes
@@ -314,7 +314,7 @@ def test_snapshot_budget_covers_the_selected_speculative_layout():
 
 
 def test_moe_decode_a16_requires_separate_graph_roles_and_aligned_experts():
-    from ignition.recipes.qwen38.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig
 
     assert PreparationConfig(force_moe_decode_a16=True).force_moe_decode_a16
     assert PreparationConfig(devices=(0, 1), force_moe_decode_a16=True).force_moe_decode_a16

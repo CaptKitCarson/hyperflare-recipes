@@ -12,12 +12,12 @@ import pytest
 import torch
 from b12x.preparation import PreparationSession
 
-from ignition.preparation.fixtures import qsa as qsa_fixtures
+from hyperflare_recipes.fixtures import qsa as qsa_fixtures
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.qwen38.attention import (
+from hyperflare_recipes.recipes.qwen38.attention import (
     PreparedAttention, QSAMetadata, QSAScratch, QSAState, RotaryTables,
 )
-from ignition.recipes.qwen38.tuning import preparation_session
+from hyperflare_recipes.recipes.qwen38.tuning import preparation_session
 
 
 def _operands(rows, batch, *, context=256, device="cpu", drafts=7):

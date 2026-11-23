@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 from b12x.sequence import engram
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.runtime_core import FileSource
-from ignition.recipes.deepseek41.engram import Tables
+from hyperflare_recipes.recipes.deepseek41.engram import Tables
 
 
 @pytest.mark.parametrize("world", [1, 2, 3, 4, 6, 8])

@@ -20,7 +20,7 @@ from PIL import Image
 from tokenizers import Tokenizer
 
 from ignition.preparation.frontend import prepare_frontend
-from ignition.recipes.deepseek41.contract import VISION, VISION_FRONTEND, INPUT_VOCABULARY
+from hyperflare_recipes.recipes.deepseek41.contract import VISION, VISION_FRONTEND, INPUT_VOCABULARY
 
 ROOT = Path(__file__).resolve().parents[2]
 SNAPSHOT = (
@@ -124,7 +124,7 @@ def test_native_images_match_checkpoint(reference, tmp_path, sizes, start):
         [
             str(Path(os.environ.get("CARGO_TARGET_DIR", ROOT / "helios/target")) / "debug/test_deepseek4_images"),
             str(SNAPSHOT),
-            str(ROOT / "ignition/recipes/deepseek41/assets"),
+            str(ROOT / "hyperflare_recipes/recipes/deepseek41/assets"),
             str(case),
             str(tmp_path),
         ],

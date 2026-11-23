@@ -23,23 +23,23 @@ from types import SimpleNamespace
 def rank_main(rank, world, rendezvous, options):
     import torch
     import torch.distributed as dist
-    from ignition.components.dflash2 import PreparedDraft
-    from ignition.components.paged_batch import Metadata
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.weights import DirectWeightLoader
+    from hyperflare_recipes.components.dflash2 import PreparedDraft
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.weights import DirectWeightLoader
     from ignition.preparation.capture import capture_forwards
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.preparation.collectives import (CollectivePreparation,
-        create_all_reduce_runtime, create_all_gather_runtime, create_head_exchange)
+    from ignition.preparation.collectives import (CollectivePreparation, create_all_reduce_runtime, create_all_gather_runtime)
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.disposable import storage_ranges
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.runtime_core import _Cuda
     from ignition.preparation.scratch import GraphBufferPool, ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.config import ModelConfig, DSparkConfig
-    from ignition.recipes.kimi31.dflash import DraftScratch, PreparedContext, DraftAttention
-    from ignition.recipes.kimi31.dflash_weights import DraftWeights
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig, DSparkConfig
+    from hyperflare_recipes.recipes.kimi31.dflash import DraftScratch, PreparedContext, DraftAttention
+    from hyperflare_recipes.recipes.kimi31.dflash_weights import DraftWeights
 
     torch.set_num_threads(2)
     torch.set_grad_enabled(False)

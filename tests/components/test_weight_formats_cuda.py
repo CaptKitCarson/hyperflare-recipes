@@ -10,7 +10,7 @@ import pytest
 import torch
 from safetensors.torch import save_file
 
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
@@ -31,12 +31,12 @@ def checkpoint(path, tensors, layers):
 @torch.no_grad()
 def test_mxfp8_gate_up_conversion_and_compiled_mlp(local, tokens):
     from torch.multiprocessing.reductions import StorageWeakRef
-    from ignition.components.mlp import MLPScratch, PreparedMLP
-    from ignition.components.weights import MLPWeights, quantize_bf16_linear_as_mxfp8
+    from hyperflare_recipes.components.mlp import MLPScratch, PreparedMLP
+    from hyperflare_recipes.components.weights import MLPWeights, quantize_bf16_linear_as_mxfp8
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.reference.qwen38_quant import decode_mxfp8, quantize_mxfp8_activation
+    from hyperflare_recipes.reference.qwen38_quant import decode_mxfp8, quantize_mxfp8_activation
 
     gen = torch.Generator().manual_seed(570)
     hidden, limit = 4096, .5
@@ -93,8 +93,8 @@ def test_mxfp8_gate_up_conversion_and_compiled_mlp(local, tokens):
 
 
 def test_mxfp8_conversion_padding_and_nonfinite_weights():
-    from ignition.components.weights import quantize_bf16_linear_as_mxfp8
-    from ignition.reference.qwen38_quant import decode_mxfp8
+    from hyperflare_recipes.components.weights import quantize_bf16_linear_as_mxfp8
+    from hyperflare_recipes.reference.qwen38_quant import decode_mxfp8
 
     weight = torch.ones((64, 288), device="cuda", dtype=torch.bfloat16)
     packed = quantize_bf16_linear_as_mxfp8(weight)
@@ -109,7 +109,7 @@ def test_mxfp8_conversion_padding_and_nonfinite_weights():
 
 def packed(rows, columns, fmt, generator):
     if fmt == "mxfp8":
-        from ignition.reference.qwen38_quant import decode_mxfp8
+        from hyperflare_recipes.reference.qwen38_quant import decode_mxfp8
 
         w = (torch.randn((rows, columns), generator=generator) * 8).to(torch.float8_e4m3fn)
         s = torch.randint(121, 125, (rows, columns // 32), dtype=torch.uint8, generator=generator)
@@ -131,7 +131,7 @@ def packed(rows, columns, fmt, generator):
 
 
 def mxfp4_activation(x):
-    from ignition.reference.qwen38_quant import _FP4_VALUES
+    from hyperflare_recipes.reference.qwen38_quant import _FP4_VALUES
 
     groups = x.float().reshape(x.shape[0], -1, 32)
     amax = groups.abs().amax(-1, keepdim=True)
@@ -148,7 +148,7 @@ def mxfp4_activation(x):
 @pytest.mark.parametrize("rows", [1, 17, 128])
 @pytest.mark.parametrize("fmt", ["nvfp4", "nvfp4_a4", "mxfp4"])
 def test_ordinary_fp4_linear_graph(tmp_path, rows, fmt, native):
-    from ignition.components.linear import QuantizedProjection
+    from hyperflare_recipes.components.linear import QuantizedProjection
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
 
@@ -198,7 +198,7 @@ def test_ordinary_fp4_linear_graph(tmp_path, rows, fmt, native):
             source = mxfp4_activation(cpu * factor) if fmt == "mxfp4" else (cpu * factor).float()
             expected = source @ weight[128:256, 32:320].T
             if fmt == "nvfp4_a4":
-                from ignition.reference.qwen38_quant import Nvfp4Projection, nvfp4_linear_reference
+                from hyperflare_recipes.reference.qwen38_quant import Nvfp4Projection, nvfp4_linear_reference
 
                 stored = Nvfp4Projection(tensors["weight"][128:256, 16:160],
                     tensors["weight_scale"][128:256, 2:20], tensors["weight_scale_2"], tensors["input_scale"])
@@ -214,8 +214,8 @@ def test_ordinary_fp4_experts_graph(tmp_path, monkeypatch, fmt, mode, compressio
     from torch.multiprocessing.reductions import StorageWeakRef
     from b12x.moe import fused_moe
     from b12x.preparation import PreparationSession
-    from ignition.components.moe import PreparedRoutedExperts
-    from ignition.reference.qwen38_quant import Nvfp4Projection, nvfp4_expert_reference, quantize_mxfp8_activation
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.reference.qwen38_quant import Nvfp4Projection, nvfp4_expert_reference, quantize_mxfp8_activation
 
     gen = torch.Generator().manual_seed(192)
     tensors, decoded, serialized = {}, [], []
@@ -323,8 +323,8 @@ def test_mxfp8_experts_match_a_reference_at_glm_geometry_with_swiglu_limit(tmp_p
     """GLM's draft layer: hidden 4096, one TP4 shard of the 2048-wide experts, top-2 routing, limit 10."""
     from b12x.moe import fused_moe
     from b12x.preparation import PreparationSession
-    from ignition.components.moe import PreparedRoutedExperts
-    from ignition.reference.qwen38_quant import decode_mxfp8, quantize_mxfp8_activation
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.reference.qwen38_quant import decode_mxfp8, quantize_mxfp8_activation
 
     hidden, intermediate, first, last, limit, count = 4096, 2048, 1536, 2048, 10., 4
     gen = torch.Generator().manual_seed(4096)
@@ -390,7 +390,7 @@ def test_bf16_experts_convert_to_nvfp4_w4a16(tmp_path, monkeypatch, local, token
     from b12x.moe import fused_moe
     from b12x.moe._shared.kernels.w4a16.host import unswizzle_block_scale
     from b12x.preparation import PreparationSession
-    from ignition.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
 
@@ -505,7 +505,7 @@ def ggml_blocks(rows, columns, codec):
 def test_ggml_projection_fusion_and_sharding_graph(tmp_path, codec, rows):
     from importlib import import_module
     from b12x.preparation import PreparationSession
-    from ignition.components.linear import QuantizedProjection
+    from hyperflare_recipes.components.linear import QuantizedProjection
     from ignition.preparation.scratch import ScratchArena
 
     torch.manual_seed(72)
@@ -539,11 +539,11 @@ def test_ggml_projection_fusion_and_sharding_graph(tmp_path, codec, rows):
 
 @pytest.mark.parametrize("rows", [1, 8])
 def test_native_mxfp8_dense_graph(rows):
-    from ignition.components.linear import QuantizedProjection
-    from ignition.components.weights import quantize_bf16_linear_as_mxfp8
+    from hyperflare_recipes.components.linear import QuantizedProjection
+    from hyperflare_recipes.components.weights import quantize_bf16_linear_as_mxfp8
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.reference.qwen38_quant import decode_mxfp8, quantize_mxfp8_activation
+    from hyperflare_recipes.reference.qwen38_quant import decode_mxfp8, quantize_mxfp8_activation
 
     gen = torch.Generator().manual_seed(195)
     weight = quantize_bf16_linear_as_mxfp8(
@@ -583,11 +583,11 @@ def test_native_mxfp8_dense_graph(rows):
 @torch.no_grad()
 def test_nvfp4_grouped_mlp_layout_and_mutable_replay(tmp_path, rows, native):
     from b12x._lib.intrinsics.reference import swizzle_block_scale
-    from ignition.components.mlp import MLPScratch, PreparedMLP
-    from ignition.components.weights import MLPWeights
+    from hyperflare_recipes.components.mlp import MLPScratch, PreparedMLP
+    from hyperflare_recipes.components.weights import MLPWeights
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.reference.qwen38_quant import Nvfp4Projection, nvfp4_linear_reference
+    from hyperflare_recipes.reference.qwen38_quant import Nvfp4Projection, nvfp4_linear_reference
 
     gen = torch.Generator().manual_seed(871)
     tensors, parts = {}, []
@@ -651,7 +651,7 @@ def test_nvfp4_grouped_mlp_layout_and_mutable_replay(tmp_path, rows, native):
 
 @pytest.mark.parametrize("difference", ["weight_scale_2", "input_scale"])
 def test_mixed_nvfp4_group_preserves_unequal_calibration(tmp_path, difference):
-    from ignition.components.weights import GroupedLinearWeights
+    from hyperflare_recipes.components.weights import GroupedLinearWeights
 
     gen = torch.Generator().manual_seed(871)
     tensors = {}

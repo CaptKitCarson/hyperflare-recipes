@@ -13,7 +13,7 @@ from tests.components.completion_support import completion_outputs
 
 from ignition.components.capacity import batch_capacities, request_capacity
 from ignition.components.sampling import AdmissionBuffers, DeviceRequestState, PreparedAdmission, PreparedSampling, RequestAdmission
-from ignition.components.token_state import PreparedTokenState
+from hyperflare_recipes.components.token_state import PreparedTokenState
 from ignition.preparation.graphs import PreparedGraphBundle
 
 

@@ -23,7 +23,7 @@ def no_cuda(*args, **kwargs):
 torch._C._cuda_init = no_cuda
 torch.cuda._lazy_init = no_cuda
 from ignition import runtime_patches
-from ignition.recipes.kimi31.recipe import RECIPE
+from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
 from qualify.kimi_latent_prefill import configure_environment
 
 def check_before_patches():

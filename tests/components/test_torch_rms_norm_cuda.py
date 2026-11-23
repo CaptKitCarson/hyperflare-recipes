@@ -7,7 +7,7 @@ import torch
 
 from b12x.norm import torch_rmsnorm
 from b12x.preparation import PreparationSession
-from ignition.components.rms_norm import PreparedTorchRMSNorm
+from hyperflare_recipes.components.rms_norm import PreparedTorchRMSNorm
 from ignition.preparation.compilation import compile_forward
 
 

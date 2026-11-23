@@ -38,7 +38,7 @@ class CheckpointSlices:
         return value.cuda()
 
     def expert(self, prefix, expert, *, rank=None, quantized=False, source=None, scale_math=None):
-        from ignition.reference.qwen38_quant import Nvfp4Projection, nvfp4_expert_reference
+        from hyperflare_recipes.reference.qwen38_quant import Nvfp4Projection, nvfp4_expert_reference
 
         first, last = (0, 4096) if rank is None else (rank * 512, (rank + 1) * 512)
         if not quantized:
@@ -67,15 +67,15 @@ class CheckpointSlices:
 @torch.no_grad()
 def test_checkpoint_moe_e256_tp8_arithmetic(layer, tokens, valid):
     from b12x.preparation import PreparationSession
-    from ignition.components.bf16_experts import PreparedBF16Experts
-    from ignition.components.moe import PreparedRoutedExperts
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.route_finalizer import PreparedRouteFinalizer
+    from hyperflare_recipes.components.bf16_experts import PreparedBF16Experts
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.route_finalizer import PreparedRouteFinalizer
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import GraphBufferPool, ScratchArena
-    from ignition.recipes.muse_spark.model import norm
-    from ignition.recipes.muse_spark.weights import BF16Experts, MuseSparkWeightLoader
+    from hyperflare_recipes.recipes.muse_spark.model import norm
+    from hyperflare_recipes.recipes.muse_spark.weights import BF16Experts, MuseSparkWeightLoader
 
     checkpoint = Path(os.environ.get("FLARE_MUSE_SPARK_CHECKPOINT", CHECKPOINT))
     if not checkpoint.is_dir():

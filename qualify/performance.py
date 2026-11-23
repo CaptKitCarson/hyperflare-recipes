@@ -28,7 +28,7 @@ from copy import deepcopy
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from ignition.preparation.qwen38 import (
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import (
     CONFIG_SHA256,
     FRONTEND_SHA256,
     MODEL_ID,

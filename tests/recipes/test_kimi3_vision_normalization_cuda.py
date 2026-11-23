@@ -6,12 +6,12 @@ import pytest
 import torch
 from b12x.preparation import PreparationSession
 
-from ignition.recipes.kimi3.vision import VisionScratch, _RMSNorm
+from hyperflare_recipes.recipes.kimi3.vision import VisionScratch, _RMSNorm
 
 
 def test_prepared_operator_examples_are_disjoint(monkeypatch):
     from types import SimpleNamespace
-    from ignition.recipes.kimi3 import vision
+    from hyperflare_recipes.recipes.kimi3 import vision
 
     operands = []
 

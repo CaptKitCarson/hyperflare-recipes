@@ -20,17 +20,17 @@ def _rank(rank, world, rendezvous, snapshot, mode):
     from b12x.comm.pcie import AllReduce
 
     from ignition.components.collectives import PreparedAllReduce
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.recurrent import DeltaMetadata, DeltaState
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.recurrent import DeltaMetadata, DeltaState
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.collectives import CollectivePreparation
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.graphs import PreparedGraphBundle
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.glm53.kda import KDAScratch, PreparedGlmKDA
-    from ignition.recipes.glm53.model import create_model_tree
-    from ignition.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
+    from hyperflare_recipes.recipes.glm53.kda import KDAScratch, PreparedGlmKDA
+    from hyperflare_recipes.recipes.glm53.model import create_model_tree
+    from hyperflare_recipes.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
 
     torch.cuda.set_device(rank)
     device = torch.device("cuda", rank)

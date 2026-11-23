@@ -13,16 +13,16 @@ from types import SimpleNamespace
 
 import torch
 
-from ignition.components.causal_prefix import PreparedCausalPrefixAllocation
+from hyperflare_recipes.components.causal_prefix import PreparedCausalPrefixAllocation
 from ignition.components.completion import CompletionOutputs
-from ignition.components.parallel_draft import DraftProposalState, PreparedParallelDraftRound
+from hyperflare_recipes.components.parallel_draft import DraftProposalState, PreparedParallelDraftRound
 from ignition.components.sampling import (
     AdmissionBuffers, DeviceRequestState, FINISHED, PreparedAdmission, PreparedSampling, RequestAdmission,
 )
-from ignition.components.speculation import DRAFT_RNG_DOMAIN, PreparedSpeculativeCommit, SpeculativeRngState
-from ignition.components.token_state import PreparedTokenState
-from ignition.components.vocabulary_logprobs import PreparedVocabularyParallelLogprobs
-from ignition.components.vocabulary_sampling import PreparedVocabularyBlockVerification, PreparedVocabularySoftmax
+from hyperflare_recipes.components.speculation import DRAFT_RNG_DOMAIN, PreparedSpeculativeCommit, SpeculativeRngState
+from hyperflare_recipes.components.token_state import PreparedTokenState
+from hyperflare_recipes.components.vocabulary_logprobs import PreparedVocabularyParallelLogprobs
+from hyperflare_recipes.components.vocabulary_sampling import PreparedVocabularyBlockVerification, PreparedVocabularySoftmax
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 

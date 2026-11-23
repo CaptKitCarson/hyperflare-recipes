@@ -9,7 +9,7 @@ import sys
 
 import pytest
 
-from ignition.components import weights
+from hyperflare_recipes.components import weights
 
 
 def _read_checkpoint_in_fresh_process(directory, existing_context):

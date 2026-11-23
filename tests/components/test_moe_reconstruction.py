@@ -5,7 +5,7 @@
 
 import pickle
 
-from ignition.components.moe import PreparedRoutedExperts
+from hyperflare_recipes.components.moe import PreparedRoutedExperts
 
 
 def test_prepared_routed_experts_unpickle_without_constructor_arguments():

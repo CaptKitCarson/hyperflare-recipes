@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.recipes.deepseek41 import decoder
+from hyperflare_recipes.recipes.deepseek41 import decoder
 
 
 @pytest.mark.parametrize("rows", [1, 2, 3, 4, 5, 8, 33, 48, 64, 96, 128, 129])

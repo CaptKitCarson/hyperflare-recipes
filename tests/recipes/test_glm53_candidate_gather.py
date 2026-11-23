@@ -14,8 +14,8 @@ import os
 import pytest
 import torch
 
-from ignition.recipes.glm53.dcp import SLICE_ROWS
-from ignition.recipes.glm53.indexer import gather_candidates
+from hyperflare_recipes.recipes.glm53.dcp import SLICE_ROWS
+from hyperflare_recipes.recipes.glm53.indexer import gather_candidates
 
 TOPK = 512
 

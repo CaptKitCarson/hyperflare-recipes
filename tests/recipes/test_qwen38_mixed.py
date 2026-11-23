@@ -10,11 +10,11 @@ import pytest
 import torch
 
 from ignition.components.capacity import batch_capacities, mixed_shapes, prefill_capacities
-from ignition.recipes.qwen38.bootstrap import PreparationConfig
-from ignition.recipes.qwen38.decoder_state import DecoderInputs
-from ignition.recipes.qwen38.mixed_state import MixedPacking, role_inputs
-from ignition.recipes.qwen38.recipe import RECIPE
-from ignition.recipes.declaration import Speculation
+from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig
+from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs
+from hyperflare_recipes.recipes.qwen38.mixed_state import MixedPacking, role_inputs
+from hyperflare_recipes.recipes.qwen38.recipe import RECIPE
+from ignition.declaration import Speculation
 
 
 @pytest.mark.parametrize("concurrency", [1, 2, 3, 8, 64])
@@ -38,7 +38,7 @@ def test_joint_catalog_covers_both_axes_without_cross_product(concurrency, width
 @pytest.mark.parametrize("mixed", [False, True])
 def test_plan_and_preparation_use_identical_catalogs(mixed, monkeypatch):
     from ignition import planning
-    from ignition.recipes.qwen38 import bootstrap
+    from hyperflare_recipes.recipes.qwen38 import bootstrap
 
     gpu = planning.Gpu(0, "NVIDIA RTX PRO 6000 Blackwell", "GPU-test", 96 << 30, 95 << 30, (12, 0))
     monkeypatch.setattr(bootstrap, "prepare_model", lambda snapshot, config, **kwargs: config)
@@ -63,7 +63,7 @@ def test_mixed_capture_defaults_off_without_changing_speculation():
 
 
 def test_prompt_sampling_precedes_draft_scratch_reuse():
-    from ignition.recipes.qwen38.mixed_model import DecodeTarget
+    from hyperflare_recipes.recipes.qwen38.mixed_model import DecodeTarget
 
     logits = torch.zeros((5, 4))
     logits[-1, 2] = 1
@@ -141,7 +141,7 @@ def test_packing_preserves_native_row_order_and_physical_slots(prompt_row, width
 
 @pytest.mark.parametrize("speculative", [False, True])
 def test_image_validation_precedes_prompt_state_gather(speculative):
-    from ignition.recipes.qwen38.mixed_model import DecodeTarget, PreparedMixedRound
+    from hyperflare_recipes.recipes.qwen38.mixed_model import DecodeTarget, PreparedMixedRound
 
     class ForwardComplete(Exception):
         pass

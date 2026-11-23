@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import torch
 
-from ignition.recipes.qwen38.decoder import PreparedDecoder
+from hyperflare_recipes.recipes.qwen38.decoder import PreparedDecoder
 from qualify.replay_floor import ReplayCase, _byte_view
 
 

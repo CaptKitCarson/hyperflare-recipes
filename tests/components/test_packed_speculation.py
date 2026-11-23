@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.packed_speculation import PreparedPackedSpeculativeRound
+from hyperflare_recipes.components.packed_speculation import PreparedPackedSpeculativeRound
 
 
 def operands():

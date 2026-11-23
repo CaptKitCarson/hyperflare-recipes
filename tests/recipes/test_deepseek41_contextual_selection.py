@@ -12,14 +12,14 @@ import pytest
 import torch
 from b12x.preparation import Finalist, FrozenMapping, PreparedCall, Selection
 
-from ignition.recipes.deepseek41.contextual_selection import (
+from hyperflare_recipes.recipes.deepseek41.contextual_selection import (
     CatalogContextualSelection, catalog_contexts, contextual_summary, prepared_layer_variant,
 )
 
 
 def test_context_discovery_covers_catalog_shapes_and_shared_draft_decoders():
     from ignition.preparation.execution import GraphSignature
-    from ignition.recipes.deepseek41.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig
 
     def decoder(batch, tokens, width, mode):
         def layer(ratio=0, carry=False):
@@ -65,7 +65,7 @@ def test_context_discovery_covers_catalog_shapes_and_shared_draft_decoders():
 def test_joint_tuning_is_explicit_and_accepts_every_text_shape(monkeypatch, kind, batch, width, packed):
     from b12x.quantization import mla_norm_mxfp8
     from ignition.preparation.execution import GraphSignature
-    from ignition.recipes.deepseek41.bootstrap import _can_race_contextual_plans
+    from hyperflare_recipes.recipes.deepseek41.bootstrap import _can_race_contextual_plans
 
     config = SimpleNamespace(joint_tuning=False, autotune_effort="default")
     signatures = {"graph": GraphSignature(kind, batch, width, packed_token_capacity=packed)}
@@ -98,8 +98,8 @@ class Plan:
 
 
 def catalog_layer():
-    from ignition.components.linear import QuantizedProjection
-    from ignition.components.projection_overlap import ConcurrentProjectionChain
+    from hyperflare_recipes.components.linear import QuantizedProjection
+    from hyperflare_recipes.components.projection_overlap import ConcurrentProjectionChain
 
     class Projection(SimpleNamespace):
         _finalize_functional = QuantizedProjection._finalize_functional
@@ -273,7 +273,7 @@ def test_export_summary_identifies_tuple_configs_and_both_measured_layers():
 def test_context_race_captures_every_tuple_with_optional_compilation(monkeypatch,
                                                                      compile_decoder):
     from ignition.preparation.execution import GraphSignature
-    from ignition.recipes.deepseek41 import contextual_selection as module
+    from hyperflare_recipes.recipes.deepseek41 import contextual_selection as module
 
     selector = object.__new__(CatalogContextualSelection)
     selector.layers = (object(),)
@@ -321,8 +321,8 @@ def test_context_race_captures_every_tuple_with_optional_compilation(monkeypatch
 
 
 def test_attention_release_preserves_contextual_projection_plan_owners():
-    from ignition.recipes.deepseek41.attention import PreparedAttention
-    from ignition.recipes.deepseek41.contextual_selection import _role_plans
+    from hyperflare_recipes.recipes.deepseek41.attention import PreparedAttention
+    from hyperflare_recipes.recipes.deepseek41.contextual_selection import _role_plans
 
     layer = catalog_layer()
     attention = object.__new__(PreparedAttention)

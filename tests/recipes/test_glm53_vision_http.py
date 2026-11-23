@@ -65,7 +65,7 @@ def check_image_answers(address, model):
 @pytest.mark.parametrize("mtp", [False, True])
 def test_native_glm_image_answers(mtp, record_property):
     import flare_heliopause
-    from ignition.recipes.glm53.bootstrap import PreparationConfig, prepare_rank
+    from hyperflare_recipes.recipes.glm53.bootstrap import PreparationConfig, prepare_rank
 
     assert os.environ.get("CUDA_VISIBLE_DEVICES"), "assign a GPU explicitly"
     assert hasattr(flare_heliopause, "Server"), "build heliopause with its qualification feature"

@@ -14,18 +14,18 @@ import torch
 from b12x.preparation import PreparationSession
 from cuda.bindings import driver as cuda
 
-from ignition.preparation import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
 from ignition.preparation.compilation import compile_forward
-from ignition.preparation.qwen38 import TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TEXT_PREFIX
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.qwen38.attention import (
+from hyperflare_recipes.recipes.qwen38.attention import (
     PreparedAttention,
     QSAMetadata,
     QSAScratch,
     QSAState,
     RotaryTables,
 )
-from ignition.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
     reason="explicit CUDA assignment required")

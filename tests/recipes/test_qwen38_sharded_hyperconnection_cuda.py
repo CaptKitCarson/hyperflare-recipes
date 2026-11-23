@@ -18,11 +18,11 @@ pytestmark = pytest.mark.skipif(os.getenv("FLARE_RUN_TP_CUDA_TESTS") != "1",
 
 def _rank(rank, rendezvous):
     from b12x.norm.hyperconnection import reference
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
     from ignition.preparation.aot import aot_forward
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.qwen38.hyperconnection import (
+    from hyperflare_recipes.recipes.qwen38.hyperconnection import (
         HyperconnectionScratch, PreparedHyperconnection, hyperconnection_extents,
     )
 

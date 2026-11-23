@@ -14,7 +14,7 @@ from pathlib import Path
 from transformers import AutoProcessor, AutoTokenizer
 from PIL import Image
 
-from ignition.recipes.glm53.frontend import chat_template_asset
+from hyperflare_recipes.recipes.glm53.frontend import chat_template_asset
 
 
 def generate(snapshot):

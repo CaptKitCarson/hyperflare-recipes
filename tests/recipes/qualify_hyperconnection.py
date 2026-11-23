@@ -14,12 +14,12 @@ import torch
 from safetensors import safe_open
 from b12x.preparation import PreparationSession
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import TRANSFORMERS_VERSION
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TRANSFORMERS_VERSION
 from ignition.preparation.compilation import ForwardTracer, compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.qwen38 import create_model_tree
-from ignition.recipes.qwen38.hyperconnection import HyperconnectionScratch, PreparedHyperconnection
+from hyperflare_recipes.recipes.qwen38 import create_model_tree
+from hyperflare_recipes.recipes.qwen38.hyperconnection import HyperconnectionScratch, PreparedHyperconnection
 
 
 def qualify(snapshot: Path) -> list[dict]:

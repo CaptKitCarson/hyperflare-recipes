@@ -11,7 +11,7 @@ from b12x.attention._shared.mla.compressed_reference import (
     compressed_sparse_mla_reference, pack_deepseek_v41_cache_reference,
 )
 
-from ignition.components.compressed_mla import PreparedCompressedMLA
+from hyperflare_recipes.components.compressed_mla import PreparedCompressedMLA
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
 

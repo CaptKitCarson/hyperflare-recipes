@@ -10,19 +10,19 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.recurrent_proposal import PreparedRecurrentProposalHead, corrected_logits, recurrent_gate
+from hyperflare_recipes.components.recurrent_proposal import PreparedRecurrentProposalHead, corrected_logits, recurrent_gate
 from ignition.components.sampling import DeviceRequestState, RUNNING
-from ignition.components.speculation import DRAFT_RNG_DOMAIN
-from ignition.components.vocabulary_sampling import PreparedVocabularySoftmax
+from hyperflare_recipes.components.speculation import DRAFT_RNG_DOMAIN
+from hyperflare_recipes.components.vocabulary_sampling import PreparedVocabularySoftmax
 from ignition.preparation.tuning import RecordedPreparationSession
 from ignition.preparation.scratch import ScratchArena
-from ignition.components.paged_batch import Metadata
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.inkling2.dspark import DraftAttention, DraftScratch, PreparedContext, PreparedDraft
-from ignition.components.weights import MLPWeights
-from ignition.recipes.inkling2.dspark_state import mix_features, rotary
-from ignition.recipes.inkling2.dspark_weights import DraftWeights
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.inkling2.dspark import DraftAttention, DraftScratch, PreparedContext, PreparedDraft
+from hyperflare_recipes.components.weights import MLPWeights
+from hyperflare_recipes.recipes.inkling2.dspark_state import mix_features, rotary
+from hyperflare_recipes.recipes.inkling2.dspark_weights import DraftWeights
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from tests.components.test_markov_sampling_cuda import philox
 
@@ -382,8 +382,8 @@ class _SparseDraftContextForward:
 def test_checkpoint_draft_aot_reads_only_selected_mapped_context_rows(tmp_path, variant):
     from ignition.preparation.aot import aot_forward
     from ignition.preparation.core_storage import CoreStorage
-    from ignition.recipes.inkling2.config import ModelConfig
-    from ignition.recipes.inkling2.pool import ContinuationPool, RankGeometry, continuation_layout, page_specs
+    from hyperflare_recipes.recipes.inkling2.config import ModelConfig
+    from hyperflare_recipes.recipes.inkling2.pool import ContinuationPool, RankGeometry, continuation_layout, page_specs
 
     variable = "FLARE_INKLING2_MINI_SNAPSHOT" if variant == "mini" else "FLARE_INKLING2_SNAPSHOT"
     snapshot = os.environ.get(variable)
@@ -394,7 +394,7 @@ def test_checkpoint_draft_aot_reads_only_selected_mapped_context_rows(tmp_path, 
     config, shard = ModelConfig.load(snapshot), TensorParallelShard(0, 1 if variant == "mini" else 4)
     manifest = inspect_indexed_checkpoint(snapshot)
     if variant == "mini":
-        from ignition.recipes.inkling2.mini_weights import MiniWeightLoader
+        from hyperflare_recipes.recipes.inkling2.mini_weights import MiniWeightLoader
         context = MiniWeightLoader(manifest, device, shard=shard, vision=False)
     else:
         context = DirectWeightLoader(manifest, device)

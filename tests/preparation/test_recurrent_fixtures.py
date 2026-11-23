@@ -7,7 +7,7 @@ import pytest
 import torch
 import weakref
 
-from ignition.preparation.fixtures.recurrent import BenchmarkStateArena, RecurrentBenchmarkInputs
+from hyperflare_recipes.fixtures.recurrent import BenchmarkStateArena, RecurrentBenchmarkInputs
 
 
 @pytest.mark.parametrize("sequences,tokens,columns", [(32, 192, 8), (32, 32, 8), (4, 17, 8)])

@@ -9,9 +9,9 @@ import pytest
 import torch
 from torch._subclasses import FakeTensor
 
-from ignition.components.draft_sampling import PreparedDraftDistribution
+from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
 from ignition.components.sampling import DeviceRequestState
-from ignition.components.speculation import PreparedSpeculativeDistributions
+from hyperflare_recipes.components.speculation import PreparedSpeculativeDistributions
 from ignition.preparation.forward_metadata import dumps, loads
 from ignition.preparation.tensor_metadata import NumericStorage
 

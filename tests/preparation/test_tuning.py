@@ -33,7 +33,7 @@ def make_session(**kwargs):
 
 @pytest.mark.parametrize("borrowed_state", [False, True])
 def test_recurrent_candidates_share_inputs_with_active_resource_eviction(backend, borrowed_state):
-    from ignition.preparation.fixtures.recurrent import benchmark_call, register_benchmark_state
+    from hyperflare_recipes.fixtures.recurrent import benchmark_call, register_benchmark_state
 
     state = torch.zeros(3, 1, 2, 2)
     arguments = {
@@ -385,7 +385,7 @@ def test_benchmark_resource_shared_across_requests_and_released_before_capture(b
 
 
 def test_indexed_normalization_releases_private_priming_operands(backend, monkeypatch):
-    from ignition.components import rms_norm
+    from hyperflare_recipes.components import rms_norm
 
     session = make_session(device=0, checkpoint="indexed-normalization")
     plan = declaration("indexed").plan
@@ -505,7 +505,7 @@ def test_recipe_policy_owns_cache_identity_and_report_limits(backend):
 
 
 def test_qwen_recipe_preserves_preparation_cache_identity(backend):
-    from ignition.recipes.qwen38.tuning import preparation_session
+    from hyperflare_recipes.recipes.qwen38.tuning import preparation_session
 
     session = preparation_session(device=0, checkpoint="revision", namespace={"headers": "digest"})
     assert session.namespace.to_dict() == {
@@ -775,7 +775,7 @@ def test_borrowed_registration_is_unique_collecting_only_and_restores_on_close(b
 
 
 def test_gdn_registration_reuses_exact_strided_key_and_drops_arena_before_reset(backend):
-    from ignition.preparation.fixtures.recurrent import register_benchmark_state
+    from hyperflare_recipes.fixtures.recurrent import register_benchmark_state
 
     session = make_session(device=0, checkpoint="revision")
     storage = torch.full((2, 32), 7, dtype=torch.uint8)
@@ -1327,10 +1327,10 @@ def test_published_priming_owners_can_release_candidate_storage_only_when_arena_
 
 @pytest.mark.parametrize("operator", ["gdn", "fused_moe", "hyperconnection", "varlen_attention", "blockscaled_gemm", "bf16_gemv", "mtp_feedback"])
 def test_operator_benchmark_owners_release_after_trial_close(backend, operator):
-    from ignition.preparation.fixtures import (
+    from hyperflare_recipes.fixtures import (
         blockscaled_gemm, bf16_gemv, fused_moe, recurrent, hyperconnection, varlen_attention, mtp_feedback,
     )
-    from ignition.components.moe import RouterScratch
+    from hyperflare_recipes.components.moe import RouterScratch
 
     events, controls = backend
     controls.retain_trials = True
@@ -1376,11 +1376,11 @@ def test_operator_benchmark_owners_release_after_trial_close(backend, operator):
                 arguments=dict(token_embedding=source, multi_state=source, output=output),
                 session=session, name="op", workspace=None, eps=1e-6)
         elif operator == "bf16_gemv":
-            from ignition.preparation.fixtures.projection import input_factory
+            from hyperflare_recipes.fixtures.projection import input_factory
             call = bf16_gemv.benchmark_call(state, inputs=input_factory(source, output),
                 weight=torch.ones(32, 32, dtype=torch.bfloat16), bias=None)
         else:
-            from ignition.preparation.fixtures.projection import input_factory
+            from hyperflare_recipes.fixtures.projection import input_factory
             call = blockscaled_gemm.benchmark_call(state, inputs=input_factory(source, output),
                 values=torch.ones(32, 32), scales=None, gain=None, bias=None,
                 weight=object(), selected_workspace=lambda _: None)
@@ -1406,7 +1406,7 @@ GIB = 1 << 30
 
 @pytest.mark.parametrize("retain_call", [False, True])
 def test_candidate_inputs_retire_cached_fixtures_but_preserve_live_and_borrowed_owners(backend, retain_call):
-    from ignition.preparation.fixtures.resources import candidate_inputs
+    from hyperflare_recipes.fixtures.resources import candidate_inputs
 
     class Owner:
         pass
@@ -1437,8 +1437,8 @@ def test_candidate_inputs_retire_cached_fixtures_but_preserve_live_and_borrowed_
 
 
 def test_projection_candidates_share_private_strided_operands(backend):
-    from ignition.preparation.fixtures.bf16_gemv import benchmark_call
-    from ignition.preparation.fixtures.projection import input_factory
+    from hyperflare_recipes.fixtures.bf16_gemv import benchmark_call
+    from hyperflare_recipes.fixtures.projection import input_factory
 
     allocations = []
 

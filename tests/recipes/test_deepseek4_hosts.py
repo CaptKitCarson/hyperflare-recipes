@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 from ignition import planning
-from ignition.recipes.deepseek4 import bootstrap, recipe
+from hyperflare_recipes.recipes.deepseek4 import bootstrap, recipe
 
 
 def test_two_hosts_may_each_use_their_own_gpu_zero():
@@ -58,8 +58,8 @@ def test_recipe_dispatches_the_complete_plan_to_the_rank_group(monkeypatch, remo
 @pytest.mark.parametrize("dspark", [False, True])
 def test_remote_channels_cover_gathers_and_broadcasts_without_pcie(monkeypatch, dspark, world):
     from ignition.components.collectives import packed_broadcast_layout
-    from ignition.components.draft_sampling import PreparedDraftBlockBroadcast, PreparedDraftDistribution
-    from ignition.components.speculation import SpeculativeAcceptance
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftBlockBroadcast, PreparedDraftDistribution
+    from hyperflare_recipes.components.speculation import SpeculativeAcceptance
 
     hosts = ("a", "b", "c", "d")[:world]
     config = bootstrap.PreparationConfig(devices=(0,) * world, hosts=hosts, max_active=16, dspark=dspark,

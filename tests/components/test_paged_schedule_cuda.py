@@ -9,8 +9,8 @@ import os
 import pytest
 import torch
 
-from ignition.components.paged_attention import PreparedPagedAttention
-from ignition.components.paged_schedule import PreparedPagedSchedules
+from hyperflare_recipes.components.paged_attention import PreparedPagedAttention
+from hyperflare_recipes.components.paged_schedule import PreparedPagedSchedules
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession

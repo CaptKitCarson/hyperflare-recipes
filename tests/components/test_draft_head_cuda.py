@@ -8,7 +8,7 @@ import os
 import pytest
 import torch
 
-from ignition.components.vocabulary import PreparedVocabularyProjection, mxfp8_draft_head, nvfp4_draft_head
+from hyperflare_recipes.components.vocabulary import PreparedVocabularyProjection, mxfp8_draft_head, nvfp4_draft_head
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.tuning import RecordedPreparationSession
 
@@ -122,8 +122,8 @@ def test_mxfp8_vocabulary_shard_replays_changed_inputs_without_target_mutation(r
 
 @torch.no_grad()
 def test_mxfp8_head_retains_the_actual_bounded_proposal_distribution():
-    from ignition.components.draft_sampling import PreparedDraftProposal
-    from ignition.components.linear import UnquantizedProjection
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftProposal
+    from hyperflare_recipes.components.linear import UnquantizedProjection
     from ignition.preparation.graphs import PreparedGraphBundle
 
     torch.manual_seed(41018)

@@ -9,8 +9,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.kimi3 import weights
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.kimi3 import weights
 
 
 @dataclass
@@ -159,8 +159,8 @@ def test_loader_rejects_unknown_scope_before_checkpoint_access(scope):
 ])
 def test_model_loader_forwards_scope_without_changing_dspark_family(
         monkeypatch, metadata_config, sparse, scope, online, tmp_path):
-    from ignition.recipes.kimi3 import dspark_weights
-    from ignition.recipes.kimi31 import dspark_config, dspark_weights as sparse_draft_weights
+    from hyperflare_recipes.recipes.kimi3 import dspark_weights
+    from hyperflare_recipes.recipes.kimi31 import dspark_config, dspark_weights as sparse_draft_weights
 
     metadata_config.dsa = SimpleNamespace(heads=32, head_dim=128) if sparse else None
     metadata_config.layers = ()
@@ -210,7 +210,7 @@ def test_model_loader_forwards_scope_without_changing_dspark_family(
 ])
 def test_dflash_body_and_head_conversion_are_independent_of_target_scope(
         monkeypatch, metadata_config, tmp_path, online, scope, body, expected):
-    from ignition.recipes.kimi31 import dflash_weights
+    from hyperflare_recipes.recipes.kimi31 import dflash_weights
 
     metadata_config.layers = ()
     loaders = []

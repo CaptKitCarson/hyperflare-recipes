@@ -14,15 +14,15 @@ import torch
 import torch.nn.functional as F
 from b12x.preparation import PreparationSession
 
-from ignition.components.moe import PreparedRoutedExperts, PreparedRouter, RouterScratch
-from ignition.components.moe_sm103 import CuteW4A16Experts, TrtllmNvfp4Experts
-from ignition.preparation import inspect_qwen38_checkpoint
+from hyperflare_recipes.components.moe import PreparedRoutedExperts, PreparedRouter, RouterScratch
+from hyperflare_recipes.components.moe_sm103 import CuteW4A16Experts, TrtllmNvfp4Experts
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
 from ignition.preparation.compilation import compile_forward
-from ignition.preparation.qwen38 import TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TEXT_PREFIX
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.qwen38.mtp_weights import MTPWeightLoader
-from ignition.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes.qwen38.mtp_weights import MTPWeightLoader
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors,
     decode_nvfp4,
     nvfp4_linear_reference,
@@ -217,8 +217,8 @@ def glm_manifest():
 
 @pytest.mark.parametrize("tokens", [1, 24])
 def test_glm_experts_preserve_clamped_swiglu(glm_manifest, tokens):
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.glm53.weights import GlmWeightLoader
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.glm53.weights import GlmWeightLoader
 
     ids = (0, 7, 100, 287)
     prefix = "model.language_model.layers.3.mlp.experts"
@@ -247,8 +247,8 @@ def test_glm_experts_preserve_clamped_swiglu(glm_manifest, tokens):
 
 @pytest.mark.parametrize("tokens", [1, 24, 512])
 def test_glm_a4_experts_preserve_distinct_input_scales(glm_manifest, tokens):
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.glm53.weights import GlmWeightLoader
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.glm53.weights import GlmWeightLoader
 
     prefix = "model.language_model.layers.3.mlp.experts"
     ids = (0, 7, 100, 287)
@@ -273,8 +273,8 @@ def test_glm_a4_experts_preserve_distinct_input_scales(glm_manifest, tokens):
 
 @pytest.mark.parametrize("tokens", [1, 512])
 def test_glm_a4_shared_reduction_preserves_distinct_input_scales(glm_manifest, tokens):
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.glm53.weights import GlmWeightLoader
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.glm53.weights import GlmWeightLoader
 
     prefix = "model.language_model.layers.3.mlp.experts"
     ids = (0, 7, 100, 287)
@@ -286,7 +286,7 @@ def test_glm_a4_shared_reduction_preserves_distinct_input_scales(glm_manifest, t
 
 @pytest.mark.parametrize("hidden", [2560, 4096])
 def test_routed_nvfp4_quantization_matches_flashinfer(hidden):
-    from ignition.components.moe_sm103 import _fp4_quantizer, _quantize_routes
+    from hyperflare_recipes.components.moe_sm103 import _fp4_quantizer, _quantize_routes
 
     assert os.environ.get("CUDA_VISIBLE_DEVICES")
     if torch.cuda.get_device_capability(0) != (10, 3):

@@ -11,7 +11,7 @@ import pytest
 import torch
 from torch.fx.experimental.proxy_tensor import make_fx
 
-from ignition.components import block_fp8, expert_overlap, mlp, moe, moe_sm103
+from hyperflare_recipes.components import block_fp8, expert_overlap, mlp, moe, moe_sm103
 
 
 @pytest.mark.parametrize("arena_owned", [False, True])

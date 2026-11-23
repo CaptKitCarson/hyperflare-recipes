@@ -20,7 +20,7 @@ pytestmark = pytest.mark.skipif(not (os.environ.get('FLARE_RUN_CUDA_TESTS') and 
 @pytest.mark.parametrize('bias_dtype', [None, torch.bfloat16, torch.float32])
 @torch.no_grad()
 def test_bound_inputs_match_canonical_native_replay(batch, vocab, dtype, compiled, prefix, bias_dtype):
-    from ignition.components.draft_sampling import PreparedDraftDistribution
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
     from ignition.components.sampling import DeviceRequestState, RUNNING
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.graphs import PreparedGraphBundle
@@ -160,7 +160,7 @@ def test_bound_inputs_match_canonical_native_replay(batch, vocab, dtype, compile
 @torch.no_grad()
 def test_parallel_draft_preparation_preserves_bias_and_selector_contract(bias_dtype, selector):
     from types import SimpleNamespace
-    from ignition.components.parallel_draft import PreparedParallelDraftRound
+    from hyperflare_recipes.components.parallel_draft import PreparedParallelDraftRound
     from ignition.components.sampling import DeviceRequestState, RUNNING
 
     batch, width, vocab, block = 2, 3, 257, 4

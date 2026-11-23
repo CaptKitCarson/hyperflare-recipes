@@ -10,7 +10,7 @@ import torch
 from b12x.preparation import PreparationSession
 from b12x.testing.mhc import make_inputs, pre_reference, post_reference
 
-from ignition.components.mhc import MHCWeights, MHCScratch, PreparedMHC, PreparedMHCPost
+from hyperflare_recipes.components.mhc import MHCWeights, MHCScratch, PreparedMHC, PreparedMHCPost
 from ignition.preparation.compilation import compile_forward
 from tests.tensor_examples import TensorExamples
 

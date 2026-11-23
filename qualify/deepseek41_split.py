@@ -37,12 +37,12 @@ import numpy as np
 import torch
 
 from ignition.cli.config import Configuration
-from ignition.components.split_draft import causal_prefix, lagged_budget
+from hyperflare_recipes.components.split_draft import causal_prefix, lagged_budget
 from ignition.direct.scheduler import Lane, Layout, Request, SamplingParameters, Scheduler, Step
 from ignition.preparation.core_storage import CoreStorage
 from ignition.preparation.rank_group import prepare_group
-from ignition.recipes.deepseek41.bootstrap import PreparationConfig, prepare_rank
-from ignition.recipes.deepseek41.recipe import RECIPE
+from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig, prepare_rank
+from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE
 
 
 PROMPTS = {
@@ -353,7 +353,7 @@ def main(args):
     from tokenizers import Tokenizer
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     tokenizer = Tokenizer.from_file(str(inspect_indexed_checkpoint(snapshot).metadata_path / 'tokenizer.json'))
-    from ignition.recipes.deepseek41 import bootstrap
+    from hyperflare_recipes.recipes.deepseek41 import bootstrap
     template = Path(bootstrap.__file__).with_name('assets').joinpath('chat_template.jinja').read_text()
     from transformers.utils.chat_template_utils import _compile_jinja_template
     render = _compile_jinja_template(template)

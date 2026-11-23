@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import weights
+from hyperflare_recipes.components import weights
 
 
 class CopySession:

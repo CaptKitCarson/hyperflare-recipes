@@ -8,7 +8,7 @@ import os
 import pytest
 import torch
 
-from ignition.recipes.glm53.dcp import ContextShards, merge_candidates, merge_expand_local, pack_candidates
+from hyperflare_recipes.recipes.glm53.dcp import ContextShards, merge_candidates, merge_expand_local, pack_candidates
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                                reason="requires an explicitly assigned CUDA device")

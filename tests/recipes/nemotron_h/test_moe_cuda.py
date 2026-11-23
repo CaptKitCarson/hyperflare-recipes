@@ -40,13 +40,13 @@ class RouterReadback:
 @torch.no_grad()
 def test_checkpoint_latent_moe(tokens, schedule, tmp_path):
     from b12x.preparation import PreparationSession
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compile_pool import CompilePool
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.nemotron_h.moe import PreparedLatentMoE
-    from ignition.recipes.nemotron_h.weights import NemotronWeightLoader
-    from ignition.reference.qwen38_quant import CheckpointTensors
+    from hyperflare_recipes.recipes.nemotron_h.moe import PreparedLatentMoE
+    from hyperflare_recipes.recipes.nemotron_h.weights import NemotronWeightLoader
+    from hyperflare_recipes.reference.qwen38_quant import CheckpointTensors
 
     path = Path(os.environ.get("FLARE_NEMOTRON_CHECKPOINT",
         "/data/models/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB"))

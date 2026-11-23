@@ -37,7 +37,7 @@ def _device():
 
 def test_dense_contract_declares_the_qwen_image_frontend():
     from ignition.preparation import runtime_core_pb2 as p
-    from ignition.recipes.qwen38_dense import contract
+    from hyperflare_recipes.recipes.qwen38_dense import contract
 
     assert contract.PATCH_CAPACITIES == (256, 1024, 4096, 16384)
     assert contract.VISION == dict(features_per_request=16384, max_images=4,
@@ -52,8 +52,8 @@ def test_dense_contract_declares_the_qwen_image_frontend():
 
 
 def test_dense_recipe_declares_the_flash_image_limits():
-    from ignition.recipes.qwen38.recipe import RECIPE as FLASH
-    from ignition.recipes.qwen38_dense.recipe import (
+    from hyperflare_recipes.recipes.qwen38.recipe import RECIPE as FLASH
+    from hyperflare_recipes.recipes.qwen38_dense.recipe import (
         RECIPE, VISION_BYTES, VISION_INPUT_BYTES, VISION_SLOT_BYTES, VISION_TOWER_BYTES,
     )
 
@@ -72,7 +72,7 @@ def test_dense_recipe_declares_the_flash_image_limits():
 def test_benchmark_selection_takes_no_image_slots():
     """A benchmark prepares text graphs only, so its configuration rejects image slots."""
     from ignition.preparation.selection import BenchmarkSelection
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     selection = BenchmarkSelection(batches=(1,), contexts=(0,), prefill_chunk=4096)
     config = PreparationConfig(draft_snapshot=Path("draft"), max_active=1,
@@ -91,8 +91,8 @@ def test_benchmark_selection_takes_no_image_slots():
 
 def test_plan_reserves_vision_storage_only_for_image_slots():
     from ignition import planning
-    from ignition.recipes import resolve
-    from ignition.recipes.qwen38_dense.recipe import RECIPE, VISION_BYTES, VISION_SLOT_BYTES
+    from hyperflare_recipes.recipes import resolve
+    from hyperflare_recipes.recipes.qwen38_dense.recipe import RECIPE, VISION_BYTES, VISION_SLOT_BYTES
 
     model = resolve("qwen3.8-27b")
     gpus = (planning.Gpu(0, "SM120", "GPU-0", 96 << 30, 95 << 30, (12, 0)),)
@@ -121,8 +121,8 @@ def test_plan_reserves_vision_storage_only_for_image_slots():
 def test_plan_shortfall_on_32gib_sm120_suggests_language_model_only_when_applicable():
     from ignition import planning
     from ignition.errors import CapacityError, UsageError
-    from ignition.recipes import resolve
-    from ignition.recipes.qwen38_dense.recipe import RECIPE
+    from hyperflare_recipes.recipes import resolve
+    from hyperflare_recipes.recipes.qwen38_dense.recipe import RECIPE
 
     model = resolve("qwen3.8-27b")
     gpus = (planning.Gpu(0, "NVIDIA GeForce RTX 5090", "GPU-0", 32 << 30, 31 << 30, (12, 0)),)
@@ -156,9 +156,9 @@ def test_dense_config_validates_vision_geometry_and_vision_weights_declares_tens
     from types import SimpleNamespace
 
     from ignition.preparation.rebuild_manifest import CONTAINER_FIELDS
-    from ignition.recipes.qwen38.vision import VisionWeights
-    from ignition.recipes.qwen38_dense.bootstrap import _declared_weight_roots
-    from ignition.recipes.qwen38_dense.config import ModelConfig
+    from hyperflare_recipes.recipes.qwen38.vision import VisionWeights
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import _declared_weight_roots
+    from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig
 
     base = {
         "architectures": ["Qwen3_5ForConditionalGeneration"],
@@ -199,7 +199,7 @@ def test_dense_config_validates_vision_geometry_and_vision_weights_declares_tens
         with pytest.raises(ValueError, match="vision"):
             ModelConfig.load(tmp_path, vision=True)
     # VisionWeights registers its fields for rebuild manifests and _declared_weight_roots includes it.
-    assert CONTAINER_FIELDS["ignition.recipes.qwen38.vision.VisionWeights"] == ("parameters", "projections")
+    assert CONTAINER_FIELDS["hyperflare_recipes.recipes.qwen38.vision.VisionWeights"] == ("parameters", "projections")
     vision = VisionWeights(parameters={"p": torch.zeros(1)}, projections={})
     fake_weights = SimpleNamespace(
         tree=SimpleNamespace(embed_tokens=None, norm=None, layers=()),
@@ -220,17 +220,17 @@ def _image_catalog():
 
     from ignition.components.capacity import batch_capacities, prefill_capacities
     from ignition.components.completion import CompletionOutputs
-    from ignition.components.paged_batch import ROTARY_OFFSET, RotaryBatchInputs
-    from ignition.components.prompt_logprobs import PromptOutputs, scored_prefill_capacities
+    from hyperflare_recipes.components.paged_batch import ROTARY_OFFSET, RotaryBatchInputs
+    from hyperflare_recipes.components.prompt_logprobs import PromptOutputs, scored_prefill_capacities
     from ignition.components.sampling import AdmissionBuffers
     from ignition.components.state import StateLayout, StateStorage
     from ignition.components.state_transfer import StateCommands
     from ignition.components.vision_state import PrefillVisionInputs
     from ignition.preparation import contract as c
     from ignition.preparation.execution import GraphSignature, PreparedExecution
-    from ignition.recipes.qwen38_dense import contract
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
-    from ignition.recipes.qwen38_dense.vision_state import VisionInputs
+    from hyperflare_recipes.recipes.qwen38_dense import contract
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.vision_state import VisionInputs
 
     config = PreparationConfig(draft_snapshot=Path("metadata-draft"), max_active=32, image_concurrency=4)
     capacity, vocabulary = config.max_active, 248320
@@ -314,10 +314,10 @@ def test_dense_image_catalog_declares_qwen_layout_and_passes_native_contract_val
 def test_dense_image_contract_rejects_prefill_without_prompt_positions():
     from types import SimpleNamespace
 
-    from ignition.components.paged_batch import ROTARY_OFFSET
+    from hyperflare_recipes.components.paged_batch import ROTARY_OFFSET
     from ignition.components.state import StateLayout
     from ignition.preparation.execution import GraphSignature
-    from ignition.recipes.qwen38_dense import contract
+    from hyperflare_recipes.recipes.qwen38_dense import contract
 
     layout = StateLayout.from_specs((("consumed_tokens", (1,), torch.int64),
                                      (ROTARY_OFFSET, (1,), torch.int64)))
@@ -331,10 +331,10 @@ def test_dense_image_contract_rejects_prefill_without_prompt_positions():
 def test_dense_vision_state_arena_geometry_and_injection():
     from types import SimpleNamespace
 
-    from ignition.components.paged_batch import RotaryBatchInputs
+    from hyperflare_recipes.components.paged_batch import RotaryBatchInputs
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.vision_state import PrefillVisionInputs, VisionState
-    from ignition.recipes.qwen38_dense.vision_state import FEATURES, IMAGE_TOKEN_ID
+    from hyperflare_recipes.recipes.qwen38_dense.vision_state import FEATURES, IMAGE_TOKEN_ID
 
     requests = DeviceRequestState.allocate("cpu", vocab_size=248320, capacity=4)
     batch = RotaryBatchInputs.allocate(4, 1, "cpu", capacity=4)
@@ -368,10 +368,10 @@ def test_dense_vision_state_arena_geometry_and_injection():
 def test_dense_vision_generation_validates_sanitizes_and_reports_errors():
     """PreparedVisionGeneration sanitizes invalid uploads and flags non-finite encoder outputs."""
     from ignition.components.completion import CompletionOutputs
-    from ignition.components.paged_batch import RotaryBatchInputs
+    from hyperflare_recipes.components.paged_batch import RotaryBatchInputs
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.vision_state import PrefillVisionInputs, VisionState
-    from ignition.recipes.qwen38_dense.vision_state import (
+    from hyperflare_recipes.recipes.qwen38_dense.vision_state import (
         IMAGE_TOKEN_ID, PreparedVisionGeneration, VisionInputs,
     )
 
@@ -474,8 +474,8 @@ def test_dense_frontend_declares_the_qwen_image_profile():
 
 def _dense_weights(path, device):
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.components.weights import DirectWeightLoader
-    from ignition.recipes.qwen38.vision import VisionWeights
+    from hyperflare_recipes.components.weights import DirectWeightLoader
+    from hyperflare_recipes.recipes.qwen38.vision import VisionWeights
     from transformers import Qwen3_5VisionConfig, Qwen3_5VisionModel
 
     manifest = inspect_indexed_checkpoint(path)
@@ -497,14 +497,14 @@ def test_dense_vision_generation_publishes_and_injects_wide_features():
 
     from b12x.preparation import PreparationSession
     from ignition.components.completion import CompletionOutputs
-    from ignition.components.paged_batch import RotaryBatchInputs
+    from hyperflare_recipes.components.paged_batch import RotaryBatchInputs
     from ignition.components.sampling import DeviceRequestState, RequestAdmission
     from ignition.components.vision_state import PrefillVisionInputs, VisionState
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.graphs import PreparedGraphBundle
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38.vision import PreparedVision, VisionMetadata, VisionScratch
-    from ignition.recipes.qwen38_dense.vision_state import (
+    from hyperflare_recipes.recipes.qwen38.vision import PreparedVision, VisionMetadata, VisionScratch
+    from hyperflare_recipes.recipes.qwen38_dense.vision_state import (
         IMAGE_TOKEN_ID, PreparedVisionGeneration, VisionInputs, vision_math_mode,
     )
     from transformers.vision_utils import (

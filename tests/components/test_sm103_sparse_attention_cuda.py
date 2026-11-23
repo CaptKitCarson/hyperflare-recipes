@@ -17,7 +17,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @pytest.mark.parametrize("cache_dtype", [torch.bfloat16, torch.float8_e4m3fn])
 def test_attends_selected_causal_positions_and_zeroes_empty_rows(rows, cache_dtype):
     """Up to 128 rows split their selection across programs; more rows attend in one pass."""
-    from ignition.components.sm103_sparse_attention import PARTIAL_ROWS, PreparedSparseAttention, splits_for
+    from hyperflare_recipes.components.sm103_sparse_attention import PARTIAL_ROWS, PreparedSparseAttention, splits_for
 
     generator = torch.Generator(device="cuda").manual_seed(2051)
     pages, width, context = 40, 2051, 2048

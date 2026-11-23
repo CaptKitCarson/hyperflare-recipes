@@ -5,10 +5,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.recipes.gemma4.attention import PreparedAttention, cache_bindings, declaration_tensor, rms_norm
-from ignition.recipes.gemma4.decoder import PreparedDecoder, Scratch, SoftcappedResume
-from ignition.recipes.gemma4.speculative import PreparedAssistant
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.recipes.gemma4.attention import PreparedAttention, cache_bindings, declaration_tensor, rms_norm
+from hyperflare_recipes.recipes.gemma4.decoder import PreparedDecoder, Scratch, SoftcappedResume
+from hyperflare_recipes.recipes.gemma4.speculative import PreparedAssistant
 
 
 def test_declaration_examples_share_shapes_without_aliasing_operator_roles():

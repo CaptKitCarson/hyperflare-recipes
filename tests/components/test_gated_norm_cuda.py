@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 
 @pytest.mark.parametrize("heads", [16, 32])
 def test_gated_norm_matches_canonical_math_and_zeroes_inactive_rows(heads):
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
 
     generator = torch.Generator(device="cuda").manual_seed(heads)
     rows, dim = 300, 128
@@ -36,7 +36,7 @@ def test_gated_norm_matches_canonical_math_and_zeroes_inactive_rows(heads):
 @pytest.mark.parametrize("activation", ["sigmoid", "silu"])
 @pytest.mark.parametrize("weight_dtype", [torch.bfloat16, torch.float32])
 def test_rounded_gated_norm_matches_a_bf16_module_with_a_strided_gate(activation, weight_dtype):
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
 
     generator = torch.Generator(device="cuda").manual_seed(48)
     rows, heads, dim = 300, 48, 128
@@ -61,7 +61,7 @@ def test_rounded_gated_norm_matches_a_bf16_module_with_a_strided_gate(activation
 @pytest.mark.parametrize("weight_dtype", [torch.bfloat16, torch.float32])
 def test_prepared_gate_before_grouped_norm_graph(weight_dtype):
     from b12x.preparation import PreparationSession
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
 
     torch.manual_seed(38)
     rows, groups, dim = 33, 8, 1024
@@ -93,7 +93,7 @@ def test_prepared_gate_before_grouped_norm_graph(weight_dtype):
 @pytest.mark.parametrize("encoded_only", [False, True])
 def test_gated_norm_mxfp8_prefill_graph_live_rows_and_storage(encoded_only):
     from b12x.quantization import mxfp8
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
 
     torch.manual_seed(0)
     rows, heads, dim = 4096, 48, 128
@@ -138,8 +138,8 @@ def test_gated_norm_mxfp8_prefill_graph_live_rows_and_storage(encoded_only):
 
 
 def test_gdn_mxfp8_encodings_reuse_storage_across_captured_prefill_shapes():
-    from ignition.components.gated_delta import GDNScratch
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gated_delta import GDNScratch
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
     from b12x.quantization import mxfp8
 
     scratch = GDNScratch.allocate(4096, torch.device("cuda:0"))
@@ -188,7 +188,7 @@ def test_gdn_mxfp8_encodings_reuse_storage_across_captured_prefill_shapes():
 
 
 def test_functional_gated_norm_replay_uses_runtime_live_count():
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
     from ignition.preparation.compilation import compile_forward
 
     rows, heads, dim = 4, 4, 128

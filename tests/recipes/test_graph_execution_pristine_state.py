@@ -9,7 +9,7 @@ import pytest
 import torch
 
 from qualify import graph_execution
-from ignition.recipes.qwen38.state import EOS_TOKEN_ID
+from hyperflare_recipes.recipes.qwen38.state import EOS_TOKEN_ID
 
 
 @pytest.mark.parametrize("corruption", [None, "state", "null_history", "history"])

@@ -16,7 +16,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @pytest.mark.parametrize("batch,depth", [(1, 1), (1, 7), (8, 7), (32, 7)])
 @torch.no_grad()
 def test_canonical_predecessors_replace_divergent_local_chain_under_native_replay(batch, depth):
-    from ignition.components.split_draft import PreparedDraftConfidence
+    from hyperflare_recipes.components.split_draft import PreparedDraftConfidence
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.graphs import PreparedGraphBundle
     from ignition.preparation.tuning import RecordedPreparationSession

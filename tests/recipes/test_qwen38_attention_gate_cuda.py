@@ -14,7 +14,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @torch.no_grad()
 def test_strided_attention_gate_preserves_rounding_and_captured_storage(tokens, packed):
     from b12x.preparation import PreparationSession
-    from ignition.components.head_gate import PreparedHeadGate
+    from hyperflare_recipes.components.head_gate import PreparedHeadGate
     from tests.tensor_examples import TensorExamples
 
     pool = TensorExamples("cuda")
@@ -56,7 +56,7 @@ def test_strided_attention_gate_preserves_rounding_and_captured_storage(tokens, 
 
 
 def test_head_gate_rejects_aliasing_logits():
-    from ignition.components.head_gate import PreparedHeadGate
+    from hyperflare_recipes.components.head_gate import PreparedHeadGate
     values = torch.zeros(2, 256, 1, device="cuda", dtype=torch.bfloat16)
     with pytest.raises(ValueError, match="overlap"):
         PreparedHeadGate(values, values.view(2, 256), session=None, name="invalid")

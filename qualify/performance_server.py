@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--trace-graph-ids', action='store_true')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
-    from ignition.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
+    from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
 
     def progress(message):
         elapsed = (time.perf_counter_ns() - started) / 1e9

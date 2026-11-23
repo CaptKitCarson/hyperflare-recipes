@@ -24,8 +24,9 @@ def worker(rank, rendezvous):
     from ignition import runtime_patches
     runtime_patches.apply()
     import torch.distributed as dist
-    from ignition.components.column_pair_gather import PreparedColumnPairGather
-    from ignition.preparation.collectives import CollectivePreparation, create_head_exchange
+    from hyperflare_recipes.components.column_pair_gather import PreparedColumnPairGather
+    from ignition.preparation.collectives import CollectivePreparation
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.tuning import RecordedPreparationSession

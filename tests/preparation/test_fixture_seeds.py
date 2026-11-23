@@ -6,8 +6,8 @@
 import pytest
 import torch
 
-from ignition.preparation.fixtures.projection import Inputs
-from ignition.preparation.fixtures.varlen_attention import attention_benchmark_inputs
+from hyperflare_recipes.fixtures.projection import Inputs
+from hyperflare_recipes.fixtures.varlen_attention import attention_benchmark_inputs
 
 
 @pytest.mark.parametrize("strided", [False, True])

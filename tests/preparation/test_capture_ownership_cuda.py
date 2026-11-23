@@ -12,7 +12,7 @@ import weakref
 import pytest
 import torch
 
-from ignition.components.linear import UnquantizedProjection
+from hyperflare_recipes.components.linear import UnquantizedProjection
 from ignition.preparation.aot import BindingMismatch, BoundForward, ForwardCache, aot_forward
 from ignition.preparation.capture import capture_forwards
 from ignition.preparation.execution import GraphSignature

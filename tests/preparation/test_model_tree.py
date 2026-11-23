@@ -8,10 +8,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from ignition.preparation import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
 from ignition.preparation.checkpoint import CheckpointError
-from ignition.recipes.qwen38 import create_model_tree
-from ignition.recipes.qwen38.checkpoint_schema import TRANSFORMERS_VERSION
+from hyperflare_recipes.recipes.qwen38 import create_model_tree
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TRANSFORMERS_VERSION
 
 
 def test_exact_checkpoint_constructs_canonical_meta_tree_without_cuda():

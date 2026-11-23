@@ -9,17 +9,17 @@ import pytest
 import torch
 from cuda.bindings import driver as cuda
 from b12x.attention._shared.mla.compressed_reference import pack_deepseek_v41_cache_reference
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.paged_batch import Metadata
-from ignition.components.ring_commit import PreparedRingCommit
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.ring_commit import PreparedRingCommit
 from ignition.preparation.aot import aot_forward
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.deepseek41.attention import AttentionScratch, PreparedAttention, Rotary
-from ignition.recipes.deepseek41.pool import ContinuationPool
-from ignition.recipes.deepseek41.weights import DeepSeekWeightLoader
+from hyperflare_recipes.recipes.deepseek41.attention import AttentionScratch, PreparedAttention, Rotary
+from hyperflare_recipes.recipes.deepseek41.pool import ContinuationPool
+from hyperflare_recipes.recipes.deepseek41.weights import DeepSeekWeightLoader
 
 pytestmark = pytest.mark.skipif(os.environ.get('FLARE_RUN_CUDA_TESTS') != '1'
     or not os.environ.get('FLARE_TEST_DS41_CHECKPOINT'), reason='requires an assigned GPU and a DS41 checkpoint')

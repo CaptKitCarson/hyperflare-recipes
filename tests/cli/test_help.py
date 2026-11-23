@@ -10,9 +10,13 @@ from pathlib import Path
 
 import pytest
 
-from ignition.cli import _parser, main
+from ignition.cli import _parser, main as _cli_main
 from ignition.errors import UsageError
-from ignition.recipes import aliases, recipes, resolve
+from hyperflare_recipes.recipes import aliases, recipes, resolve
+
+
+def main(argv=None):
+    return _cli_main(argv, recipes=recipes())
 
 
 @pytest.mark.parametrize('flags', [['--output', 'model'], ['--form', 'packed'], ['--form', 'directory']])
@@ -157,13 +161,13 @@ import contextlib
 import io
 import sys
 from ignition.cli import main
-from ignition.recipes import recipes
+from hyperflare_recipes.recipes import recipes
 with contextlib.redirect_stdout(io.StringIO()):
     for recipe in recipes():
         for checkpoint in recipe.checkpoints:
             for model in (checkpoint.alias, checkpoint.repository):
                 try:
-                    main(['export', model, '--help'])
+                    main(['export', model, '--help'], recipes=recipes())
                 except SystemExit as error:
                     assert error.code == 0
 assert not {'torch', 'transformers', 'flare_heliopause', 'huggingface_hub', 'pynvml'} & set(sys.modules)

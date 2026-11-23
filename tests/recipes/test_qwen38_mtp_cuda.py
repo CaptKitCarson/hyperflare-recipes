@@ -9,13 +9,13 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TEXT_PREFIX
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.qwen38.attention import QSAMetadata, QSAState, RotaryTables
-from ignition.recipes.qwen38.mtp import MTPScratch, PreparedMTP, PreparedMTPFeedback
-from ignition.recipes.qwen38.mtp_weights import MTPWeights
-from ignition.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.recipes.qwen38.attention import QSAMetadata, QSAState, RotaryTables
+from hyperflare_recipes.recipes.qwen38.mtp import MTPScratch, PreparedMTP, PreparedMTPFeedback
+from hyperflare_recipes.recipes.qwen38.mtp_weights import MTPWeights
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
     reason="requires an assigned CUDA_VISIBLE_DEVICES and FLARE_RUN_CUDA_TESTS=1")

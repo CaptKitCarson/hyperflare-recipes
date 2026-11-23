@@ -5,14 +5,14 @@ import torch
 from types import SimpleNamespace
 import sys
 
-from ignition.recipes.kimi31.slot_tuning import slot_inputs
+from hyperflare_recipes.recipes.kimi31.slot_tuning import slot_inputs
 
 
 @pytest.mark.parametrize("available,supported,agreed,expected", (
     (False, True, True, False), (True, False, True, False),
     (True, True, False, False), (True, True, True, True)))
 def test_all_ranks_require_the_optional_slot_provider(monkeypatch, available, supported, agreed, expected):
-    from ignition.recipes.kimi31 import local_slots
+    from hyperflare_recipes.recipes.kimi31 import local_slots
 
     observed = []
     def agree(value):
@@ -29,7 +29,7 @@ def test_all_ranks_require_the_optional_slot_provider(monkeypatch, available, su
 
 def test_compiler_metadata_keeps_only_the_recording_rank_handle():
     from ignition.preparation import forward_metadata
-    from ignition.recipes.kimi31 import local_slots
+    from hyperflare_recipes.recipes.kimi31 import local_slots
 
     class OnlyOnRecorder:
         def __reduce__(self):

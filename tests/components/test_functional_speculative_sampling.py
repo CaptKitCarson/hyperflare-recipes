@@ -7,7 +7,7 @@ import pytest
 import torch
 
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
-from ignition.components.speculation import (
+from hyperflare_recipes.components.speculation import (
     PreparedSpeculativeDistributions, PreparedSpeculativeStateCommit,
     PreparedStochasticVerification, SpeculativeAcceptance, SpeculativeRngState,
 )
@@ -140,7 +140,7 @@ def test_functional_commit_matches_bound_request_and_completion_state(scenario, 
 @pytest.mark.parametrize("release_first", [False, True])
 @pytest.mark.parametrize("source_kind", ["materialized", "fused", "shortlist"])
 def test_proposal_launches_use_runtime_prefix_rng_and_output_operands(monkeypatch, release_first, source_kind):
-    from ignition.components import draft_sampling as draft
+    from hyperflare_recipes.components import draft_sampling as draft
     import ignition.preparation.triton as launches
 
     fused_source = source_kind == "fused"
@@ -222,7 +222,7 @@ def test_proposal_launches_use_runtime_prefix_rng_and_output_operands(monkeypatc
 @pytest.mark.parametrize("width", [1, 4])
 @pytest.mark.parametrize("invalid_target", [False, True])
 def test_verification_routes_runtime_validity_rng_and_independent_results(monkeypatch, width, invalid_target):
-    import ignition.components.speculation as verification
+    import hyperflare_recipes.components.speculation as verification
 
     state = request_state()
     rng = SpeculativeRngState.allocate("cpu", capacity=2)
@@ -299,7 +299,7 @@ def test_functional_commit_traces_with_explicit_inputs_and_local_outputs():
 def test_idle_completion_record_traces_without_host_tensor_constants(tokens, context_lag):
     from torch.fx.experimental.proxy_tensor import make_fx
     from ignition.components.completion import VECTOR_TOKENS_FIELD
-    from ignition.components.speculation import _idle_completion_record
+    from hyperflare_recipes.components.speculation import _idle_completion_record
 
     fields = VECTOR_TOKENS_FIELD + tokens
     def initialize():

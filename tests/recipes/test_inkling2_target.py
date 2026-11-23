@@ -11,11 +11,11 @@ import pytest
 import torch
 import torch.nn.functional as F
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.inkling2.arithmetic import l2_clip, residual_mix, short_convolution
-from ignition.recipes.inkling2.config import ModelConfig
-from ignition.recipes.inkling2.pool import RankGeometry, continuation_layout, page_specs
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.inkling2.arithmetic import l2_clip, residual_mix, short_convolution
+from hyperflare_recipes.recipes.inkling2.config import ModelConfig
+from hyperflare_recipes.recipes.inkling2.pool import RankGeometry, continuation_layout, page_specs
 
 
 @pytest.fixture
@@ -108,9 +108,9 @@ def test_checkpoint_attention_fp8_and_fp32_projection(configuration, layer, mode
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.inkling2.attention import LayerCache, PreparedAttention
-    from ignition.recipes.inkling2.pool import ContinuationPool
-    from ignition.recipes.inkling2.weights import InklingWeightLoader
+    from hyperflare_recipes.recipes.inkling2.attention import LayerCache, PreparedAttention
+    from hyperflare_recipes.recipes.inkling2.pool import ContinuationPool
+    from hyperflare_recipes.recipes.inkling2.weights import InklingWeightLoader
 
     snapshot = Path(os.environ.get('FLARE_INKLING2_SNAPSHOT', '/data/models/Inkling-2-Small-NVFP4'))
     device = torch.device('cuda', 0)
@@ -164,7 +164,7 @@ def test_checkpoint_attention_fp8_and_fp32_projection(configuration, layer, mode
 
 @pytest.mark.skipif(os.environ.get('FLARE_RUN_CUDA_TESTS') != '1', reason='requires an assigned SM120 GPU')
 def test_accepted_window_prefix_commits_replay_without_candidate_mutation():
-    from ignition.recipes.inkling2.attention import retain_batch, stage_batch
+    from hyperflare_recipes.recipes.inkling2.attention import retain_batch, stage_batch
 
     device = torch.device('cuda', 0)
     m = _metadata([8, 8, 8], [0, 1150, 3499], device)
@@ -210,8 +210,8 @@ def test_accepted_window_prefix_commits_replay_without_candidate_mutation():
     + [(64, 1, 5, True), (64, 3, 9, False), (4096, 1, 9, False), (4096, 3, 9, True)])
 def test_prepared_attention_residual_reference_and_capture(tokens, streams, sources, add):
     from cuda.bindings import driver
-    from ignition.recipes.inkling2.arithmetic import rms_norm
-    from ignition.recipes.inkling2.residual import PreparedResidualMix
+    from hyperflare_recipes.recipes.inkling2.arithmetic import rms_norm
+    from hyperflare_recipes.recipes.inkling2.residual import PreparedResidualMix
     from ignition.preparation.tuning import RecordedPreparationSession
 
     torch.manual_seed(19)
@@ -264,7 +264,7 @@ class _ResidualForward:
 def test_prepared_attention_residual_aot_restore_and_replay(tmp_path, tokens, streams, sources, add):
     from ignition.preparation.aot import aot_forward
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.inkling2.residual import PreparedResidualMix
+    from hyperflare_recipes.recipes.inkling2.residual import PreparedResidualMix
 
     torch.manual_seed(47)
     device = torch.device('cuda', 0)
@@ -311,11 +311,11 @@ def test_prepared_attention_residual_aot_restore_and_replay(tmp_path, tokens, st
 @pytest.mark.parametrize('projection_width', [3280, 3792])
 @torch.no_grad()
 def test_shared_attention_gate_and_value_norm_compiled_replay(tokens, projection_width):
-    from ignition.components.head_gate import PreparedHeadGate
-    from ignition.components.rms_norm import PreparedRMSNorm
+    from hyperflare_recipes.components.head_gate import PreparedHeadGate
+    from hyperflare_recipes.components.rms_norm import PreparedRMSNorm
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.inkling2.arithmetic import rms_norm
+    from hyperflare_recipes.recipes.inkling2.arithmetic import rms_norm
 
     torch.manual_seed(37)
     device = torch.device('cuda', 0)

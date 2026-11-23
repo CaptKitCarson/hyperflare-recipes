@@ -9,7 +9,7 @@ import pytest
 import torch
 
 from ignition import planning
-from ignition.recipes.inkling2 import bootstrap, decoder, recipe
+from hyperflare_recipes.recipes.inkling2 import bootstrap, decoder, recipe
 
 HOSTS = ("hertz", "maxwell", "ampere", "faraday")
 HIDDEN, LOCAL_VOCABULARY, DRAFT_BLOCK = 4608, 201024 // 4, 8
@@ -120,8 +120,8 @@ def test_remote_capacities_follow_thirty_two_requests_and_8192_token_chunks(monk
 @pytest.mark.parametrize("chain", [False, True])
 def test_remote_channels_share_one_roce_runtime_without_pcie(monkeypatch, drafting, chain):
     from ignition.components.collectives import packed_broadcast_layout
-    from ignition.components.vocabulary_logprobs import _SUMMARY
-    from ignition.components.vocabulary_sampling import SUMMARY_WORDS
+    from hyperflare_recipes.components.vocabulary_logprobs import _SUMMARY
+    from hyperflare_recipes.components.vocabulary_sampling import SUMMARY_WORDS
 
     config = bootstrap.PreparationConfig(devices=(0,) * 4, hosts=HOSTS, max_active=8, drafting=drafting,
                                          roce_chain=chain)

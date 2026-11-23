@@ -4,7 +4,7 @@ import os
 import pytest
 import torch
 
-from ignition.components.candidate_selector import PreparedCandidateSelector
+from hyperflare_recipes.components.candidate_selector import PreparedCandidateSelector
 from ignition.preparation.compilation import compile_forward
 
 pytestmark = pytest.mark.skipif(os.environ.get('FLARE_RUN_CUDA_TESTS') != '1', reason='requires assigned CUDA GPU')

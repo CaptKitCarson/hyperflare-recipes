@@ -19,7 +19,7 @@ pytestmark = pytest.mark.skipif(
 @pytest.mark.parametrize("support_cap", [16, 64])
 @torch.no_grad()
 def test_shortlist_matches_dense_native_replay(batch, vocab, prefix, compiled, top_k, support_cap):
-    from ignition.components.draft_sampling import PreparedDraftDistribution
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
     from ignition.components.sampling import DeviceRequestState, RUNNING
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.graphs import PreparedGraphBundle

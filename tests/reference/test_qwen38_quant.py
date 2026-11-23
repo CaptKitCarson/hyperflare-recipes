@@ -11,9 +11,9 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import PLE_PREFIX
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import PLE_PREFIX
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors,
     Nvfp4Projection,
     decode_csf_scales,
@@ -95,7 +95,7 @@ def test_nvfp4_activation_zero_underflow_and_finite_saturation():
 
 
 def test_nvfp4_midpoint_uses_rounded_reciprocal_metadata():
-    from ignition.reference.qwen38_quant import _nvfp4_activation_unscaled
+    from hyperflare_recipes.reference.qwen38_quant import _nvfp4_activation_unscaled
 
     values = torch.zeros((1, 16), dtype=torch.bfloat16)
     values[0, 0] = -.02685546875

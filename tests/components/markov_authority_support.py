@@ -11,15 +11,15 @@ import torch.distributed as dist
 
 
 def rank_main(rank, rendezvous, output):
-    from ignition.components.markov_sampling import PreparedMarkovProposals, PreparedDraftTokenBroadcast
-    from ignition.components.speculation import (
+    from hyperflare_recipes.components.markov_sampling import PreparedMarkovProposals, PreparedDraftTokenBroadcast
+    from hyperflare_recipes.components.speculation import (
         SpeculativeAcceptance,
         PreparedStochasticVerification,
         PreparedSpeculativeCommit,
         SpeculativeRngState,
         DRAFT_RNG_DOMAIN,
     )
-    from ignition.components.parallel_draft import PreparedParallelDraftRound
+    from hyperflare_recipes.components.parallel_draft import PreparedParallelDraftRound
     from ignition.components.sampling import DeviceRequestState, RequestAdmission, RUNNING, ERROR
     from ignition.components.completion import CompletionOutputs
     from ignition.preparation.collectives import CollectivePreparation, create_result_broadcast_runtime

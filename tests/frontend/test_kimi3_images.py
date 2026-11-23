@@ -22,14 +22,14 @@ def reference(tmp_path_factory):
     if not CHECKPOINT.is_dir():
         pytest.skip('Kimi K3 checkpoint is unavailable')
     from transformers.dynamic_module_utils import get_class_from_dynamic_module
-    from ignition.recipes.kimi3.tokenizer import convert
+    from hyperflare_recipes.recipes.kimi3.tokenizer import convert
     cls = get_class_from_dynamic_module('kimi_k3_vision_processing.KimiK3VisionProcessor', str(CHECKPOINT))
     processor = cls.from_pretrained(CHECKPOINT)
     assets = tmp_path_factory.mktemp('kimi3-assets')
     tokenizer = convert(CHECKPOINT)
     tokenizer.save(str(assets / 'tokenizer.json'))
     shutil.copyfile(CHECKPOINT / 'tokenizer_config.json', assets / 'tokenizer_config.json')
-    shutil.copyfile(ROOT / 'ignition/recipes/kimi3/assets/chat_template.jinja', assets / 'chat_template.jinja')
+    shutil.copyfile(ROOT / 'hyperflare_recipes/recipes/kimi3/assets/chat_template.jinja', assets / 'chat_template.jinja')
     subprocess.run(['cargo', 'build', '--quiet', '--manifest-path', str(ROOT / 'helios/Cargo.toml'),
         '--features', 'server,test-tools', '--bin', 'test_kimi3_images'], check=True)
     return processor, assets, tokenizer

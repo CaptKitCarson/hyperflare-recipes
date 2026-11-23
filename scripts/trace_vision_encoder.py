@@ -31,16 +31,16 @@ from transformers.vision_utils import (
     get_vision_position_ids,
 )
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import MODEL_ID, REVISION
-from ignition.recipes.qwen38.vision import (
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import MODEL_ID, REVISION
+from hyperflare_recipes.recipes.qwen38.vision import (
     PreparedVision,
     VisionMetadata,
     VisionScratch,
     VisionWeights,
 )
-from ignition.recipes.qwen38.weights import QwenWeightLoader
-from ignition.reference.qwen38_quant import quantize_mxfp8_activation
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.reference.qwen38_quant import quantize_mxfp8_activation
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -75,8 +75,8 @@ def provenance(manifest):
     source_root = Path(b12x.__file__).parent
     files = [ROOT / name for name in (
         "scripts/trace_vision_encoder.py", "tests/recipes/test_qwen38_vision.py",
-        "ignition/recipes/qwen38/vision.py", "ignition/components/linear.py",
-        "ignition/recipes/qwen38/weights.py", "ignition/reference/qwen38_quant.py",
+        "hyperflare_recipes/recipes/qwen38/vision.py", "ignition/components/linear.py",
+        "hyperflare_recipes/recipes/qwen38/weights.py", "ignition/reference/qwen38_quant.py",
     )]
     files += list(source_root.rglob("*.py")) + [Path(canonical.__file__)]
     return {

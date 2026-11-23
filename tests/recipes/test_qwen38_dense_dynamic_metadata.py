@@ -6,9 +6,9 @@
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.recurrent import DeltaMetadata
-from ignition.recipes.qwen38_dense.decoder import PreparedDecoder
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.recurrent import DeltaMetadata
+from hyperflare_recipes.recipes.qwen38_dense.decoder import PreparedDecoder
 
 
 @pytest.mark.parametrize("width", [1, 4])

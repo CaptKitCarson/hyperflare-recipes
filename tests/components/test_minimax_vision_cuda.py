@@ -8,12 +8,12 @@ import os
 import pytest
 import torch
 
-from ignition.components.linear import UnquantizedProjection
-from ignition.components.varlen_attention import PreparedVarlenAttention
+from hyperflare_recipes.components.linear import UnquantizedProjection
+from hyperflare_recipes.components.varlen_attention import PreparedVarlenAttention
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.minimax_m3.vision import axial_rope
+from hyperflare_recipes.recipes.minimax_m3.vision import axial_rope
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires an assigned GPU"

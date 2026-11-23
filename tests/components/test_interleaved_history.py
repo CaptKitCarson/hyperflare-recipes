@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from ignition.components.interleaved_history import validate_history
+from hyperflare_recipes.components.interleaved_history import validate_history
 
 
 def operands():
@@ -67,7 +67,7 @@ def test_history_transfer_rejects_invalid_metadata(field, value):
 
 
 def test_dependent_gather_declares_slab_read_and_output_write():
-    from ignition.components.peer_record_gather import _dependent_gather
+    from hyperflare_recipes.components.peer_record_gather import _dependent_gather
 
     schema = _dependent_gather._opoverload._schema
     arguments = {argument.name: argument for argument in schema.arguments}

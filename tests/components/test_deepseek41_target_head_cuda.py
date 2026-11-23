@@ -11,7 +11,7 @@ import json
 import pytest
 import torch
 
-from ignition.components.vocabulary import PreparedVocabularyProjection
+from hyperflare_recipes.components.vocabulary import PreparedVocabularyProjection
 from ignition.preparation.compilation import compile_forward
 from b12x.preparation import PreparationSession
 

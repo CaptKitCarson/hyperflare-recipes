@@ -10,12 +10,12 @@ import torch
 @pytest.mark.parametrize("replicated", [False, True])
 def test_registering_packed_rounds_preserves_the_graph_catalog(monkeypatch, replicated):
     from types import SimpleNamespace
-    from ignition.components import parallel_draft
+    from hyperflare_recipes.components import parallel_draft
     from ignition.components.capacity import parallel_speculative_shapes
     from ignition.preparation.execution import GraphSignature
-    from ignition.recipes.kimi3.bootstrap import _register_speculative_graphs
-    from ignition.recipes.kimi3.config import DSparkConfig
-    from ignition.recipes.kimi3.dspark import DraftForwards
+    from hyperflare_recipes.recipes.kimi3.bootstrap import _register_speculative_graphs
+    from hyperflare_recipes.recipes.kimi3.config import DSparkConfig
+    from hyperflare_recipes.recipes.kimi3.dspark import DraftForwards
 
     logits = torch.arange(7)
     draft = DraftForwards(None, None, lambda gather_rows=None: logits[:gather_rows], None)
@@ -57,7 +57,7 @@ def test_draft_result_preserves_every_block_position(recipe, batch):
     from importlib import import_module
     from types import SimpleNamespace
 
-    prepared = import_module(f"ignition.recipes.{recipe}.dspark").PreparedDraft
+    prepared = import_module(f"hyperflare_recipes.recipes.{recipe}.dspark").PreparedDraft
     draft = prepared.__new__(prepared)
     block, hidden, vocabulary = 7, 16, 32
     embedding = torch.nn.Embedding(vocabulary, hidden)
@@ -79,9 +79,9 @@ def test_draft_scratch_export_ranges():
     import ctypes
     from dataclasses import fields, is_dataclass
     from types import SimpleNamespace
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.disposable import storage_ranges
-    from ignition.recipes.kimi3.dspark import DraftScratch as DSparkScratch
+    from hyperflare_recipes.recipes.kimi3.dspark import DraftScratch as DSparkScratch
 
     config = SimpleNamespace(hidden=128, vocabulary=512, draft=SimpleNamespace(
         heads=2, kv_heads=1, head_dim=64, window=128, text={"intermediate_size": 256}))

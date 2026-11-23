@@ -36,8 +36,8 @@ class GuardedBuffers:
 
 class Selection:
     def __init__(self, rows, width, topk, device, session, radix=None):
-        from ignition.components.ordered_row_topk import PreparedOrderedRowTopK
-        from ignition.components.row_topk import PreparedRowTopK
+        from hyperflare_recipes.components.ordered_row_topk import PreparedOrderedRowTopK
+        from hyperflare_recipes.components.row_topk import PreparedRowTopK
 
         self.scores = torch.empty((rows, width), dtype=torch.float32, device=device)
         self.ids = torch.empty((rows, width), dtype=torch.int32, device=device)

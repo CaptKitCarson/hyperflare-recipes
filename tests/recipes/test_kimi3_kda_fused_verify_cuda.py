@@ -33,12 +33,12 @@ def _weights(device, generator):
 @torch.no_grad()
 @pytest.mark.parametrize("tokens", [1, 4, 8])
 def test_fused_verify_matches_three_launches(tokens):
-    from ignition.components.kda_speculation import KDARecords
-    from ignition.components.recurrent import DeltaMetadata, DeltaState
+    from hyperflare_recipes.components.kda_speculation import KDARecords
+    from hyperflare_recipes.components.recurrent import DeltaMetadata, DeltaState
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.kda import PreparedKDA
+    from hyperflare_recipes.recipes.kimi3.kda import PreparedKDA
 
     torch.cuda.set_device(0)
     device = torch.device("cuda:0")

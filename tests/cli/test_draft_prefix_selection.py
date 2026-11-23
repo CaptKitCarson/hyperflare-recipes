@@ -10,8 +10,8 @@ import pytest
 from ignition.cli import _parser, preparation, display
 from ignition.cli.config import Configuration
 from ignition.errors import UsageError
-from ignition.recipes import resolve
-from ignition.recipes.declaration import Speculation
+from hyperflare_recipes.recipes import resolve
+from ignition.declaration import Speculation
 
 
 DEFAULT = Speculation(7, token_capacity=128, packed_verification=True, draft_prefix_selection="gpu", graph_budget=64)

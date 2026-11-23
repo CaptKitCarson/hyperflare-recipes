@@ -93,7 +93,7 @@ def test_stage_copies_preserve_return_identity_and_do_not_retain_mutable_view():
 def test_hyperconnection_stage_trace_excludes_volatile_gate_workspace():
     from types import SimpleNamespace
 
-    from ignition.recipes.qwen38.hyperconnection import (
+    from hyperflare_recipes.recipes.qwen38.hyperconnection import (
         HyperconnectionScratch,
         PreparedHyperconnection,
     )

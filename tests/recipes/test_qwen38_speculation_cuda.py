@@ -15,8 +15,8 @@ from tests.components.completion_support import completion_outputs
 
 from ignition.components.sampling import FINISHED
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-from ignition.components.speculation import (
+from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+from hyperflare_recipes.components.speculation import (
     TARGET_RNG_DOMAIN,
     PreparedSpeculativeCommit,
     PreparedSpeculativeDistributions,
@@ -32,8 +32,8 @@ VOCAB = 248320
 @torch.no_grad()
 def test_compiled_commit_preserves_pooled_state_without_pool_copies():
     from ignition.preparation.compilation import compile_forward
-    from ignition.components.speculation import SpeculativeAcceptance
-    from ignition.recipes.qwen38.state import HybridStatePool
+    from hyperflare_recipes.components.speculation import SpeculativeAcceptance
+    from hyperflare_recipes.recipes.qwen38.state import HybridStatePool
 
     state, slots, epochs, live, inputs, records, frame, sequence = tensors(4, 2)
     pool = HybridStatePool.allocate(34, "cuda", speculative_tokens=7)

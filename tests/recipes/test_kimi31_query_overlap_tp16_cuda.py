@@ -87,14 +87,14 @@ def _rank(rank, directory, history_capacity, implementation, measure_latency):
 
     from ignition.preparation.capture import capture_forwards
     from b12x.comm.pcie.pcie_dcp_topk import PCIeDCPTopKOwnerExchange
-    from ignition.preparation.collectives import (CollectivePreparation, create_head_exchange,
-                                                 create_all_reduce_runtime)
+    from ignition.preparation.collectives import (CollectivePreparation, create_all_reduce_runtime)
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi31.attention import PreparedDSA
-    from ignition.recipes.kimi31.dcp import AttentionConstants, ContextParallel, ContextShards, RECORD_BYTES
+    from hyperflare_recipes.recipes.kimi31.attention import PreparedDSA
+    from hyperflare_recipes.recipes.kimi31.dcp import AttentionConstants, ContextParallel, ContextShards, RECORD_BYTES
 
     from ignition import runtime_patches
     runtime_patches.apply()

@@ -75,7 +75,7 @@ def test_ordinary_state_copy_and_reset_leave_draft_regions_untouched(device):
 @pytest.mark.parametrize("endpoint", [127, 128, 129, 130])
 @torch.no_grad()
 def test_excluded_partial_pages_survive_snapshot_and_restore(endpoint):
-    from ignition.components.paged_state import PagedStateStorage
+    from hyperflare_recipes.components.paged_state import PagedStateStorage
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.state import StateLayout
     from ignition.components.state_transfer import PreparedStateTransfer, StateCommands

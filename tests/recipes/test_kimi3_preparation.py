@@ -18,7 +18,7 @@ def config_type(request, monkeypatch):
     monkeypatch.setattr(torch.cuda, "_lazy_init", no_cuda)
     monkeypatch.setattr(torch.cuda, "device_count", lambda: 0)
     monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
-    return importlib.import_module(f"ignition.recipes.{request.param}.bootstrap").PreparationConfig
+    return importlib.import_module(f"hyperflare_recipes.recipes.{request.param}.bootstrap").PreparationConfig
 
 
 @pytest.mark.parametrize("capacity", [None, 0])

@@ -12,14 +12,14 @@ import torch
 
 from b12x.preparation import PreparationSession
 
-from ignition.components.compressed_mla import PreparedCompressedCacheWriter, PreparedCompressedMLA
-from ignition.components.paged_batch import Metadata
+from hyperflare_recipes.components.compressed_mla import PreparedCompressedCacheWriter, PreparedCompressedMLA
+from hyperflare_recipes.components.paged_batch import Metadata
 from ignition.components.state import gather_rows
-from ignition.components.window_indices import PreparedWindowIndices
+from hyperflare_recipes.components.window_indices import PreparedWindowIndices
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.deepseek4.attention import AttentionIndices
-from ignition.recipes.deepseek41.attention import AttentionIndices as DeepSeek41Indices
+from hyperflare_recipes.recipes.deepseek4.attention import AttentionIndices
+from hyperflare_recipes.recipes.deepseek41.attention import AttentionIndices as DeepSeek41Indices
 from tests.tensor_examples import TensorExamples
 from .test_window_indices import assert_metadata_equal, poison, set_metadata
 from .window_indices_reference import LiteralDeepSeek4WindowIndices, LiteralDeepSeek41WindowIndices

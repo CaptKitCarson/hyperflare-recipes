@@ -11,7 +11,7 @@ import weakref
 import pytest
 import torch
 
-from ignition.components.block_fp8 import BlockFP8Projection, BlockFP8Weight
+from hyperflare_recipes.components.block_fp8 import BlockFP8Projection, BlockFP8Weight
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.tuning import RecordedPreparationSession
 
@@ -40,7 +40,7 @@ def test_block_fp8_compiled_replay(rows, monkeypatch):
             return result
 
         with monkeypatch.context() as patch:
-            patch.setattr("ignition.components.block_fp8.per_token_group_quant_8bit", track_inputs)
+            patch.setattr("hyperflare_recipes.components.block_fp8.per_token_group_quant_8bit", track_inputs)
             session.tune()
         gc.collect()
         assert tuning_inputs and all(value() is None for value in tuning_inputs)

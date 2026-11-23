@@ -6,9 +6,9 @@
 import json
 import math
 import torch
-from ignition.components.markov_sampling import PreparedMarkovProposals
+from hyperflare_recipes.components.markov_sampling import PreparedMarkovProposals
 from ignition.components.sampling import DeviceRequestState, RUNNING
-from ignition.components.speculation import PreparedStochasticVerification, SpeculativeRngState, DRAFT_RNG_DOMAIN
+from hyperflare_recipes.components.speculation import PreparedStochasticVerification, SpeculativeRngState, DRAFT_RNG_DOMAIN
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 
@@ -45,7 +45,7 @@ def run(output, *, fp8=False, policy_names=None):
     embedding = torch.zeros((v, r), device="cuda", dtype=torch.bfloat16)
     head = torch.zeros_like(embedding)
     if fp8:
-        from ignition.components.markov_sampling import fp8_markov_head
+        from hyperflare_recipes.components.markov_sampling import fp8_markov_head
 
         head = fp8_markov_head(head)
     pending = torch.zeros(b, device="cuda", dtype=torch.int64)

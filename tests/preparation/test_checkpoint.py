@@ -12,11 +12,12 @@ from pathlib import Path
 
 import pytest
 
-from ignition.preparation import CheckpointError, inspect_qwen38_checkpoint
-from ignition.preparation import qwen38
-from ignition.preparation.checkpoint import (
-    _inspect_frontend_assets, _parse_json, _read_header, _validate_config, _validate_tensors,
+from ignition.preparation import CheckpointError
+from hyperflare_recipes.recipes.qwen38.checkpoint import (
+    _inspect_frontend_assets, _validate_config, _validate_tensors, inspect_qwen38_checkpoint,
 )
+from hyperflare_recipes.recipes.qwen38 import checkpoint_schema as qwen38
+from ignition.preparation.checkpoint import _parse_json, _read_header
 
 
 def _write_header(path, header, payload=b"\0\0\0\0"):

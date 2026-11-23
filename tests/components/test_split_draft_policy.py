@@ -8,7 +8,7 @@ from itertools import product
 
 import pytest
 
-from ignition.components.split_draft import allocate_draft_budget, causal_prefix, lagged_budget
+from hyperflare_recipes.components.split_draft import allocate_draft_budget, causal_prefix, lagged_budget
 
 
 def first_token_probability(selector):

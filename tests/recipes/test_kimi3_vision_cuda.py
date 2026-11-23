@@ -32,7 +32,7 @@ def test_checkpoint_vision(monkeypatch, tmp_path, n, h, w):
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.kimi3.vision import VisionWeights, VisionInputs, VisionScratch, PreparedVision
+    from hyperflare_recipes.recipes.kimi3.vision import VisionWeights, VisionInputs, VisionScratch, PreparedVision
 
     if not CHECKPOINT.is_dir():
         pytest.skip('Kimi K3 checkpoint is unavailable')
@@ -110,10 +110,10 @@ def test_checkpoint_vision(monkeypatch, tmp_path, n, h, w):
         torch.cuda.synchronize()
         torch.testing.assert_close(output, actual, atol=0, rtol=0)
         graph.reset()
-        from ignition.components.paged_batch import BatchInputs
+        from hyperflare_recipes.components.paged_batch import BatchInputs
         from ignition.components.sampling import DeviceRequestState
         from ignition.components.vision_state import PrefillVisionInputs, VisionState
-        from ignition.recipes.kimi3.vision_state import PreparedVisionGeneration
+        from hyperflare_recipes.recipes.kimi3.vision_state import PreparedVisionGeneration
 
         requests = DeviceRequestState.allocate(device, vocab_size=163840, capacity=2)
         batch = BatchInputs.allocate(n, 2, device, capacity=2)

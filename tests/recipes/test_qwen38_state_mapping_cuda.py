@@ -14,11 +14,11 @@ from tests.components.completion_support import completion_outputs
 
 from ignition.components.sampling import AdmissionBuffers
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.qwen38.attention import QSAState
-from ignition.recipes.qwen38.decoder_state import DecoderInputs
-from ignition.recipes.qwen38.maintenance import PreparedMaintenance
-from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-from ignition.recipes.qwen38.state import HybridStatePool, StateTransferMetadata
+from hyperflare_recipes.recipes.qwen38.attention import QSAState
+from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs
+from hyperflare_recipes.recipes.qwen38.maintenance import PreparedMaintenance
+from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+from hyperflare_recipes.recipes.qwen38.state import HybridStatePool, StateTransferMetadata
 
 
 @pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="explicit CUDA assignment required")

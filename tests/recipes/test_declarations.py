@@ -13,8 +13,8 @@ from types import SimpleNamespace
 import pytest
 
 from ignition import planning
-from ignition.recipes import resolve
-from ignition.recipes.declaration import Speculation
+from hyperflare_recipes.recipes import resolve
+from ignition.declaration import Speculation
 
 HUB = Path.home() / ".cache/huggingface/hub"
 QWEN = resolve("qwen3.8-flash")
@@ -31,7 +31,7 @@ def test_rectangular_recipe_defaults_prepare_bounded_speculative_coverage(alias,
 
     recipe = resolve(alias).recipe
     selected = recipe.speculation
-    config = import_module(f"ignition.recipes.{recipe.name}.bootstrap").PreparationConfig(
+    config = import_module(f"hyperflare_recipes.recipes.{recipe.name}.bootstrap").PreparationConfig(
         max_active=recipe.concurrency, speculative_widths=selected.widths,
         speculative_token_capacity=selected.token_capacity, **options)
     assert config.max_active == 32 and config.speculative_token_capacity == 128
@@ -49,7 +49,7 @@ def test_qwen_state_rows_and_pages_match_the_prepared_layouts(world_size):
     import torch
     from b12x.attention import qsa
 
-    from ignition.recipes.qwen38.state import HybridStateLayout
+    from hyperflare_recipes.recipes.qwen38.state import HybridStateLayout
 
     recipe = QWEN.recipe
     assert recipe.speculation == Speculation(draft_tokens=5, token_capacity=128) and recipe.max_draft_tokens == 7
@@ -81,7 +81,7 @@ def test_fp8_cache_views_and_planned_bytes(alias, world_size, drafting):
     from importlib import import_module
 
     import torch
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
 
     model = resolve(alias)
     if drafting and model.recipe.speculation is None:
@@ -89,11 +89,11 @@ def test_fp8_cache_views_and_planned_bytes(alias, world_size, drafting):
     snapshot = model.snapshot(HUB)
     if not (snapshot / "config.json").is_file():
         pytest.skip("checkpoint metadata is not installed")
-    prefix = f"ignition.recipes.{model.recipe.name}"
+    prefix = f"hyperflare_recipes.recipes.{model.recipe.name}"
     config = import_module(prefix + ".config").ModelConfig.load(snapshot)
     if drafting and model.recipe.name == "kimi3":
         from .test_kimi3 import DRAFT
-        from ignition.recipes.kimi3.config import DSparkConfig
+        from hyperflare_recipes.recipes.kimi3.config import DSparkConfig
 
         if not (DRAFT / "config.json").is_file():
             pytest.skip("Red Hat DSpark checkpoint metadata is not installed")
@@ -138,7 +138,7 @@ def test_fp8_cache_views_and_planned_bytes(alias, world_size, drafting):
 
 @pytest.mark.parametrize("world_size", [2, 4])
 def test_glm_state_rows_and_pages_match_the_continuation_pool(world_size):
-    from ignition.recipes.glm53.pool import continuation_layout
+    from hyperflare_recipes.recipes.glm53.pool import continuation_layout
 
     recipe = GLM.recipe
     assert recipe.speculation == Speculation(draft_tokens=5, token_capacity=128) and recipe.max_draft_tokens == 7
@@ -196,7 +196,7 @@ def fitted(model, gpus, **settings):
 @pytest.mark.parametrize("compile_forwards", [False, True])
 @pytest.mark.parametrize("concurrency", [1, 5, 32, 64])
 def test_qwen_adapter_configures_the_bootstrap_from_a_plan(monkeypatch, tmp_path, compile_forwards, concurrency):
-    from ignition.recipes.qwen38.state import HybridStateLayout
+    from hyperflare_recipes.recipes.qwen38.state import HybridStateLayout
 
     seen = {}
 
@@ -204,7 +204,7 @@ def test_qwen_adapter_configures_the_bootstrap_from_a_plan(monkeypatch, tmp_path
         seen.update(snapshot=snapshot, config=config, compile_decoder=compile_decoder)
         return "prepared"
 
-    monkeypatch.setattr("ignition.recipes.qwen38.bootstrap.prepare_model", prepare_model)
+    monkeypatch.setattr("hyperflare_recipes.recipes.qwen38.bootstrap.prepare_model", prepare_model)
     plan = fitted(QWEN, 1, concurrency=concurrency, reserve_bytes=2 << 30)
     assert QWEN.recipe.prepare(tmp_path, plan, compile_forwards=compile_forwards, kernel_cache=tmp_path / "kernels",
                                progress=None) == "prepared"
@@ -227,10 +227,10 @@ def test_qwen_adapter_configures_the_bootstrap_from_a_plan(monkeypatch, tmp_path
 
 
 def test_qwen_adapter_passes_speculation_overrides(monkeypatch, tmp_path):
-    from ignition.recipes.qwen38.state import HybridStateLayout
+    from hyperflare_recipes.recipes.qwen38.state import HybridStateLayout
 
     seen = []
-    monkeypatch.setattr("ignition.recipes.qwen38.bootstrap.prepare_model",
+    monkeypatch.setattr("hyperflare_recipes.recipes.qwen38.bootstrap.prepare_model",
                         lambda snapshot, config, *, progress, compile_decoder: seen.append(config))
 
     def configured(speculation):
@@ -258,7 +258,7 @@ GLM_TEMPLATE = {"text": "annotated template", "sha256": "0" * 64}
 def glm_template(monkeypatch):
     """Replace the GLM chat-template resolution that preparation performs before any rank starts."""
     calls = []
-    monkeypatch.setattr("ignition.recipes.glm53.frontend.chat_template_asset",
+    monkeypatch.setattr("hyperflare_recipes.recipes.glm53.frontend.chat_template_asset",
                         lambda snapshot, *, cache_dir=None: calls.append((snapshot, cache_dir)) or GLM_TEMPLATE)
     return calls
 
@@ -269,7 +269,7 @@ def test_glm_template_failure_stops_preparation_before_a_rank_group_starts(monke
     def offline(snapshot, *, cache_dir=None):
         raise FetchError("offline")
 
-    monkeypatch.setattr("ignition.recipes.glm53.frontend.chat_template_asset", offline)
+    monkeypatch.setattr("hyperflare_recipes.recipes.glm53.frontend.chat_template_asset", offline)
     monkeypatch.setattr("ignition.preparation.rank_group.prepare_group",
                         lambda *args, **options: pytest.fail("a rank group started"))
     for ranks in (1, 4):
@@ -304,8 +304,8 @@ def test_tensor_parallel_adapters_prepare_a_rank_group(monkeypatch, tmp_path, gl
     monkeypatch.setattr("ignition.preparation.rank_group.prepare_group",
                         lambda snapshot, config, prepare, *, progress, core_storage=None, ranks=None, checkpoint=None:
                         seen.append((config, prepare, ranks, checkpoint)) or "group")
-    from ignition.recipes.glm53 import bootstrap as glm
-    from ignition.recipes.qwen38 import bootstrap as qwen
+    from hyperflare_recipes.recipes.glm53 import bootstrap as glm
+    from hyperflare_recipes.recipes.qwen38 import bootstrap as qwen
 
     plan = fitted(QWEN, 2)
     assert QWEN.recipe.prepare(tmp_path, plan, compile_forwards=True, kernel_cache=None, progress=None) == "group"
@@ -345,7 +345,7 @@ def test_tensor_parallel_adapters_prepare_a_rank_group(monkeypatch, tmp_path, gl
     assert config.mtp is False and config.page_capacity == plan.minimum_pages
 
     # MiMo ranks on separate hosts also prepare on GPU 0 and receive the planned checkpoint.
-    from ignition.recipes.mimo_v2 import bootstrap as mimo
+    from hyperflare_recipes.recipes.mimo_v2 import bootstrap as mimo
 
     flash = resolve("mimo-v2.6-flash-rl")
     plan = fitted(flash, 2, concurrency=8)
@@ -386,7 +386,7 @@ def test_flash_checkpoint_declares_the_sizes_its_shards_divide():
 def test_checkpoint_costs_stay_within_the_recipe_sizes():
     from dataclasses import replace
 
-    from ignition.recipes.declaration import RankCosts
+    from ignition.declaration import RankCosts
 
     flash = resolve("mimo-v2.6-flash-rl")
     recipe, checkpoint = flash.recipe, flash.checkpoint
@@ -424,7 +424,7 @@ def test_adapters_carry_stream_overlap_into_the_preparation_config(monkeypatch, 
 @pytest.mark.parametrize("compression,expected", [(None, "csf"), ("csf", "csf"), ("native", None)])
 @pytest.mark.parametrize("drafting", [False, True])
 def test_deepseek41_native_checkpoint_and_scale_compression(monkeypatch, tmp_path, compression, expected, drafting):
-    from ignition.recipes.deepseek41.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig
 
     model = resolve("deepseek-v4.1-flash")
     assert model.checkpoint.repository == "deepseek-ai/DeepSeek-V4.1-Flash-1017"
@@ -501,7 +501,7 @@ def test_parallel_recipe_defaults_capture_ragged_rows_at_declared_width(alias, o
 
     recipe = resolve(alias).recipe
     selected = recipe.speculation
-    config = import_module(f"ignition.recipes.{recipe.name}.bootstrap").PreparationConfig(
+    config = import_module(f"hyperflare_recipes.recipes.{recipe.name}.bootstrap").PreparationConfig(
         max_active=recipe.concurrency, speculative_widths=selected.widths,
         speculative_token_capacity=selected.token_capacity,
         speculative_graph_budget=selected.graph_budget, **options)

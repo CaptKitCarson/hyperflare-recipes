@@ -15,7 +15,7 @@ KEY_HEADS, VALUE_HEADS, SLOTS = 16, 48, 6
 
 
 def _case(lengths, slots, fresh, tokens):
-    from ignition.components.recurrent import DeltaMetadata
+    from hyperflare_recipes.components.recurrent import DeltaMetadata
 
     generator = torch.Generator(device="cuda").manual_seed(sum(lengths) + len(lengths))
     mixed = (torch.randn((tokens, (2 * KEY_HEADS + VALUE_HEADS) * 128), generator=generator, device="cuda")
@@ -57,7 +57,7 @@ def _b12x(case, tokens):
                             max_state_slots=SLOTS, key_heads=KEY_HEADS, value_heads=VALUE_HEADS,
                             checkpoint_export=False, null_state_index=0, recurrence_policy="sequential_k1")
     plan = gdn_prefill.plan(caps, invocation=gdn_prefill.invocation_from_tensors(**args))
-    from ignition.components.recurrent import prepare_sequence_binding
+    from hyperflare_recipes.components.recurrent import prepare_sequence_binding
 
     original = state.clone()
     box = {}
@@ -104,8 +104,8 @@ def _fp64(case, lengths, slots, fresh):
 def test_chunked_prefill_matches_sequential_b12x(lengths, slots, fresh):
     from b12x.preparation import PreparationSession
 
-    from ignition.components.gdn_prefill_sm103 import PreparedGdnPrefill
-    from ignition.components.sm103 import is_sm103
+    from hyperflare_recipes.components.gdn_prefill_sm103 import PreparedGdnPrefill
+    from hyperflare_recipes.components.sm103 import is_sm103
 
     if not is_sm103("cuda"):
         pytest.skip("SM103 path")

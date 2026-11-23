@@ -30,7 +30,7 @@ class SeparateHistoryForward:
         self.attention, self.source = attention, source
 
     def __call__(self):
-        from ignition.recipes.kimi31.dcp import selection_slots, write_records
+        from hyperflare_recipes.recipes.kimi31.dcp import selection_slots, write_records
 
         op = self.attention
         op.project(self.source)
@@ -140,8 +140,8 @@ class RecordedAttentionTail:
 class WindowScores:
     def __init__(self, cache, *, session, arena, maximum):
         import torch
-        from ignition.components.fp8_indexer import PreparedFP8Indexer
-        from ignition.recipes.kimi31.indexer import SharedBuffers
+        from hyperflare_recipes.components.fp8_indexer import PreparedFP8Indexer
+        from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
 
         self.width = min(maximum, 131072)
         device = cache.device
@@ -207,21 +207,22 @@ def worker(rank, rendezvous, checkpoint, config_path, maximum):
     import torch
     import torch.distributed as dist
     from ignition import runtime_patches
-    from ignition.components.fp8_indexer import write_fp8_index_keys
-    from ignition.components.paged_batch import Metadata
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.shared_pages import SharedPages
+    from hyperflare_recipes.components.fp8_indexer import write_fp8_index_keys
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.shared_pages import SharedPages
     from ignition.preparation.capture import capture_forwards
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime, create_head_exchange
+    from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.bootstrap import REDUCE_ROWS, allocate_prefill_histories
-    from ignition.recipes.kimi3.weights import KimiWeightLoader
-    from ignition.recipes.kimi31.attention import PreparedDSA
-    from ignition.recipes.kimi31.dcp import AttentionConstants, ContextParallel, ContextShards
+    from hyperflare_recipes.recipes.kimi3.bootstrap import REDUCE_ROWS, allocate_prefill_histories
+    from hyperflare_recipes.recipes.kimi3.weights import KimiWeightLoader
+    from hyperflare_recipes.recipes.kimi31.attention import PreparedDSA
+    from hyperflare_recipes.recipes.kimi31.dcp import AttentionConstants, ContextParallel, ContextShards
     from ignition.cli.config import Configuration
 
 
@@ -479,7 +480,7 @@ if __name__ == "__main__":
     from ignition.cli.config import Configuration
     from ignition.cli.environment import apply
     from ignition.cli.preparation import Host
-    from ignition.recipes.kimi31.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
     import torch.multiprocessing as mp
 
     parser = argparse.ArgumentParser(description=__doc__)

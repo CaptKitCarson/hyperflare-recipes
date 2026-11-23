@@ -8,9 +8,9 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.vocabulary import PreparedVocabularyProjection
-from ignition.recipes.deepseek41.decoder import PreparedDecoder
-from ignition.recipes.deepseek41.bootstrap import PreparationConfig
+from hyperflare_recipes.components.vocabulary import PreparedVocabularyProjection
+from hyperflare_recipes.recipes.deepseek41.decoder import PreparedDecoder
+from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig
 
 
 class CpuProjection:
@@ -30,7 +30,7 @@ class CpuProjection:
 @pytest.mark.parametrize("batch,physical", PreparationConfig(max_active=4,
     speculative_widths=tuple(range(1, 9)), speculative_token_capacity=32).packed_speculative_shapes)
 def test_packed_head_factory_uses_disjoint_logical_local_output(monkeypatch, batch, physical):
-    monkeypatch.setattr("ignition.components.vocabulary.UnquantizedProjection", CpuProjection)
+    monkeypatch.setattr("hyperflare_recipes.components.vocabulary.UnquantizedProjection", CpuProjection)
     decoder = PreparedDecoder.__new__(PreparedDecoder)
     logical = batch * 8
     decoder.scratch = SimpleNamespace(hidden=torch.arange(logical * 4).reshape(logical, 4).bfloat16(),
@@ -53,7 +53,7 @@ def test_packed_head_factory_uses_disjoint_logical_local_output(monkeypatch, bat
 
 @pytest.mark.parametrize("invalid", ["dtype", "rows", "columns", "overlap"])
 def test_local_expansion_rejects_invalid_geometry_and_aliases(monkeypatch, invalid):
-    monkeypatch.setattr("ignition.components.vocabulary.UnquantizedProjection", CpuProjection)
+    monkeypatch.setattr("hyperflare_recipes.components.vocabulary.UnquantizedProjection", CpuProjection)
     source, weight = torch.zeros(2, 4), torch.zeros(3, 4)
     local = torch.empty(8, 3)
     output = torch.empty(8, 3)
@@ -76,7 +76,7 @@ def test_local_expansion_rejects_invalid_geometry_and_aliases(monkeypatch, inval
 def test_functional_head_uses_runtime_indices_and_preserves_bound_defaults(monkeypatch, gather, dynamic):
     import weakref
 
-    monkeypatch.setattr("ignition.components.vocabulary.UnquantizedProjection", CpuProjection)
+    monkeypatch.setattr("hyperflare_recipes.components.vocabulary.UnquantizedProjection", CpuProjection)
     source = torch.arange(8).reshape(2, 4).float()
     weight = torch.arange(12).reshape(3, 4).float()
     indices = torch.tensor([0, 1, 0, 1])

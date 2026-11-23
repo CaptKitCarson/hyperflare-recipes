@@ -22,7 +22,7 @@ def _rank(rank, world_size, rendezvous, rows, uneven=False):
     from b12x.preparation import PreparationSession
 
     from ignition.components.collectives import PreparedAllReduce
-    from ignition.components.linear import UnquantizedProjection
+    from hyperflare_recipes.components.linear import UnquantizedProjection
     from ignition.preparation.collectives import CollectivePreparation
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.graphs import PreparedGraphBundle

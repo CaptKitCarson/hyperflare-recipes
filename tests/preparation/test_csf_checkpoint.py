@@ -82,7 +82,7 @@ def test_container_rejects_unmapped_physical_tensor(tmp_path):
 
 
 def test_local_model_resolution_uses_container_metadata_and_checks_missing_shards(tmp_path):
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     declared = container(tmp_path)
     model = resolve(str(tmp_path))

@@ -25,14 +25,14 @@ def bf16_weight(weight):
 @pytest.mark.parametrize("quantized", [False, True])
 @torch.no_grad()
 def test_windowed_mla_checkpoint_and_replay(quantized):
-    from ignition.components.paged_batch import Metadata
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.config import DSparkConfig, ModelConfig
-    from ignition.recipes.kimi31.dflash import DraftAttention, DraftScratch, PreparedContext
-    from ignition.recipes.kimi31.dflash_weights import DraftWeights
+    from hyperflare_recipes.recipes.kimi3.config import DSparkConfig, ModelConfig
+    from hyperflare_recipes.recipes.kimi31.dflash import DraftAttention, DraftScratch, PreparedContext
+    from hyperflare_recipes.recipes.kimi31.dflash_weights import DraftWeights
 
     checkpoint = os.getenv("FLARE_KIMI31_DFLASH_CHECKPOINT")
     if checkpoint is None:

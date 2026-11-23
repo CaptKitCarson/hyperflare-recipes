@@ -9,9 +9,9 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.dspark import PreparedMarkov
-from ignition.components.embedding import PreparedEmbedding
-from ignition.components.markov_sampling import PreparedRowScaledFP8MarkovProjection, fp8_markov_head
+from hyperflare_recipes.components.dspark import PreparedMarkov
+from hyperflare_recipes.components.embedding import PreparedEmbedding
+from hyperflare_recipes.components.markov_sampling import PreparedRowScaledFP8MarkovProjection, fp8_markov_head
 from ignition.preparation.tuning import RecordedPreparationSession
 
 
@@ -27,7 +27,7 @@ def test_replicated_markov_head_on_a_tensor_parallel_rank(rows, quantization):
     torch.manual_seed(4101)
     head = torch.randn((129280, 256), device=device, dtype=torch.bfloat16) * .02
     if quantization:
-        from ignition.components.vocabulary import nvfp4_draft_head
+        from hyperflare_recipes.components.vocabulary import nvfp4_draft_head
 
         # Every block has the same maximum; all entries are exactly NVFP4-representable.
         values = torch.tensor([0, .5, 1, 1.5, 2, 3, 4, 6], device=device) / 32

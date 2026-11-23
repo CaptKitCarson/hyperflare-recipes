@@ -9,10 +9,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.window_indices import PreparedWindowIndices
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.window_indices import PreparedWindowIndices
 from ignition.preparation.execution import GraphSignature
-from ignition.recipes.deepseek41.contextual_tuning import CatalogLayerFixture
+from hyperflare_recipes.recipes.deepseek41.contextual_tuning import CatalogLayerFixture
 
 
 def catalog_layer(batch, tokens, width, mode, *, carry=False):

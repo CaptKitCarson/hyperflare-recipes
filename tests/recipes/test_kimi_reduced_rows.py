@@ -2,7 +2,7 @@
 """Map reduced attention and MLP outputs to the residual update that consumes them."""
 
 import pytest
-from ignition.recipes.kimi3.row_reductions import hidden_row_choices, RowGeometry
+from hyperflare_recipes.recipes.kimi3.row_reductions import hidden_row_choices, RowGeometry
 
 
 def test_layer_consumers_write_the_numbered_block_and_dspark_tap():
@@ -26,7 +26,7 @@ def test_compiler_workers_receive_operands_and_handles_without_cuda_resources(ge
     from types import SimpleNamespace
     from cuda.bindings.driver import CUstream
     from ignition.preparation.forward_metadata import dumps, loads
-    from ignition.recipes.kimi3.row_reductions import (
+    from hyperflare_recipes.recipes.kimi3.row_reductions import (
         RowReductionChoice,
         _BINDINGS,
         _PreparedTrial,

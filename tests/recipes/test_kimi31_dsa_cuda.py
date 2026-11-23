@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @pytest.mark.parametrize("local", [False, True])
 def test_selected_records_compact_causal_interleaved_owners(local):
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.kimi31.dcp import TOPK, ContextShards, index_pages, pack_candidates, selection_slots
+    from hyperflare_recipes.recipes.kimi31.dcp import TOPK, ContextShards, index_pages, pack_candidates, selection_slots
 
     device = torch.device("cuda", 0)
     shards = ContextShards.on(7, 16, device)
@@ -71,7 +71,7 @@ def _identity_fp8_reference(value, *, power_of_two):
 
 @torch.no_grad()
 def test_fp8_top2048_scores_and_inactive_rows():
-    from ignition.components.fp8_indexer import PreparedFP8Indexer
+    from hyperflare_recipes.components.fp8_indexer import PreparedFP8Indexer
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import GraphBufferPool, ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
@@ -176,13 +176,13 @@ def test_fp8_top2048_scores_and_inactive_rows():
 @torch.no_grad()
 def test_candidate_fold_and_selected_peer_records_match_dense_reference():
     from b12x.attention import dense_mla
-    from ignition.components.dense_mla import PreparedDenseMLA
-    from ignition.components.peer_record_gather import PreparedPeerRecordGather
-    from ignition.components.row_topk import PreparedRowTopK
+    from hyperflare_recipes.components.dense_mla import PreparedDenseMLA
+    from hyperflare_recipes.components.peer_record_gather import PreparedPeerRecordGather
+    from hyperflare_recipes.components.row_topk import PreparedRowTopK
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi31.dcp import TOPK, ContextShards, selection_slots
+    from hyperflare_recipes.recipes.kimi31.dcp import TOPK, ContextShards, selection_slots
 
     device = torch.device("cuda", 0)
     torch.manual_seed(1307)
@@ -254,12 +254,12 @@ def test_candidate_fold_and_selected_peer_records_match_dense_reference():
 @pytest.mark.parametrize("eps", [1e-6, 1e-5])
 @torch.no_grad()
 def test_index_projections_layernorm_and_prefill_slice_boundary(compile_projection, eps):
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi31.dcp import ContextShards
-    from ignition.recipes.kimi31.indexer import PreparedDSAIndexer
+    from hyperflare_recipes.recipes.kimi31.dcp import ContextShards
+    from hyperflare_recipes.recipes.kimi31.indexer import PreparedDSAIndexer
 
     device = torch.device("cuda", 0)
     torch.manual_seed(3181)
@@ -367,12 +367,13 @@ def _cache_barrier_peer_read_rank(rank, rendezvous, world, rows):
     import torch.distributed as dist
 
     from ignition.components.collectives import PreparedAllGather
-    from ignition.components.peer_record_gather import PreparedPeerRecordGather
-    from ignition.preparation.collectives import CollectivePreparation, create_head_exchange
+    from hyperflare_recipes.components.peer_record_gather import PreparedPeerRecordGather
+    from ignition.preparation.collectives import CollectivePreparation
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi31.dcp import RECORD_BYTES, TOPK, write_records
+    from hyperflare_recipes.recipes.kimi31.dcp import RECORD_BYTES, TOPK, write_records
 
     local_records = 128
     torch.cuda.set_device(rank)
@@ -463,14 +464,14 @@ def test_compiled_cache_write_precedes_candidate_barrier_and_peer_read(tmp_path,
 @torch.no_grad()
 def test_selected_attention_constants_survive_disposable_scratch_reset():
     from b12x.attention import dense_mla
-    from ignition.components.dense_mla import PreparedDenseMLA
-    from ignition.components.peer_record_gather import PreparedPeerRecordGather
+    from hyperflare_recipes.components.dense_mla import PreparedDenseMLA
+    from hyperflare_recipes.components.peer_record_gather import PreparedPeerRecordGather
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.disposable import storage_ranges
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi31.dcp import AttentionConstants, PREFILL_ROWS, RECORD_BYTES, TOPK
-    from ignition.recipes.kimi31.indexer import SharedBuffers
+    from hyperflare_recipes.recipes.kimi31.dcp import AttentionConstants, PREFILL_ROWS, RECORD_BYTES, TOPK
+    from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
 
     device = torch.device("cuda", 0)
     torch.manual_seed(3147)
@@ -585,13 +586,13 @@ def test_selected_attention_constants_survive_disposable_scratch_reset():
 def test_inactive_local_dsa_stage_replay_with_overwritten_workspace(stage):
     """Inactive rows preserve cache bytes and clear selections, records, and attention outputs."""
     from b12x.attention import dense_mla
-    from ignition.components.dense_mla import PreparedDenseMLA
-    from ignition.components.fp8_indexer import PreparedFP8Indexer
-    from ignition.components.peer_record_gather import PreparedPeerRecordGather
-    from ignition.components.row_topk import PreparedRowTopK
+    from hyperflare_recipes.components.dense_mla import PreparedDenseMLA
+    from hyperflare_recipes.components.fp8_indexer import PreparedFP8Indexer
+    from hyperflare_recipes.components.peer_record_gather import PreparedPeerRecordGather
+    from hyperflare_recipes.components.row_topk import PreparedRowTopK
     from ignition.preparation.scratch import GraphBufferPool, ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi31.dcp import (
+    from hyperflare_recipes.recipes.kimi31.dcp import (
         AttentionConstants, ContextShards, PREFILL_ROWS, RECORD_BYTES, TOPK, selection_slots,
     )
 
@@ -697,8 +698,8 @@ def test_inactive_local_dsa_stage_replay_with_overwritten_workspace(stage):
 
 @torch.no_grad()
 def test_bf16_head_gate_rounding_and_normalized_fp8_weights_under_replay():
-    from ignition.components.fp8_indexer import PreparedFP8Indexer
-    from ignition.components.linear import UnquantizedProjection
+    from hyperflare_recipes.components.fp8_indexer import PreparedFP8Indexer
+    from hyperflare_recipes.components.linear import UnquantizedProjection
     from ignition.preparation.scratch import GraphBufferPool, ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
 
@@ -777,7 +778,7 @@ def test_bf16_head_gate_rounding_and_normalized_fp8_weights_under_replay():
 def test_mla_query_and_latent_norm_use_configured_epsilon(eps):
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.attention import PreparedMLAProjection
+    from hyperflare_recipes.recipes.kimi3.attention import PreparedMLAProjection
 
     device = torch.device("cuda", 0)
     rows, hidden, heads, query_width = 3, 7168, 6, 1536

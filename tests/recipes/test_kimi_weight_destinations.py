@@ -9,12 +9,12 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import weights as common
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components import weights as common
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation import persistent
-from ignition.recipes.kimi3 import weights
-from ignition.recipes.kimi3.residual import score_weight
-from ignition.recipes.kimi31 import dspark_weights
+from hyperflare_recipes.recipes.kimi3 import weights
+from hyperflare_recipes.recipes.kimi3.residual import score_weight
+from hyperflare_recipes.recipes.kimi31 import dspark_weights
 
 
 class CopySession:

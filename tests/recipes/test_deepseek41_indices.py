@@ -6,9 +6,9 @@
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.recipes.deepseek41.attention import AttentionIndices
-from ignition.recipes.deepseek41.decoder_prefill import PreparedDecoderSuffix
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.recipes.deepseek41.attention import AttentionIndices
+from hyperflare_recipes.recipes.deepseek41.decoder_prefill import PreparedDecoderSuffix
 
 
 def set_metadata(metadata, starts, lengths):

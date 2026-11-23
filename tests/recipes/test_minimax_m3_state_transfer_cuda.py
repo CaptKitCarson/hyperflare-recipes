@@ -10,11 +10,11 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.components.sampling import DeviceRequestState
 from ignition.components.state_transfer import PreparedStateTransfer, StateCommands
-from ignition.recipes.minimax_m3.config import ModelConfig
-from ignition.recipes.minimax_m3.pool import ContinuationPool
+from hyperflare_recipes.recipes.minimax_m3.config import ModelConfig
+from hyperflare_recipes.recipes.minimax_m3.pool import ContinuationPool
 
 from .test_minimax_m3 import configuration
 

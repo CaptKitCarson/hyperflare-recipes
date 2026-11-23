@@ -23,7 +23,7 @@ def reference():
     if not CHECKPOINT.is_dir():
         pytest.skip('Kimi K3 checkpoint is not installed')
     import tiktoken
-    from ignition.recipes.kimi3.tokenizer import PATTERN, _Converter, convert
+    from hyperflare_recipes.recipes.kimi3.tokenizer import PATTERN, _Converter, convert
 
     spec = importlib.util.spec_from_file_location('kimi3_reference_encoding', CHECKPOINT / 'encoding_k3.py')
     module = importlib.util.module_from_spec(spec)
@@ -58,7 +58,7 @@ def test_native_xtml_matches_checkpoint(reference, tmp_path, annotated):
         pytest.skip('build test_frontend with frontend,test-tools features')
     tokenizer.save(str(tmp_path / 'tokenizer.json'))
     shutil.copyfile(CHECKPOINT / 'tokenizer_config.json', tmp_path / 'tokenizer_config.json')
-    template = (ROOT / 'ignition/recipes/kimi3/assets/chat_template.jinja').read_text()
+    template = (ROOT / 'hyperflare_recipes/recipes/kimi3/assets/chat_template.jinja').read_text()
     if not annotated:
         template = template.replace('{%- mark ns.segments | length -%}', '')
     (tmp_path / 'chat_template.jinja').write_text(template)

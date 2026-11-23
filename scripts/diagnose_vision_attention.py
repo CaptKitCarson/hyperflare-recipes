@@ -28,9 +28,9 @@ from transformers.vision_utils import (
     get_vision_interpolation_indices_and_weights, get_vision_position_ids,
 )
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import MODEL_ID, REVISION
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import MODEL_ID, REVISION
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors, decode_mxfp8, decode_nvfp4, quantize_mxfp8_activation,
     read_nvfp4_projection,
 )

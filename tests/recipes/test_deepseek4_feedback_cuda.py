@@ -8,8 +8,8 @@ import os
 import pytest
 import torch
 
-from ignition.components.dspark import PreparedFeedbackCapture
-from ignition.components.paged_batch import Metadata
+from hyperflare_recipes.components.dspark import PreparedFeedbackCapture
+from hyperflare_recipes.components.paged_batch import Metadata
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 

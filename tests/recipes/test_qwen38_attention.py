@@ -12,19 +12,19 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.preparation import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.preparation.qwen38 import TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TEXT_PREFIX
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.qwen38.attention import (
+from hyperflare_recipes.recipes.qwen38.attention import (
     PreparedAttention,
     QSAMetadata,
     QSAScratch,
     QSAState,
     RotaryTables,
 )
-from ignition.recipes.qwen38.weights import QwenWeightLoader
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors,
     decode_mxfp8,
     quantize_mxfp8_activation,

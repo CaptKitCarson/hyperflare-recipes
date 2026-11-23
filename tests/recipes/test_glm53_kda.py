@@ -12,16 +12,16 @@ import pytest
 import torch
 from cuda.bindings import driver as cuda
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.recurrent import DeltaMetadata, DeltaState
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.recurrent import DeltaMetadata, DeltaState
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.execution import GraphSignature, PreparedExecution
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.glm53.kda import KDAScratch, PreparedGlmKDA
-from ignition.recipes.glm53.model import create_model_tree
-from ignition.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
+from hyperflare_recipes.recipes.glm53.kda import KDAScratch, PreparedGlmKDA
+from hyperflare_recipes.recipes.glm53.model import create_model_tree
+from hyperflare_recipes.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
 
 
 def runs_concurrently(graph):

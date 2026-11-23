@@ -23,7 +23,7 @@ from transformers.vision_utils import (
     get_vision_position_ids,
 )
 
-from ignition.preparation.qwen38 import FRONTEND_SHA256, MODEL_ID, REVISION, TRANSFORMERS_VERSION, require_transformers_version
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import FRONTEND_SHA256, MODEL_ID, REVISION, TRANSFORMERS_VERSION, require_transformers_version
 
 
 TORCH_COMMIT = "cf30153c4c131c8164ee7798e5022d810682e2cb"

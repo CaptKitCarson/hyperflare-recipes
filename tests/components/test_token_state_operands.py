@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.token_state import PreparedTokenState
+from hyperflare_recipes.components.token_state import PreparedTokenState
 
 
 @pytest.mark.parametrize("dynamic", [False, True])

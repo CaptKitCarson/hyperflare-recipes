@@ -10,10 +10,10 @@ from pathlib import Path
 
 import pytest
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-from ignition.recipes.muse_spark.config import ModelConfig
-from ignition.recipes.muse_spark.draft_config import DraftConfig, REVISION
+from hyperflare_recipes.recipes.muse_spark.config import ModelConfig
+from hyperflare_recipes.recipes.muse_spark.draft_config import DraftConfig, REVISION
 
 CACHE = Path('/data/cache/huggingface/hub')
 TARGET = CACHE / 'models--meta-models--Muse-Spark-Open-816B-A42B-NVFP4/snapshots/4239e4db19376904f2e82c167e78f70abb5455fe'
@@ -59,7 +59,7 @@ def test_incompatible_projector_rejected(config, key, value):
 
 
 def test_tensor_metadata_checked_before_loading(config):
-    from ignition.recipes.muse_spark.draft_weights import validate_metadata
+    from hyperflare_recipes.recipes.muse_spark.draft_weights import validate_metadata
     manifest = inspect_indexed_checkpoint(DRAFT)
     validate_metadata(manifest, config.draft)
     for shape, dtype in [((1, 8192), 'BF16'), ((8192, 40960), 'F32')]:
@@ -77,7 +77,7 @@ def test_tensor_metadata_checked_before_loading(config):
 def test_checkpoint_shards_and_replicated_weights(config):
     import torch
     from safetensors import safe_open
-    from ignition.recipes.muse_spark.draft_weights import DraftWeights
+    from hyperflare_recipes.recipes.muse_spark.draft_weights import DraftWeights
 
     rank = 3
     weights = DraftWeights.load(DRAFT, config.draft, torch.device('cuda:0'), TensorParallelShard(rank, 8))

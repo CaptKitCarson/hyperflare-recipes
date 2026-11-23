@@ -8,7 +8,7 @@ import pytest
 from ignition import planning
 from ignition.cli import _parser, preparation
 from ignition.errors import UsageError
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 
 
 ALIAS = "muse-spark-open-nvfp4"

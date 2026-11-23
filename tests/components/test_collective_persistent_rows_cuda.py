@@ -116,7 +116,7 @@ def _layer_handoff_rank(rank, world, rendezvous):
     from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.minimax_m3.decoder import PreparedDecoderLayer
+    from hyperflare_recipes.recipes.minimax_m3.decoder import PreparedDecoderLayer
 
     class ReferenceBranch(torch.nn.Module):
         def __init__(self, output, observed, *, attention):

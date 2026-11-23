@@ -42,9 +42,9 @@ def test_result_broadcast_channel_uses_captured_payloads(
         monkeypatch, batches, offsets, payload_bytes, transport_rows):
     import torch
 
-    from ignition.components.draft_sampling import PreparedDraftDistribution
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
     from ignition.components.collectives import packed_broadcast_layout
-    from ignition.components.speculation import SpeculativeAcceptance
+    from hyperflare_recipes.components.speculation import SpeculativeAcceptance
     from ignition.preparation import collectives
 
     catalog = SimpleNamespace(batch_capacities=batches, request_capacity=64)

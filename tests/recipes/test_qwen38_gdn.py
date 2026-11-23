@@ -13,17 +13,17 @@ import pytest
 import torch
 import torch.nn.functional as F
 
-from ignition.components.recurrent import DeltaMetadata
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import TEXT_PREFIX
-from ignition.components.gated_delta import (
+from hyperflare_recipes.components.recurrent import DeltaMetadata
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TEXT_PREFIX
+from hyperflare_recipes.components.gated_delta import (
     GDNScratch,
     GDNState,
     PreparedGDN,
     _validate_geometry,
 )
-from ignition.recipes.qwen38.weights import QwenWeightLoader
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors,
     decode_mxfp8,
     quantize_mxfp8_activation,
@@ -39,7 +39,7 @@ PROJECTIONS = ("in_proj_qkv", "in_proj_z", "in_proj_a", "in_proj_b", "out_proj")
 
 @pytest.mark.parametrize("chunked", [False, True])
 def test_gdn_chunked_prefill_storage_follows_execution_path(monkeypatch, chunked):
-    from ignition.components import sm103
+    from hyperflare_recipes.components import sm103
 
     monkeypatch.setattr(sm103, "is_sm103", lambda device: chunked)
     scratch = GDNScratch.allocate(4096, torch.device("meta"))

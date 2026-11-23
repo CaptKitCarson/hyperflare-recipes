@@ -22,11 +22,11 @@ class SelectedHistory:
     def __init__(self, *, cache, direct_peers, stage, output, signals, rows, maximum,
                  runtime, coordinator, session, arena, device, name="fixture"):
         from b12x.attention import dense_mla
-        from ignition.components.dense_mla import PreparedDenseMLA
+        from hyperflare_recipes.components.dense_mla import PreparedDenseMLA
         from ignition.components.collectives import PreparedAllReduce
-        from ignition.components.interleaved_history import PreparedInterleavedHistory
-        from ignition.components.peer_record_gather import PreparedPeerRecordGather
-        from ignition.recipes.kimi3.dcp import ContextShards
+        from hyperflare_recipes.components.interleaved_history import PreparedInterleavedHistory
+        from hyperflare_recipes.components.peer_record_gather import PreparedPeerRecordGather
+        from hyperflare_recipes.recipes.kimi3.dcp import ContextShards
 
         rank = coordinator.ranks.index(torch.distributed.get_rank())
         self.shards = ContextShards.on(rank, WORLD, device)
@@ -79,7 +79,7 @@ class SelectedHistory:
             dependencies=(output, self.transfer.completed))
 
     def write_current(self):
-        from ignition.recipes.kimi3.dcp import write_records
+        from hyperflare_recipes.recipes.kimi3.dcp import write_records
 
         table = self.table[None].expand(self.rows, -1)
         current_slots = self.shards.token_slots(self.positions, table)
@@ -87,7 +87,7 @@ class SelectedHistory:
 
     def run_variant(self, staged):
         """Use one record buffer, attention plan and scratch for either timed path."""
-        from ignition.recipes.kimi31.dcp import selection_slots
+        from hyperflare_recipes.recipes.kimi31.dcp import selection_slots
 
         table = self.table[None].expand(self.rows, -1)
         owners, slots, counts, direct_gather, attention, attended = self.parts[0]
@@ -107,7 +107,7 @@ class SelectedHistory:
         return target
 
     def __call__(self):
-        from ignition.recipes.kimi31.dcp import selection_slots
+        from hyperflare_recipes.recipes.kimi31.dcp import selection_slots
 
         table = self.table[None].expand(self.rows, -1)
         self.write_current()
@@ -161,7 +161,7 @@ def _benchmark_rank(rank, rendezvous, destination, pairs, seeds):
     from ignition import runtime_patches
     runtime_patches.apply()
     import torch.distributed as dist
-    from ignition.components.shared_pages import SharedPages
+    from hyperflare_recipes.components.shared_pages import SharedPages
     from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.core_storage import CoreStorage

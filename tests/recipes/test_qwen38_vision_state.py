@@ -14,8 +14,8 @@ import torch
 from tests.components.completion_support import completion_outputs
 
 from tests.tensor_examples import TensorExamples
-from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-from ignition.recipes.qwen38.vision_state import (
+from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+from hyperflare_recipes.recipes.qwen38.vision_state import (
     PreparedEmbeddingInjection,
     PreparedVisionHandoff,
     VisionFeatureState,
@@ -199,7 +199,7 @@ def test_native_vision_handoff_append_epoch_validation_and_completion(compiled):
 @pytest.mark.parametrize("compiled", [False, True])
 @torch.no_grad()
 def test_native_embedding_injection_precedes_gather_and_model_mutation(capacity, compiled):
-    from ignition.components.token_state import PreparedTokenState
+    from hyperflare_recipes.components.token_state import PreparedTokenState
     from ignition.preparation.graphs import PreparedGraphBundle
 
     device = _device()

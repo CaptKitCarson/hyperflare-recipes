@@ -36,7 +36,7 @@ def test_native_message_anchor_survives_reasoning_history(directory, variable, r
     ], text=True))["target_directory"]
     tokenizer = AutoTokenizer.from_pretrained(snapshot, local_files_only=True)
     annotated = annotated_template_asset((snapshot / "chat_template.jinja").read_bytes(),
-        ROOT / f"ignition/recipes/{recipe}/assets/chat_template.patch.json")["text"]
+        ROOT / f"hyperflare_recipes/recipes/{recipe}/assets/chat_template.patch.json")["text"]
     marker = "\0message-position\0"
     marked_template = _compile_jinja_template(
         annotated.replace("{%- mark -%}", "{{- message_position() -}}"))

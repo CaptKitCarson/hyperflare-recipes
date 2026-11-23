@@ -21,7 +21,7 @@ from ignition.preparation.execution import GraphSignature
     ("deepseek41", 128, 0, None), ("deepseek4", 128, 0, None), ("mimo_v2", 128, 0, 1),
 ])
 def test_recipe_declares_sources_storage_cursors_and_frontend(recipe, page, lag, rows):
-    module = importlib.import_module(f"ignition.recipes.{recipe}.contract")
+    module = importlib.import_module(f"hyperflare_recipes.recipes.{recipe}.contract")
     signatures = {kind: GraphSignature(kind, 1, 4 if kind == "speculative" else 1,
         tuple(c.text_inputs(kind)), speculation_enabled=kind == "speculative")
         for kind in ("init", "restore", "snapshot", "prefill", "decode", "resume", "speculative")}
@@ -54,7 +54,7 @@ def test_recipe_declares_sources_storage_cursors_and_frontend(recipe, page, lag,
 
 
 def test_device_pending_token_has_read_and_producer_declarations():
-    module = importlib.import_module("ignition.recipes.qwen38.contract")
+    module = importlib.import_module("hyperflare_recipes.recipes.qwen38.contract")
     pool = SimpleNamespace(layout=SimpleNamespace(row_bytes=32, region=lambda _: SimpleNamespace(offset=0, nbytes=8)))
     signatures = {kind: GraphSignature(kind, 1, 1, tuple(c.text_inputs(kind))) for kind in ("init", "restore", "prefill", "decode")}
     value = module.prepare(signatures, {"page_tables": None}, pool, page_tokens=64, draft_lag=None)
@@ -66,7 +66,7 @@ def test_device_pending_token_has_read_and_producer_declarations():
 
 
 def test_glm_vision_uses_shared_feature_bindings_and_preserves_text_only_contract():
-    from ignition.recipes.glm53.contract import prepare
+    from hyperflare_recipes.recipes.glm53.contract import prepare
 
     pool = SimpleNamespace(layout=SimpleNamespace(row_bytes=32, region=lambda _: SimpleNamespace(offset=0, nbytes=8)))
     text = {"prefill": GraphSignature("prefill", 1, 128,
@@ -100,7 +100,7 @@ def test_history_plane_registers_actual_row_geometry():
 
 def test_unknown_packing_fields_do_not_acquire_sources_from_model_identity():
     pool = SimpleNamespace(layout=SimpleNamespace(row_bytes=32, region=lambda _: SimpleNamespace(offset=0, nbytes=8)))
-    module = importlib.import_module("ignition.recipes.glm53.contract")
+    module = importlib.import_module("hyperflare_recipes.recipes.glm53.contract")
     value = module.prepare({"decode": GraphSignature("decode", 1, 1, ("token_ids", "unused_scratch"))},
         {}, pool, page_tokens=256, draft_lag=None)
     assert value["graphs"][0]["inputs"] == []
@@ -109,8 +109,8 @@ def test_unknown_packing_fields_do_not_acquire_sources_from_model_identity():
 
 def test_dense_qwen_preserves_device_decode_and_page_storage_in_typed_contract():
     import torch
-    from ignition.components.paged_batch import BatchInputs
-    from ignition.recipes.qwen38_dense.contract import prepare
+    from hyperflare_recipes.components.paged_batch import BatchInputs
+    from hyperflare_recipes.recipes.qwen38_dense.contract import prepare
 
     inputs = BatchInputs.allocate(128, 2, "cpu", capacity=4)
     buffers = inputs.buffers()
@@ -139,7 +139,7 @@ def test_dense_qwen_preserves_device_decode_and_page_storage_in_typed_contract()
 
 
 def test_prompt_scoring_is_an_additive_catalog_and_serialization_contract():
-    from ignition.components.prompt_logprobs import prefill_graph_count, prefill_modes, scored_prefill_capacities
+    from hyperflare_recipes.components.prompt_logprobs import prefill_graph_count, prefill_modes, scored_prefill_capacities
     from ignition.components.capacity import prefill_capacities
 
     prefills = prefill_capacities(4096)

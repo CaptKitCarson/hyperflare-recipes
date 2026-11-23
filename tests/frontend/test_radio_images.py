@@ -33,7 +33,7 @@ def reference():
     ([(1600, 101)], "RGB", "png"), ([(2048, 1024)], "RGB", "png"), ([(83, 127)], "RGBA", "png"),
     ([(149, 31)], "L", "png"), ([(503, 701), (149, 31)], "RGB", "png"), ([(512, 512)], "RGB", "jpeg")])
 def test_native_radio_images(reference, tmp_path, sizes, mode, format):
-    from ignition.recipes.nemotron_h.contract import FRONTEND, VISION
+    from hyperflare_recipes.recipes.nemotron_h.contract import FRONTEND, VISION
     processor, tokenizer = reference
     images, inputs = [], []
     for i, (width, height) in enumerate(sizes):

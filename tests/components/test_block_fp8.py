@@ -10,8 +10,8 @@ import torch
 from b12x.gemm import blockscaled
 from torch._subclasses.fake_tensor import FakeTensorMode
 
-from ignition.components.block_fp8 import BlockFP8Projection, BlockFP8Weight
-from ignition.components.block_fp8_sm103 import plan as sm103_plan
+from hyperflare_recipes.components.block_fp8 import BlockFP8Projection, BlockFP8Weight
+from hyperflare_recipes.components.block_fp8_sm103 import plan as sm103_plan
 
 
 @pytest.mark.parametrize("sm103, rows", [(False, 4), (True, 4), (True, 33)])

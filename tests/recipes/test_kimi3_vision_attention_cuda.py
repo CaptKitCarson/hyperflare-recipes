@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.recipes.kimi3.vision import PATCH_CAPACITIES, _Attention
+from hyperflare_recipes.recipes.kimi3.vision import PATCH_CAPACITIES, _Attention
 
 
 @pytest.mark.skipif(

@@ -157,7 +157,7 @@ class _ScratchArenaAudit:
                 self.plan_owners(f"{name}.variant.{capacity}", child)
 
     def projection(self, name, projection):
-        from ignition.components.linear import UnquantizedProjection, QuantizedProjection
+        from hyperflare_recipes.components.linear import UnquantizedProjection, QuantizedProjection
 
         memory = projection.plan.memory_requirements()
         if isinstance(projection, QuantizedProjection):
@@ -226,9 +226,9 @@ class _ScratchArenaAudit:
 def verify_prepared_scratch_arena(model, decoders, owners, evidence):
     """Check every Qwen operator's final scratch bindings before parity reset."""
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38.attention import PreparedAttention
-    from ignition.recipes.qwen38.gdn import PreparedGDN
-    from ignition.recipes.qwen38.vision import PreparedVision
+    from hyperflare_recipes.recipes.qwen38.attention import PreparedAttention
+    from hyperflare_recipes.recipes.qwen38.gdn import PreparedGDN
+    from hyperflare_recipes.recipes.qwen38.vision import PreparedVision
 
     arenas = [owner for owner in model._resources if isinstance(owner, ScratchArena)]
     if len(arenas) != 1:
@@ -316,7 +316,7 @@ def verify_prepared_hybrid_state(state, evidence):
     """Check benchmark restoration before the parity reset overwrites model state."""
     import torch
 
-    from ignition.recipes.qwen38.state import EOS_TOKEN_ID
+    from hyperflare_recipes.recipes.qwen38.state import EOS_TOKEN_ID
 
     history = state.ple_history.cpu()
     eos = torch.tensor([EOS_TOKEN_ID], dtype=torch.int64)
@@ -339,10 +339,10 @@ class MutableReset:
         import torch
 
         from ignition.preparation.scratch import ScratchArena
-        from ignition.recipes.qwen38.decoder import DecoderScratch, ModelWeights
-        from ignition.recipes.qwen38.maintenance import PreparedMaintenance
-        from ignition.recipes.qwen38.vision import PreparedVision, VisionScratch
-        from ignition.recipes.qwen38.vision_state import (
+        from hyperflare_recipes.recipes.qwen38.decoder import DecoderScratch, ModelWeights
+        from hyperflare_recipes.recipes.qwen38.maintenance import PreparedMaintenance
+        from hyperflare_recipes.recipes.qwen38.vision import PreparedVision, VisionScratch
+        from hyperflare_recipes.recipes.qwen38.vision_state import (
             PreparedVisionHandoff,
             VisionFeatureState,
         )
@@ -559,7 +559,7 @@ class Scenario:
             self.groups.append([command])
 
     def admit(self, kind, capacity, specifications, *, temperatures=None):
-        from ignition.recipes.qwen38.sampling import RequestAdmission
+        from hyperflare_recipes.recipes.qwen38.sampling import RequestAdmission
 
         h = self.host
         h["admission_count"].fill_(len(specifications))
@@ -1100,12 +1100,12 @@ def main():
     import torch
     from transformers import AutoTokenizer
 
-    from ignition.preparation.qwen38 import MODEL_ID, REVISION
-    from ignition.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
-    from ignition.recipes.qwen38.decoder import DecoderScratch, PreparedDecoder
-    from ignition.recipes.qwen38.maintenance import PreparedMaintenance
-    from ignition.recipes.qwen38.sampling import DeviceRequestState
-    from ignition.recipes.qwen38.state import HybridStatePool
+    from hyperflare_recipes.recipes.qwen38.checkpoint_schema import MODEL_ID, REVISION
+    from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
+    from hyperflare_recipes.recipes.qwen38.decoder import DecoderScratch, PreparedDecoder
+    from hyperflare_recipes.recipes.qwen38.maintenance import PreparedMaintenance
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState
+    from hyperflare_recipes.recipes.qwen38.state import HybridStatePool
 
     torch.set_grad_enabled(False)
     torch.set_num_threads(8)

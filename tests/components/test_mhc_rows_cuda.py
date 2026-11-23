@@ -9,7 +9,7 @@ import pytest
 import torch
 from b12x.testing.mhc import make_inputs, post_reference, pre_reference
 
-from ignition.components.mhc import MHCScratch, MHCWeights, PreparedMHC
+from hyperflare_recipes.components.mhc import MHCScratch, MHCWeights, PreparedMHC
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.scratch import ScratchArena

@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(not (os.environ.get('FLARE_RUN_CUDA_TESTS') and 
 @pytest.mark.parametrize("shortlist", [False, True])
 @torch.no_grad()
 def test_support_emission_and_sparse_restore_native_replay(batch, vocab, shortlist):
-    from ignition.components.draft_sampling import PreparedDraftDistribution, DRAFT_CANDIDATES
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution, DRAFT_CANDIDATES
     from ignition.components.sampling import DeviceRequestState, RUNNING
     from ignition.preparation.graphs import PreparedGraphBundle
 

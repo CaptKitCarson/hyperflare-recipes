@@ -10,9 +10,9 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.draft_sampling import PreparedDraftDistribution
+from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
-from ignition.components.speculation import (
+from hyperflare_recipes.components.speculation import (
     PreparedSpeculativeDistributions, PreparedStochasticVerification, SpeculativeRngState,
 )
 from ignition.preparation.graphs import PreparedGraphBundle

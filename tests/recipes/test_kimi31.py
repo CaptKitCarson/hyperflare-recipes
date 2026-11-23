@@ -24,13 +24,13 @@ def raw_config():
 
 @pytest.fixture(scope="module")
 def config(raw_config):
-    from ignition.recipes.kimi3.config import ModelConfig
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig
 
     return ModelConfig.from_dict(raw_config)
 
 
 def test_checkpoint_geometry(config):
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
 
     config.validate_shard(TensorParallelShard(0, 16))
     assert len(config.layers) == 93
@@ -58,7 +58,7 @@ def test_mla_norm_epsilon_uses_the_k31_checkpoint_value(config):
     ("index_topk", True), ("index_head_dim", 128.0), ("unknown_option", True),
 ])
 def test_unsupported_dsa_configuration_rejected(raw_config, field, value):
-    from ignition.recipes.kimi3.config import ModelConfig
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig
 
     raw = deepcopy(raw_config)
     raw["text_config"]["dsa_config"][field] = value
@@ -69,7 +69,7 @@ def test_unsupported_dsa_configuration_rejected(raw_config, field, value):
 @pytest.mark.parametrize("layers", [[], [4], [4, 4], [0, 4], [94],
     list(reversed([*range(4, 93, 4), 93])), [*range(4, 93, 4), 92]])
 def test_dsa_layers_must_match_the_attention_partition(raw_config, layers):
-    from ignition.recipes.kimi3.config import ModelConfig
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig
 
     raw = deepcopy(raw_config)
     raw["text_config"]["dsa_config"]["dsa_layers"] = layers
@@ -79,7 +79,7 @@ def test_dsa_layers_must_match_the_attention_partition(raw_config, layers):
 
 @pytest.mark.parametrize("mutation", ["missing_dsa", "k3_with_dsa", "architecture_mismatch"])
 def test_dsa_identity_cannot_select_dense_attention(raw_config, mutation):
-    from ignition.recipes.kimi3.config import ModelConfig
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig
 
     raw = deepcopy(raw_config)
     if mutation == "missing_dsa":
@@ -93,7 +93,7 @@ def test_dsa_identity_cannot_select_dense_attention(raw_config, mutation):
 
 
 def test_k31_does_not_attach_an_unrelated_k3_draft(raw_config, tmp_path):
-    from ignition.recipes.kimi3.config import ModelConfig
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig
 
     (tmp_path / "config.json").write_text(json.dumps(raw_config))
     (tmp_path / "dspark").mkdir()
@@ -104,7 +104,7 @@ def test_k31_does_not_attach_an_unrelated_k3_draft(raw_config, tmp_path):
 
 
 def test_recipe_registration_and_sampling_defaults(raw_config, tmp_path):
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     model = resolve("kimi-k3.1-pro")
     assert model.recipe.name == "kimi31"
@@ -124,7 +124,7 @@ def test_recipe_registration_and_sampling_defaults(raw_config, tmp_path):
 @pytest.mark.parametrize("command", ["export", "debug-serve"])
 def test_cli_draft_defaults_and_explicit_disabling(command):
     from ignition.cli import _parser, preparation
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     model = resolve("kimi-k3.1-pro")
     args = _parser().parse_args([command, model.checkpoint.alias])
@@ -139,7 +139,7 @@ def test_cli_draft_defaults_and_explicit_disabling(command):
 
 @pytest.mark.parametrize("embedded_draft", [False, True])
 def test_preparation_adapter_preserves_k31_defaults_without_fetching_a_draft(monkeypatch, tmp_path, embedded_draft):
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
     from .test_declarations import fitted
 
     model = resolve("kimi-k3.1-pro")
@@ -163,8 +163,8 @@ def test_preparation_adapter_preserves_k31_defaults_without_fetching_a_draft(mon
 
 @pytest.mark.parametrize("embedded_draft", [False, True])
 def test_preparation_selects_the_inferact_draft(monkeypatch, tmp_path, embedded_draft):
-    from ignition.recipes import resolve
-    from ignition.recipes.kimi31.recipe import DSPARK_REPOSITORY, DSPARK_REVISION
+    from hyperflare_recipes.recipes import resolve
+    from hyperflare_recipes.recipes.kimi31.recipe import DSPARK_REPOSITORY, DSPARK_REVISION
     from .test_declarations import fitted
 
     model = resolve("kimi-k3.1-pro")
@@ -190,7 +190,7 @@ def test_preparation_selects_the_inferact_draft(monkeypatch, tmp_path, embedded_
 
 def test_preparation_rejects_unsharded_context_before_dispatch(tmp_path):
     from types import SimpleNamespace
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     with pytest.raises(ValueError, match="requires context parallelism"):
         resolve("kimi-k3.1-pro").recipe.prepare(tmp_path, SimpleNamespace(context_parallel=False),
@@ -202,7 +202,7 @@ def test_preparation_rejects_unsharded_context_before_dispatch(tmp_path):
     ({}, "requires recipe sampling defaults and a frontend template"),
 ])
 def test_rank_preparation_rejects_invalid_k31_inputs_before_cuda(raw_config, tmp_path, options, reason):
-    from ignition.recipes.kimi3.bootstrap import PreparationConfig, prepare_rank
+    from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig, prepare_rank
 
     (tmp_path / "config.json").write_text(json.dumps(raw_config))
     with pytest.raises(ValueError, match=reason):
@@ -214,7 +214,7 @@ def test_paired_route_gather_uses_two_row_blocks_only_for_p8(monkeypatch, rows, 
     from types import SimpleNamespace
     import torch
     from b12x.comm import pcie
-    from ignition.recipes.kimi3 import routing
+    from hyperflare_recipes.recipes.kimi3 import routing
 
     class Plan:
         def __init__(self, query):
@@ -255,9 +255,9 @@ def test_native_quantization_covers_all_routed_experts(config):
 def test_checkpoint_indexer_weights_are_replicated_without_conversion(config):
     import torch
     from safetensors import safe_open
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.recipes.kimi3.weights import KimiWeightLoader
+    from hyperflare_recipes.recipes.kimi3.weights import KimiWeightLoader
 
     device = torch.device("cuda:0")
     torch.cuda.set_device(device)
@@ -286,7 +286,7 @@ def test_checkpoint_indexer_weights_are_replicated_without_conversion(config):
 def test_native_expert_shards_preserve_checkpoint_arithmetic(partition):
     import torch
     from b12x.moe._shared.kernels.reference import moe_reference_w4a16_fp4_e8m0_k32
-    from ignition.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
     from .test_kimi3_experts_cuda import PREFIXES, _load

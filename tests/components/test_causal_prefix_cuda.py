@@ -9,7 +9,7 @@ import random
 import pytest
 import torch
 
-from ignition.components.causal_prefix import PreparedCausalPrefixAllocation
+from hyperflare_recipes.components.causal_prefix import PreparedCausalPrefixAllocation
 from tests.components.causal_prefix_oracle import allocate
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
@@ -93,7 +93,7 @@ def test_signed_zero_frontier_order_and_fp64_underflow_survival():
 
 def test_compiler_access_analysis_preserves_read_only_prefix_inputs():
     from torch._higher_order_ops.triton_kernel_wrap import identify_accessed_tensors
-    from ignition.components.causal_prefix import _allocate
+    from hyperflare_recipes.components.causal_prefix import _allocate
 
     confidence = torch.full((4, 2), .75, device="cuda")
     slots = torch.arange(4, device="cuda", dtype=torch.int64)

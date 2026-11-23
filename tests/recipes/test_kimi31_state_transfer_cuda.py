@@ -18,7 +18,7 @@ def test_snapshot_forks_restore_kda_latents_index_keys_and_scales(config, endpoi
     import torch
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.state_transfer import PreparedStateTransfer, StateCommands
-    from ignition.recipes.kimi3.pool import ContinuationPool
+    from hyperflare_recipes.recipes.kimi3.pool import ContinuationPool
 
     device = torch.device("cuda:0")
     torch.cuda.set_device(device)

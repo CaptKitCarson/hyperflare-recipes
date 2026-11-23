@@ -11,7 +11,7 @@ import pytest
 from ignition.preparation.frontend import PromptEncoder, prepare_frontend
 from ignition.preparation.core_proto import serving
 from ignition.preparation.runtime_core_pb2 import ModelIndex
-from ignition.recipes.deepseek41.recipe import RECIPE
+from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE
 
 
 def test_native_prompt_export():

@@ -10,7 +10,7 @@ import torch
 import triton
 
 from tests.preparation import test_graph_local_scratch_cuda as serial
-from ignition.components.projection_overlap import _join
+from hyperflare_recipes.components.projection_overlap import _join
 from ignition.preparation.aot import aot_forward
 
 

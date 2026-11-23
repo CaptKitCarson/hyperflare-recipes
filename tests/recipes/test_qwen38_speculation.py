@@ -10,8 +10,8 @@ import torch
 from tests.components.completion_support import RecordOnlyLogprobs, completion_outputs
 
 from ignition.components.sampling import ERROR, FINISHED, RUNNING
-from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-from ignition.components.speculation import (
+from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+from hyperflare_recipes.components.speculation import (
     DRAFT_RNG_DOMAIN,
     INVALID_SPECULATION,
     TARGET_RNG_DOMAIN,
@@ -218,7 +218,7 @@ def test_draft_penalties_ignore_unoffered_candidates(prefix_offset):
 def records_only_cpu_commit(monkeypatch):
     # These state-machine tests run without CUDA; reduction and graph ordering
     # have independent CUDA coverage.
-    monkeypatch.setattr("ignition.components.speculation.PreparedLogprobs", RecordOnlyLogprobs)
+    monkeypatch.setattr("hyperflare_recipes.components.speculation.PreparedLogprobs", RecordOnlyLogprobs)
 
 
 @pytest.mark.parametrize("clipping", ["none", "budget", "eos", "inactive"])

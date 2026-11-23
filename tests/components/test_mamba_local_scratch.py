@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import torch
 
-from ignition.components import mamba
+from hyperflare_recipes.components import mamba
 
 
 def test_functional_scan_allocates_plan_scratch_and_output_locally(monkeypatch):

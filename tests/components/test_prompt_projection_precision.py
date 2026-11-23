@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import prompt_logprobs
+from hyperflare_recipes.components import prompt_logprobs
 
 
 @pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float32])

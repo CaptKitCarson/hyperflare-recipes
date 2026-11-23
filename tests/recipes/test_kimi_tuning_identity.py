@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from ignition.recipes.kimi3.bootstrap import target_tuning_identity
+from hyperflare_recipes.recipes.kimi3.bootstrap import target_tuning_identity
 
 
 def fixture():
@@ -57,7 +57,7 @@ def test_projection_scopes_separate_tuning_namespaces():
 
 @pytest.mark.parametrize("scope,online", [("unsupported", True), ("kda-input", False)])
 def test_preparation_rejects_inconsistent_conversion_scope(scope, online):
-    from ignition.recipes.kimi3.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig
 
     with pytest.raises(ValueError, match="scope"):
         PreparationConfig(online_mxfp8=online, online_mxfp8_scope=scope)

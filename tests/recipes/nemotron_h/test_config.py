@@ -21,9 +21,9 @@ def checkpoint():
 
 
 def test_checkpoint_storage_matches_recipe(checkpoint):
-    from ignition.recipes.nemotron_h.config import ModelConfig
-    from ignition.recipes.nemotron_h.pool import continuation_layout, page_bytes
-    from ignition.recipes.nemotron_h.recipe import RECIPE
+    from hyperflare_recipes.recipes.nemotron_h.config import ModelConfig
+    from hyperflare_recipes.recipes.nemotron_h.pool import continuation_layout, page_bytes
+    from hyperflare_recipes.recipes.nemotron_h.recipe import RECIPE
 
     config = ModelConfig.load(checkpoint)
     layout = continuation_layout(config)
@@ -43,7 +43,7 @@ def test_checkpoint_storage_matches_recipe(checkpoint):
 @pytest.mark.parametrize("field,value", [("use_qk_norm", True), ("time_step_limit", [.001, 1.]),
                                          ("residual_in_fp32", True), ("conv_kernel", 5)])
 def test_rejects_different_recurrent_or_attention_semantics(checkpoint, field, value):
-    from ignition.recipes.nemotron_h.config import ModelConfig
+    from hyperflare_recipes.recipes.nemotron_h.config import ModelConfig
 
     config = json.loads((checkpoint / "config.json").read_text())
     config["llm_config"][field] = value
@@ -53,17 +53,17 @@ def test_rejects_different_recurrent_or_attention_semantics(checkpoint, field, v
 
 def test_draft_taps_and_quantization_exclusions(checkpoint):
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.recipes.nemotron_h.config import ModelConfig
-    from ignition.recipes.nemotron_h.draft_config import DraftConfig
-    from ignition.recipes.nemotron_h.draft_weights import DraftWeightLoader
+    from hyperflare_recipes.recipes.nemotron_h.config import ModelConfig
+    from hyperflare_recipes.recipes.nemotron_h.draft_config import DraftConfig
+    from hyperflare_recipes.recipes.nemotron_h.draft_weights import DraftWeightLoader
 
     path = Path(str(checkpoint) + "-LiLiCorr")
     if not path.is_dir():
         pytest.skip("requires LiLiCorr checkpoint metadata")
     target = ModelConfig.load(checkpoint)
     draft = DraftConfig.load(path, target)
-    from ignition.recipes.nemotron_h.pool import continuation_layout
-    from ignition.recipes.nemotron_h.recipe import RECIPE
+    from hyperflare_recipes.recipes.nemotron_h.pool import continuation_layout
+    from hyperflare_recipes.recipes.nemotron_h.recipe import RECIPE
     layout = continuation_layout(replace(target, draft=draft))
     assert layout.row_bytes == RECIPE.costs(1, RECIPE.speculation).state_row_bytes
     assert layout.region("layer0.convolution").shape == (10240, 10)
@@ -82,8 +82,8 @@ def test_draft_taps_and_quantization_exclusions(checkpoint):
 
 def test_image_frontend_matches_checkpoint(checkpoint):
     from ignition.preparation.frontend import prepare_frontend
-    from ignition.recipes.nemotron_h.vision import VisionConfig
-    from ignition.recipes.nemotron_h.contract import FRONTEND, VISION
+    from hyperflare_recipes.recipes.nemotron_h.vision import VisionConfig
+    from hyperflare_recipes.recipes.nemotron_h.contract import FRONTEND, VISION
     from ignition.preparation import runtime_core_pb2 as p
 
     raw = json.loads((checkpoint / "config.json").read_text())
@@ -100,8 +100,8 @@ def test_image_frontend_matches_checkpoint(checkpoint):
 
 
 def test_host_ragged_rounds_separate_target_rows_from_sample_rows():
-    from ignition.recipes.nemotron_h.bootstrap import PreparationConfig
-    from ignition.recipes.nemotron_h.recipe import RECIPE
+    from hyperflare_recipes.recipes.nemotron_h.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.nemotron_h.recipe import RECIPE
 
     config = PreparationConfig(max_active=4, draft_checkpoint=Path("lilicorr"),
         speculative_widths=tuple(range(1, 9)), speculative_token_capacity=8)

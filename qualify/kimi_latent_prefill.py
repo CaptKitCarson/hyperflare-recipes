@@ -72,10 +72,10 @@ class ProjectionRouting:
     def __init__(self, source, row_weight, column_weight, router_weight, correction, columns, *,
                  row_sharded, reduction, router_runtime, pair_runtime, session, coordinator,
                  buffers, name):
-        from ignition.components.column_pair_gather import PreparedColumnPairGather
+        from hyperflare_recipes.components.column_pair_gather import PreparedColumnPairGather
         from ignition.components.collectives import PreparedChunkedAllGather, PreparedChunkedAllReduce
-        from ignition.components.linear import UnquantizedProjection
-        from ignition.components.moe import PreparedRouter, RouterScratch
+        from hyperflare_recipes.components.linear import UnquantizedProjection
+        from hyperflare_recipes.components.moe import PreparedRouter, RouterScratch
 
         rows, device = source.shape[0], source.device
         self.source, self.columns, self.row_sharded = source, columns, row_sharded
@@ -127,12 +127,13 @@ def worker(rank, rendezvous, checkpoint, destination, policy):
     from ignition import runtime_patches
     runtime_patches.apply()
     import torch.distributed as dist
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.preparation.collectives import CollectivePreparation, create_all_gather_runtime, create_all_reduce_runtime, create_head_exchange
+    from ignition.preparation.collectives import CollectivePreparation, create_all_gather_runtime, create_all_reduce_runtime
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.weights import KimiWeightLoader
+    from hyperflare_recipes.recipes.kimi3.weights import KimiWeightLoader
 
     torch.set_num_threads(2)
     torch.set_grad_enabled(False)

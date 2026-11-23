@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import causal_draft
+from hyperflare_recipes.components import causal_draft
 
 
 @pytest.mark.parametrize("batch", (1, 2))

@@ -6,7 +6,7 @@
 import pytest
 import torch
 
-from ignition.recipes.kimi3 import decoder
+from hyperflare_recipes.recipes.kimi3 import decoder
 
 
 class Shared:

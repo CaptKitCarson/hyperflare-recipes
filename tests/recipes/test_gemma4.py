@@ -14,21 +14,21 @@ import torch
 from ignition import planning
 from ignition.preparation import runtime_core_pb2 as p
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-from ignition.recipes import resolve
-from ignition.recipes.gemma4.attention import (
+from hyperflare_recipes.recipes import resolve
+from hyperflare_recipes.recipes.gemma4.attention import (
     apply_rotary_pos_emb,
     attention_descales,
     rms_norm,
     rms_norm_no_scale,
 )
-from ignition.recipes.gemma4.bootstrap import chat_template_asset
-from ignition.recipes.gemma4.config import PAGE_TOKENS, ModelConfig
-from ignition.recipes.gemma4.contract import FRONTEND, prepare as prepare_contract
-from ignition.recipes.gemma4.decoder import softcap_logits
-from ignition.recipes.gemma4.moe import dequantize_nvfp4_tensor, geglu_moe_reference
-from ignition.recipes.gemma4.pool import ContinuationPool, continuation_layout, page_bytes
-from ignition.recipes.gemma4.recipe import RECIPE
-from ignition.recipes.gemma4.weights import BF16ExpertsWeight, NVFP4ExpertsWeight
+from hyperflare_recipes.recipes.gemma4.bootstrap import chat_template_asset
+from hyperflare_recipes.recipes.gemma4.config import PAGE_TOKENS, ModelConfig
+from hyperflare_recipes.recipes.gemma4.contract import FRONTEND, prepare as prepare_contract
+from hyperflare_recipes.recipes.gemma4.decoder import softcap_logits
+from hyperflare_recipes.recipes.gemma4.moe import dequantize_nvfp4_tensor, geglu_moe_reference
+from hyperflare_recipes.recipes.gemma4.pool import ContinuationPool, continuation_layout, page_bytes
+from hyperflare_recipes.recipes.gemma4.recipe import RECIPE
+from hyperflare_recipes.recipes.gemma4.weights import BF16ExpertsWeight, NVFP4ExpertsWeight
 
 
 def _rope_params():
@@ -466,7 +466,7 @@ def test_gemma4_recipe_adapter_configures_bootstrap(monkeypatch, tmp_path):
         seen.update(snapshot=snapshot, config=config, core_storage=core_storage)
         return "prepared"
 
-    monkeypatch.setattr("ignition.recipes.gemma4.bootstrap.prepare", fake_prepare)
+    monkeypatch.setattr("hyperflare_recipes.recipes.gemma4.bootstrap.prepare", fake_prepare)
     model = resolve("gemma-4-26b-a4b-nvfp4")
     gpu = planning.Gpu(0, "NVIDIA RTX PRO 6000 Blackwell", "GPU-0", 96 << 30, 95 << 30, (12, 0))
     plan = planning.fit(model.recipe, model.checkpoint, (gpu,), concurrency=4, reserve_bytes=0, speculation=None)
@@ -575,7 +575,7 @@ def test_unknown_model_size_has_no_chat_template():
 )
 @pytest.mark.parametrize("world_size", [1, 2, 4])
 def test_gemma4_tp_sharding_and_declared_rank_costs(alias, raw_fn, world_size):
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
 
     model = resolve(alias)
     config = ModelConfig.from_dict(raw_fn())
@@ -590,8 +590,8 @@ def test_gemma4_tp_sharding_and_declared_rank_costs(alias, raw_fn, world_size):
 
 
 def test_gemma4_draft_config_and_donor_kv_sharing():
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.gemma4.config import DraftConfig
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.gemma4.config import DraftConfig
 
     target_31b = ModelConfig.from_dict(_dense_31b_raw())
     assert target_31b.sliding_donor_layer == 58

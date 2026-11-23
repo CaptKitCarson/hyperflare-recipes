@@ -8,7 +8,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import collectives, paged_resume, vocabulary
+from ignition.components import collectives
+from hyperflare_recipes.components import paged_resume, vocabulary
 from ignition.preparation.scratch import ScratchArena
 
 

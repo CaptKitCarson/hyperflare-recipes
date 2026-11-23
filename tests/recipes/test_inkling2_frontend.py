@@ -11,7 +11,7 @@ import pytest
 
 from ignition.preparation.frontend import PromptEncoder
 from ignition.preparation.runtime_core_pb2 import ModelIndex
-from ignition.recipes.inkling2 import frontend as inkling2
+from hyperflare_recipes.recipes.inkling2 import frontend as inkling2
 
 # The native tests validate this frontend contract and prepare Inkling 2 requests with it.
 FIXTURE = Path(__file__).parents[2] / "helios/tests/support/contracts/inkling2_frontend.json"

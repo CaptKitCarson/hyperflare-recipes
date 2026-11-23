@@ -5,7 +5,7 @@
 
 import pytest
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 
 
 @pytest.mark.parametrize("world", (1, 2, 3, 4, 6, 8, 16))

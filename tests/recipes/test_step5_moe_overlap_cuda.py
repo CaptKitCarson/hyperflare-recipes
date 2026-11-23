@@ -9,13 +9,13 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.step5.decoder import PreparedFeedForward, Scratch
-from ignition.recipes.step5.weights import Step5WeightLoader
+from hyperflare_recipes.recipes.step5.decoder import PreparedFeedForward, Scratch
+from hyperflare_recipes.recipes.step5.weights import Step5WeightLoader
 
 pytestmark = pytest.mark.skipif(os.getenv("FLARE_RUN_CUDA_TESTS") != "1",
                                reason="requires an explicitly assigned CUDA device")

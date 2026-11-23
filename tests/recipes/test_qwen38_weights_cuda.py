@@ -13,10 +13,10 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import TEXT_PREFIX
-from ignition.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors,
     mxfp8_linear_reference,
     nvfp4_expert_reference,
@@ -130,7 +130,7 @@ def test_batched_tensors_are_ready_before_loader_exit(manifest):
 @pytest.mark.parametrize("rank,world", [(0, 1), (1, 2), (3, 4)])
 def test_actual_csf_experts_prepared_graph_replay(manifest, rank, world):
     from dataclasses import replace
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
 
     shard = TensorParallelShard(rank, world)
     first, last = shard.partition(640)
@@ -224,7 +224,7 @@ def test_packed_mxfp8_projections_preserve_serialized_rows(manifest, layer, regi
 
 
 def test_complete_layer_csf_load_and_captured_expansion(manifest):
-    from ignition.reference.qwen38_quant import decode_csf_scales
+    from hyperflare_recipes.reference.qwen38_quant import decode_csf_scales
 
     scratch = allocate_expert_scale_scratch('cuda:0')
     prefix = f'{TEXT_PREFIX}.layers.0.mlp.experts.'
@@ -278,7 +278,7 @@ def test_complete_layer_csf_scales_expand_once_without_scratch(manifest):
 
 
 def test_csf_expert_persistent_storage_contains_final_weights(manifest):
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.tensor_metadata import merge_ranges, subtract_ranges, tensor_ranges
 
@@ -315,8 +315,8 @@ def test_mtp_expert_shards_match_checkpoint_arithmetic(manifest, rank, world):
     from dataclasses import replace
     from b12x.moe import fused_moe as moe
     from b12x.preparation import PreparationSession, PreparedCall
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.qwen38.mtp_weights import MTPWeightLoader
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.qwen38.mtp_weights import MTPWeightLoader
 
     shard = TensorParallelShard(rank, world)
     first, last = shard.partition(640)
@@ -373,7 +373,7 @@ def test_mtp_expert_shards_match_checkpoint_arithmetic(manifest, rank, world):
 
 def test_csf_tuning_preserves_scales_across_graph_capacities(manifest):
     from b12x.moe import fused_moe
-    from ignition.components.moe import PreparedRoutedExperts, RouterScratch
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts, RouterScratch
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
 

@@ -19,7 +19,7 @@ import torch
 from PIL import Image
 from tokenizers import Tokenizer
 
-from ignition.recipes.deepseek4.config import REVISION
+from hyperflare_recipes.recipes.deepseek4.config import REVISION
 
 ROOT = Path(__file__).resolve().parents[2]
 SNAPSHOT = (
@@ -116,7 +116,7 @@ def test_native_images_match_checkpoint(reference, tmp_path, sizes, start):
         [
             str(Path(os.environ.get("CARGO_TARGET_DIR", ROOT / "helios/target")) / "debug/test_deepseek4_images"),
             str(SNAPSHOT),
-            str(ROOT / "ignition/recipes/deepseek4/assets"),
+            str(ROOT / "hyperflare_recipes/recipes/deepseek4/assets"),
             str(case),
             str(tmp_path),
         ],

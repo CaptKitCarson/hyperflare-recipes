@@ -11,7 +11,7 @@ import torch
 
 from qualify import graph_execution
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.qwen38.vision_state import VisionFeatureState
+from hyperflare_recipes.recipes.qwen38.vision_state import VisionFeatureState
 
 
 @dataclass

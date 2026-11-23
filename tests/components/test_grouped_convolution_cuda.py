@@ -14,7 +14,7 @@ cuda = pytest.mark.skipif(os.getenv("FLARE_RUN_CUDA_TESTS") != "1", reason="requ
 @cuda
 @torch.no_grad()
 def test_dynamic_convolution_preserves_bf16_rounding_and_block_boundaries():
-    from ignition.components.grouped_convolution import _convolve
+    from hyperflare_recipes.components.grouped_convolution import _convolve
     from ignition.preparation.compilation import compile_forward
 
     torch.cuda.set_device(0)

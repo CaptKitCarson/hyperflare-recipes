@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.recipes.kimi3 import vision_state
+from hyperflare_recipes.recipes.kimi3 import vision_state
 
 
 @pytest.mark.parametrize("invalid", [False, True])

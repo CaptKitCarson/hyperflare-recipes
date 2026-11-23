@@ -7,12 +7,12 @@ from types import SimpleNamespace
 
 from google.protobuf.json_format import ParseDict
 
-from ignition.components.paged_batch import BatchInputs
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.paged_batch import BatchInputs
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation import contract as c, runtime_core_pb2 as p
 from ignition.preparation.execution import GraphSignature
-from ignition.recipes.muse_spark.contract import prepare
-from ignition.recipes.muse_spark.pool import ContinuationPool
+from hyperflare_recipes.recipes.muse_spark.contract import prepare
+from hyperflare_recipes.recipes.muse_spark.pool import ContinuationPool
 
 from .test_muse_spark_attention import Geometry
 
@@ -46,7 +46,7 @@ def test_text_contract_binds_complete_state_and_physical_fp8_page_bytes():
 
 
 def test_preparation_accepts_shared_64_token_chunk_geometry():
-    from ignition.recipes.muse_spark.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.muse_spark.bootstrap import PreparationConfig
     assert PreparationConfig(prefill_chunk_size=64).prefill_chunk_size == 64
     assert PreparationConfig(prefill_chunk_size=192).prefill_chunk_size == 192
 
@@ -75,7 +75,7 @@ def test_speculative_contract_tracks_committed_cursor_and_device_pending_token()
 
 
 def test_dflash_catalog_covers_width_one_and_packed_full_depth(tmp_path):
-    from ignition.recipes.muse_spark.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.muse_spark.bootstrap import PreparationConfig
 
     config = PreparationConfig(dflash=True, draft_snapshot=tmp_path, speculative_token_capacity=32)
     shapes = config.speculative_round_shapes

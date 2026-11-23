@@ -62,14 +62,14 @@ def main():
 
     import torch
     from flashinfer.testing.utils import bench_gpu_time_with_cuda_event
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.preparation import inspect_qwen38_checkpoint
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
     from ignition.preparation.compilation import compile_forward
-    from ignition.preparation.qwen38 import REVISION, TEXT_PREFIX
+    from hyperflare_recipes.recipes.qwen38.checkpoint_schema import REVISION, TEXT_PREFIX
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38.moe import PreparedQwenMoe, QwenMoeScratch, QwenMoeWeights
-    from ignition.recipes.qwen38.tuning import preparation_session
-    from ignition.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
+    from hyperflare_recipes.recipes.qwen38.moe import PreparedQwenMoe, QwenMoeScratch, QwenMoeWeights
+    from hyperflare_recipes.recipes.qwen38.tuning import preparation_session
+    from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
 
     torch.set_num_threads(1)
     torch.cuda.set_device(0)

@@ -8,9 +8,9 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.preparation.fixtures import varlen_attention as attention_fixtures
-from ignition.components import varlen_attention
-from ignition.recipes.qwen38 import attention, ple, vision
+from hyperflare_recipes.fixtures import varlen_attention as attention_fixtures
+from hyperflare_recipes.components import varlen_attention
+from hyperflare_recipes.recipes.qwen38 import attention, ple, vision
 from ignition.preparation.scratch import ScratchArena
 
 

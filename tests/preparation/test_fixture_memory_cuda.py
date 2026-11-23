@@ -9,9 +9,9 @@ import weakref
 import pytest
 import torch
 
-from ignition.components.moe import RouterScratch
-from ignition.preparation.fixtures.fused_moe import ExpertBenchmarkInputs
-from ignition.preparation.fixtures.projection import input_factory
+from hyperflare_recipes.components.moe import RouterScratch
+from hyperflare_recipes.fixtures.fused_moe import ExpertBenchmarkInputs
+from hyperflare_recipes.fixtures.projection import input_factory
 from ignition.preparation.tuning import RecordedPreparationSession
 
 pytestmark = pytest.mark.skipif(os.getenv("FLARE_RUN_CUDA_TESTS") != "1",
@@ -87,8 +87,8 @@ def test_projection_can_follow_expert_tuning_under_memory_pressure():
 @torch.no_grad()
 def test_attention_trials_share_output_and_restore_host_seeds_without_device_temporaries():
     from b12x.preparation import PreparationSession
-    from ignition.components.varlen_attention import PreparedVarlenAttention
-    from ignition.preparation.fixtures import varlen_attention
+    from hyperflare_recipes.components.varlen_attention import PreparedVarlenAttention
+    from hyperflare_recipes.fixtures import varlen_attention
     from ignition.preparation.scratch import ScratchArena
 
     device = torch.device("cuda:0")
@@ -148,7 +148,7 @@ def test_attention_trials_share_output_and_restore_host_seeds_without_device_tem
 
 @torch.no_grad()
 def test_strided_attention_fixture_restoration_needs_no_device_temporary():
-    from ignition.preparation.fixtures.varlen_attention import attention_benchmark_inputs
+    from hyperflare_recipes.fixtures.varlen_attention import attention_benchmark_inputs
 
     source = torch.zeros(64, 24, 128, dtype=torch.bfloat16, device="cuda:0")[:, :12]
     inputs = attention_benchmark_inputs(dict(q=source, k=source, v=source,
@@ -174,8 +174,8 @@ def test_strided_attention_fixture_restoration_needs_no_device_temporary():
 @torch.no_grad()
 def test_projection_trials_fit_bounded_memory_at_encoder_and_draft_capacities(rows, columns, outputs):
     from b12x.preparation import PreparationSession
-    from ignition.components.linear import UnquantizedProjection
-    from ignition.preparation.fixtures.bf16_gemv import benchmark_call
+    from hyperflare_recipes.components.linear import UnquantizedProjection
+    from hyperflare_recipes.fixtures.bf16_gemv import benchmark_call
 
     device = torch.device("cuda:0")
     source = torch.zeros(rows, columns, dtype=torch.bfloat16, device=device)

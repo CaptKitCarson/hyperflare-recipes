@@ -6,12 +6,12 @@
 import pytest
 
 from ignition.components.capacity import batch_capacities, proposal_shapes, speculative_shapes
-from ignition.recipes.qwen38.bootstrap import PreparationConfig as Qwen
-from ignition.recipes.glm53.bootstrap import PreparationConfig as Glm
-from ignition.recipes.deepseek4.bootstrap import PreparationConfig as DeepSeek4
-from ignition.recipes.deepseek41.bootstrap import PreparationConfig as DeepSeek41
-from ignition.recipes.mimo_v2.bootstrap import PreparationConfig as Mimo
-from ignition.recipes.step5.bootstrap import PreparationConfig as Step5
+from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig as Qwen
+from hyperflare_recipes.recipes.glm53.bootstrap import PreparationConfig as Glm
+from hyperflare_recipes.recipes.deepseek4.bootstrap import PreparationConfig as DeepSeek4
+from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig as DeepSeek41
+from hyperflare_recipes.recipes.mimo_v2.bootstrap import PreparationConfig as Mimo
+from hyperflare_recipes.recipes.step5.bootstrap import PreparationConfig as Step5
 
 
 @pytest.mark.parametrize("concurrency", [1, 3, 4, 5, 8, 16, 33, 64])
@@ -73,7 +73,7 @@ def test_parallel_rounds_bound_physical_rows_independently_of_samples(recipe, en
 
 
 def test_kimi_parallel_rounds_have_packed_target_capacity():
-    from ignition.recipes.kimi3.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig
 
     config = PreparationConfig(max_active=2, speculative_widths=(1, 2, 3, 4),
                                speculative_token_capacity=4, draft_checkpoint="/tmp/dspark")
@@ -111,7 +111,7 @@ def test_recipe_completion_capacity_tracks_enabled_native_catalog(recipe, flag):
 @pytest.mark.parametrize("width", [1, 8, 13, 16])
 def test_qwen_dense_native_capacity_remains_independent_of_recurrent_state_columns(width):
     from pathlib import Path
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     settings = PreparationConfig(draft_snapshot=Path("/tmp/dflash"), speculative_widths=tuple(range(1, width + 1)))
     assert settings.completion_token_capacity == width

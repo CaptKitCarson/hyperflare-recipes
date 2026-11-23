@@ -5,7 +5,7 @@
 import pytest
 import torch
 
-from ignition.components.candidate_selection import PreparedCandidateSelection
+from hyperflare_recipes.components.candidate_selection import PreparedCandidateSelection
 
 
 @pytest.mark.parametrize("implementation", ["replicated", "owner"])
@@ -37,7 +37,7 @@ def test_invocation_packets_preserve_score_bits_and_global_ids(implementation):
 def test_gathered_owner_packets_restore_exact_rows(monkeypatch, world, rows):
     from types import SimpleNamespace
     from ignition.components import collectives
-    from ignition.components.row_ownership import PreparedGatheredRows
+    from hyperflare_recipes.components.row_ownership import PreparedGatheredRows
 
     owned = -(-rows // world)
     topk = 2048

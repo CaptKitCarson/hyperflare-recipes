@@ -17,9 +17,9 @@ pytestmark = pytest.mark.skipif(os.getenv("FLARE_RUN_TP_CUDA_TESTS") != "1",
 
 
 def _rank(rank, world, rendezvous, snapshot):
-    from ignition.components.paged_batch import Metadata
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.rms_norm import PreparedRMSNorm
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.rms_norm import PreparedRMSNorm
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.collectives import (
         CollectivePreparation,
@@ -29,14 +29,14 @@ def _rank(rank, world, rendezvous, snapshot):
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.step5.attention import PreparedAttention
-    from ignition.recipes.step5.decoder import (
+    from hyperflare_recipes.recipes.step5.attention import PreparedAttention
+    from hyperflare_recipes.recipes.step5.decoder import (
         PreparedDecoderLayer,
         PreparedFeedForward,
         Scratch,
     )
-    from ignition.recipes.step5.pool import ContinuationPool
-    from ignition.recipes.step5.weights import Step5WeightLoader
+    from hyperflare_recipes.recipes.step5.pool import ContinuationPool
+    from hyperflare_recipes.recipes.step5.weights import Step5WeightLoader
 
     torch.cuda.set_device(rank)
     device, shard = torch.device("cuda", rank), TensorParallelShard(rank, world)

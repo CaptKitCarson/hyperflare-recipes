@@ -62,12 +62,12 @@ def main():
     import torch
     from flashinfer.testing.utils import bench_gpu_time_with_cuda_event
     from safetensors.torch import load_file
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.situ_experts import PreparedSiTUExperts
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.situ_experts import PreparedSiTUExperts
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.inkling2.mini_experts import load_experts
-    from ignition.recipes.inkling2.mini_weights import MiniWeightLoader
+    from hyperflare_recipes.recipes.inkling2.mini_experts import load_experts
+    from hyperflare_recipes.recipes.inkling2.mini_weights import MiniWeightLoader
 
     torch.set_num_threads(1)
     torch.cuda.set_device(0)

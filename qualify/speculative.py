@@ -95,7 +95,7 @@ def run(args, model, server):
 
 
 def main():
-    from ignition.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
+    from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--snapshot", type=Path, required=True)

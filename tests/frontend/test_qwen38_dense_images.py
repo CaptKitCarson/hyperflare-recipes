@@ -35,7 +35,7 @@ def _snapshot() -> Path | None:
         if path.is_dir():
             return path
     try:
-        from ignition.recipes import resolve
+        from hyperflare_recipes.recipes import resolve
 
         hub = Path(os.environ.get("HF_HUB_CACHE", Path.home() / ".cache/huggingface/hub"))
         resolved = resolve("qwen3.8-27b").snapshot(hub)

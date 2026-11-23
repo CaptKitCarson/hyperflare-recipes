@@ -38,11 +38,11 @@ def session(device):
 def test_projection_weight_storage_is_numeric(fmt):
     from b12x._lib.intrinsics.reference import swizzle_block_scale
     from b12x.gemm import blockscaled, wo_projection
-    from ignition.components.attention_output import PreparedGroupedOutputProjection
-    from ignition.components.block_fp8 import BlockFP8Projection, BlockFP8Weight
-    from ignition.components.linear import BatchedQuantizedProjection, QuantizedProjection, UnquantizedProjection
-    from ignition.components.tensor_fp8 import TensorFP8Projection, TensorFP8Weight
-    from ignition.components.weights import quantize_bf16_linear_as_mxfp8
+    from hyperflare_recipes.components.attention_output import PreparedGroupedOutputProjection
+    from hyperflare_recipes.components.block_fp8 import BlockFP8Projection, BlockFP8Weight
+    from hyperflare_recipes.components.linear import BatchedQuantizedProjection, QuantizedProjection, UnquantizedProjection
+    from hyperflare_recipes.components.tensor_fp8 import TensorFP8Projection, TensorFP8Weight
+    from hyperflare_recipes.components.weights import quantize_bf16_linear_as_mxfp8
 
     device = torch.device("cuda:0")
     def zeros(shape, dtype):
@@ -109,7 +109,7 @@ def test_projection_weight_storage_is_numeric(fmt):
 def test_expert_weight_storage_is_numeric(fmt, mode, layout):
     from b12x._lib.intrinsics.reference import swizzle_block_scale
     from b12x.moe import fused_moe
-    from ignition.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
 
     device = torch.device("cuda:0")
     nv = fmt == "modelopt_nvfp4"
@@ -155,7 +155,7 @@ def defer_planning(monkeypatch, module, planner):
 def test_compressed_expert_records_are_numeric_but_program_storage_is_opaque(monkeypatch, format):
     from b12x._lib.quant.csf_blocks import CsfBlockPayload, CsfBlockScales, Nvfp4CompactBlockPlane
     from b12x._lib.quant.nvfp4_csf import Nvfp4CsfBatch, Nvfp4CsfDecoder
-    from ignition.components import moe
+    from hyperflare_recipes.components import moe
 
     plan = defer_planning(monkeypatch, moe, (moe.fused_moe, "plan_execution"))
     monkeypatch.setattr(moe.fused_moe, "plan_scale_expansion", lambda *args, **kwargs: plan)
@@ -187,7 +187,7 @@ def test_compressed_expert_records_are_numeric_but_program_storage_is_opaque(mon
 
 @pytest.mark.parametrize("kind", ["trtllm", "cute"])
 def test_sm103_expert_storage_uses_the_same_numeric_contract(monkeypatch, kind):
-    from ignition.components import moe, moe_sm103
+    from hyperflare_recipes.components import moe, moe_sm103
 
     defer_planning(monkeypatch, moe_sm103, (moe_sm103, "plan_routed_experts"))
     w13, w2 = torch.zeros((2, 32, 8), dtype=torch.uint8), torch.zeros((2, 16, 8), dtype=torch.uint8)

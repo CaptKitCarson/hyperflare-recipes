@@ -7,7 +7,7 @@ import torch
 from b12x.gemm.blockscaled import _a16
 from flashinfer import gemm
 from flashinfer.gemm import gemm_base
-from ignition.components import sm103_projection as projection
+from hyperflare_recipes.components import sm103_projection as projection
 
 
 def test_expanded_nvfp4_separates_matrix_and_aligned_gemm_workspace(monkeypatch):

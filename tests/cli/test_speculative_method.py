@@ -13,7 +13,7 @@ from ignition import planning
 from ignition.cli import _parser, preparation
 from ignition.cli.config import Configuration
 from ignition.errors import UsageError
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 from ignition.preparation import rebuild_manifest, runtime_core_pb2 as proto
 
 

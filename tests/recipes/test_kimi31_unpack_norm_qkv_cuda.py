@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @torch.no_grad()
 def test_unpack_and_rms_norm_qkv_matches_original(rows):
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.kimi3.pointwise import rms_norm_columns, unpack_and_rms_norm_qkv
+    from hyperflare_recipes.recipes.kimi3.pointwise import rms_norm_columns, unpack_and_rms_norm_qkv
 
     torch.cuda.set_device(0)
     device = torch.device("cuda", 0)
@@ -67,7 +67,7 @@ def test_unpack_and_rms_norm_qkv_matches_original(rows):
 @torch.no_grad()
 def test_unpack_and_rms_norm_qkv_dynamic_outputs_match_original(rows):
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.kimi3.pointwise import rms_norm_columns, unpack_and_rms_norm_qkv
+    from hyperflare_recipes.recipes.kimi3.pointwise import rms_norm_columns, unpack_and_rms_norm_qkv
 
     torch.cuda.set_device(0)
     device = torch.device("cuda", 0)

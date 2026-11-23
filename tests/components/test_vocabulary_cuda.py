@@ -19,7 +19,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_TP_CUDA_TESTS") != "1"
 
 @torch.no_grad()
 def _rank(rank, world, rendezvous, vocab, indexed=False, output_dtype=torch.bfloat16, prefix=None):
-    from ignition.components.vocabulary import PreparedVocabularyProjection
+    from hyperflare_recipes.components.vocabulary import PreparedVocabularyProjection
     from ignition.preparation.collectives import (
         CollectivePreparation,
         create_all_gather_runtime,
@@ -164,7 +164,7 @@ def test_fp32_vocabulary_expands_rows_after_gather_under_native_replay(tmp_path)
 @torch.no_grad()
 def test_quantized_draft_shards_preserve_logits_under_compiled_replay(world):
     from b12x.preparation import PreparationSession
-    from ignition.components.vocabulary import PreparedVocabularyProjection, nvfp4_draft_head
+    from hyperflare_recipes.components.vocabulary import PreparedVocabularyProjection, nvfp4_draft_head
     from ignition.preparation.compilation import compile_forward
 
     assert os.environ.get("CUDA_VISIBLE_DEVICES")

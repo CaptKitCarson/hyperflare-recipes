@@ -10,15 +10,15 @@ import torch
 import triton
 
 from ignition.preparation.triton import launch_triton, prepare_triton
-from ignition.recipes.inkling2.attention import _retain_kv_kernel, _stage_kv_kernel
-from ignition.recipes.inkling2.loop import (
+from hyperflare_recipes.recipes.inkling2.attention import _retain_kv_kernel, _stage_kv_kernel
+from hyperflare_recipes.recipes.inkling2.loop import (
     GateWeights,
     PreparedCrossPassRouter,
     PreparedMessageGate,
     PreparedSharedQKVNormCat,
 )
-from ignition.recipes.inkling2.pool import KV_DTYPE, PAGE_TOKENS
-from ignition.recipes.inkling2.residual import PreparedResidualMix
+from hyperflare_recipes.recipes.inkling2.pool import KV_DTYPE, PAGE_TOKENS
+from hyperflare_recipes.recipes.inkling2.residual import PreparedResidualMix
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",

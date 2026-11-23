@@ -11,7 +11,7 @@ pytestmark = pytest.mark.skipif(not torch.cuda.is_available(), reason="requires 
 
 @pytest.mark.parametrize("world", [2, 4])
 def test_each_rank_merges_its_head_shard_from_every_ranks_partial(world):
-    from ignition.components.head_exchange import merge, pack, pack_width
+    from hyperflare_recipes.components.head_exchange import merge, pack, pack_width
 
     torch.manual_seed(world)
     rows, heads, dim = 5, 64, 512

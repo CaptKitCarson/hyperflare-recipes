@@ -9,8 +9,8 @@ import json
 import pytest
 
 from ignition.cli import _parser, preparation
-from ignition.recipes import ResolvedModel, resolve
-from ignition.recipes.inkling2.recipe import RECIPE, MINI_RECIPE
+from hyperflare_recipes.recipes import ResolvedModel, resolve
+from hyperflare_recipes.recipes.inkling2.recipe import RECIPE, MINI_RECIPE
 from tests.cli.test_planning import derive, gpu
 
 
@@ -50,7 +50,7 @@ def test_inkling_defaults_cover_tp4_seven_drafts_and_vision():
 
 
 def test_inkling_adapter_preserves_uncompiled_untuned_qualification(monkeypatch, tmp_path):
-    from ignition.recipes.inkling2 import bootstrap
+    from hyperflare_recipes.recipes.inkling2 import bootstrap
 
     devices = tuple(gpu(i, 95) for i in range(4))
     plan = replace(derive(model=RECIPE, gpus=devices, selected=(0, 1, 2, 3), concurrency=8),
@@ -83,7 +83,7 @@ def test_inkling_adapter_preserves_uncompiled_untuned_qualification(monkeypatch,
 @pytest.mark.parametrize("draft_head", [None, "nvfp4", "mxfp8"])
 @pytest.mark.parametrize("markov_head", [None, "nvfp4"])
 def test_mini_proposal_head_quantization_plans_and_prepares(monkeypatch, tmp_path, draft_head, markov_head):
-    from ignition.recipes.inkling2 import bootstrap
+    from hyperflare_recipes.recipes.inkling2 import bootstrap
 
     model = ResolvedModel(MINI_RECIPE, MINI_RECIPE.checkpoints[0])
     argv = ["export", model.checkpoint.alias]
@@ -117,7 +117,7 @@ def test_mini_proposal_head_quantization_plans_and_prepares(monkeypatch, tmp_pat
 
 def test_mini_rejects_undeclared_proposal_head_quantization():
     from ignition.planning import UsageError
-    from ignition.recipes.inkling2.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.inkling2.bootstrap import PreparationConfig
 
     bad_markov = replace(MINI_RECIPE.speculation, markov_head_quantization="fp8")
     with pytest.raises(UsageError, match="markov-head-quantization"):

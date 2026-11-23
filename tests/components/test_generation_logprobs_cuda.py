@@ -118,7 +118,7 @@ def test_sampling_reports_raw_scores_before_every_sampler_transform(compiled, co
 def test_speculative_logprobs_follow_committed_target_positions_and_token_limits(width, compiled, count):
     from ignition.components.completion import CompletionOutputs
     from ignition.components.sampling import DeviceRequestState, RequestAdmission
-    from ignition.components.speculation import PreparedSpeculativeCommit, SpeculativeAcceptance
+    from hyperflare_recipes.components.speculation import PreparedSpeculativeCommit, SpeculativeAcceptance
     from ignition.preparation.compilation import compile_forward
     device = 'cuda'
     state = DeviceRequestState.allocate(device, vocab_size=4096)
@@ -434,7 +434,7 @@ def test_native_tensor_parallel_reports_only_the_coordinating_ranks_values(world
 def test_packed_columns_beyond_a_short_request_never_read_another_requests_logits():
     from ignition.components.completion import CompletionOutputs
     from ignition.components.sampling import DeviceRequestState, RequestAdmission
-    from ignition.components.speculation import PreparedSpeculativeCommit, SpeculativeAcceptance
+    from hyperflare_recipes.components.speculation import PreparedSpeculativeCommit, SpeculativeAcceptance
     from ignition.preparation.compilation import compile_forward
     device = 'cuda'
     state = DeviceRequestState.allocate(device, vocab_size=4096, capacity=2)
@@ -486,7 +486,7 @@ def test_packed_columns_beyond_a_short_request_never_read_another_requests_logit
 def test_verification_reports_raw_target_logits_with_local_filtering_scratch(compiled, count):
     from ignition.components.completion import CompletionOutputs
     from ignition.components.sampling import DeviceRequestState, RequestAdmission
-    from ignition.components.speculation import (PreparedSpeculativeDistributions,
+    from hyperflare_recipes.components.speculation import (PreparedSpeculativeDistributions,
         PreparedStochasticVerification, PreparedSpeculativeCommit, SpeculativeRngState)
     from ignition.preparation.compilation import compile_forward
     device = 'cuda'

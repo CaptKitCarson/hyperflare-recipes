@@ -13,9 +13,8 @@ def _worker(rank, directory, head_major):
     import torch
     import torch.distributed as dist
     from b12x.comm.pcie import AllReduce, DcpAllToAll
-    from ignition.components.collectives import (
-        PreparedAllReduce, PreparedAllReduceRMSNorm, PreparedAllGather, PreparedLseReduceScatter,
-    )
+    from ignition.components.collectives import (PreparedAllReduce, PreparedAllReduceRMSNorm, PreparedAllGather)
+    from hyperflare_recipes.components.head_exchange import PreparedLseReduceScatter
     from ignition.preparation.collectives import CollectivePreparation
     from ignition.preparation.tuning import RecordedPreparationSession
 

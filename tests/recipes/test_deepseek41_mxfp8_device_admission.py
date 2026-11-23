@@ -8,13 +8,13 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.recipes.deepseek41.attention import AttentionScratch, PreparedAttention
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.recipes.deepseek41.attention import AttentionScratch, PreparedAttention
 
 
 @pytest.mark.parametrize("sm103", (True, False))
 def test_attention_selects_architecture_compatible_mxfp8_preparation(monkeypatch, sm103):
-    from ignition.recipes.deepseek41 import attention
+    from hyperflare_recipes.recipes.deepseek41 import attention
 
     class PackedMXFP8:
         pass
@@ -74,7 +74,7 @@ def test_attention_selects_architecture_compatible_mxfp8_preparation(monkeypatch
 def test_sm103_mxfp8_projection_reaches_existing_native_plan(monkeypatch):
     from b12x.gemm.blockscaled import _a16
     from b12x.gemm.blockscaled._linear import MXFP8LinearWeight
-    from ignition.components import linear
+    from hyperflare_recipes.components import linear
 
     source = torch.zeros((1, 1280), dtype=torch.bfloat16)
     output = torch.empty((1, 8192), dtype=torch.bfloat16)

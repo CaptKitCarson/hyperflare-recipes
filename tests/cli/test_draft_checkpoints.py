@@ -12,7 +12,7 @@ import pytest
 from ignition import planning
 from ignition.cli.config import Configuration, Setting
 from ignition.cli.preparation import Host, derive
-from ignition.recipes import ResolvedModel, recipes
+from hyperflare_recipes.recipes import ResolvedModel, recipes
 
 
 @pytest.mark.parametrize("name,embedded", [("nemotron_h", False), ("kimi3", False), ("kimi3", True), ("muse_spark", False), ("qwen38_dense", False)])
@@ -34,7 +34,7 @@ def test_draft_preparation_selects_local_or_hub_snapshot(monkeypatch, tmp_path, 
                   concurrency=Setting(4, "test"), speculation=recipe.speculation if drafting else None)
     assert plan.hub_cache == hub_cache
 
-    draft = import_module(f"ignition.recipes.{name}." + ("config" if name == "kimi3" else "draft_config"))
+    draft = import_module(f"hyperflare_recipes.recipes.{name}." + ("config" if name == "kimi3" else "draft_config"))
     repository = draft.DSPARK_REPOSITORY if name == "kimi3" else draft.REPOSITORY
     revision = draft.DSPARK_REVISION if name == "kimi3" else draft.REVISION
     snapshot = hub_cache / f"models--{repository.replace('/', '--')}" / "snapshots" / revision
@@ -61,7 +61,7 @@ def test_draft_preparation_selects_local_or_hub_snapshot(monkeypatch, tmp_path, 
     def preparation_config(**options):
         return SimpleNamespace(**(dict(draft_checkpoint=None) | options))
 
-    monkeypatch.setitem(sys.modules, f"ignition.recipes.{name}.bootstrap", SimpleNamespace(
+    monkeypatch.setitem(sys.modules, f"hyperflare_recipes.recipes.{name}.bootstrap", SimpleNamespace(
         PreparationConfig=preparation_config, prepare=prepare_model, prepare_rank=prepare_model))
     monkeypatch.setitem(sys.modules, "ignition.preparation.rank_group", SimpleNamespace(
         prepare_group=lambda snapshot, config, prepare, **options: config))

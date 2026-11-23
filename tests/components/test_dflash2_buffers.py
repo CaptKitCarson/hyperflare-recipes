@@ -7,9 +7,9 @@ from types import SimpleNamespace
 
 import torch
 
-from ignition.components.dflash2 import DraftScratch, PreparedContextCapture
-from ignition.components.dflash2_geometry import DraftAttentionGeometry
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.dflash2 import DraftScratch, PreparedContextCapture
+from hyperflare_recipes.components.dflash2_geometry import DraftAttentionGeometry
+from hyperflare_recipes.components.parallel import TensorParallelShard
 
 
 def draft_config():
@@ -21,7 +21,7 @@ def draft_config():
 
 
 def test_draft_declaration_reuse_keeps_writable_roles_disjoint():
-    from ignition.components.dflash2 import _draft_templates
+    from hyperflare_recipes.components.dflash2 import _draft_templates
 
     config, shard, examples = draft_config(), TensorParallelShard(0, 1), {}
     scratch = DraftScratch.allocate(config, shard, 8, "cpu")
@@ -147,7 +147,7 @@ def test_draft_scratch_tracks_geometry_without_device_buffers():
 
 
 def test_hyperconnection_variants_share_exact_immutable_gain():
-    from ignition.recipes.qwen38.hyperconnection import normalization_gain
+    from hyperflare_recipes.recipes.qwen38.hyperconnection import normalization_gain
 
     weight = torch.linspace(-.25, .25, 10240, dtype=torch.bfloat16)
     module = SimpleNamespace(hc_norm=SimpleNamespace(weight=weight))

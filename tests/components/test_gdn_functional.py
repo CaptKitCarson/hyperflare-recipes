@@ -10,7 +10,7 @@ import weakref
 import pytest
 import torch
 
-from ignition.components import gated_delta, gated_norm, gdn_prefill_sm103, gdn_recovery
+from hyperflare_recipes.components import gated_delta, gated_norm, gdn_prefill_sm103, gdn_recovery
 
 
 def test_functional_gated_norm_releases_bound_operands_and_returns_local_output(monkeypatch):
@@ -210,7 +210,7 @@ def test_functional_sm103_prefill_preserves_gates_and_selected_operation(monkeyp
 
 
 def test_functional_state_partitions_preserve_row_maps_without_scratch_owners():
-    from ignition.recipes.qwen38.mixed_state import StatePartitions
+    from hyperflare_recipes.recipes.qwen38.mixed_state import StatePartitions
 
     packing = SimpleNamespace(prompt_indices=torch.tensor([0, 1]), decode_indices=torch.tensor([2, 3]),
         prompt_valid=torch.tensor([True, False]), decode_valid=torch.tensor([False, True]),

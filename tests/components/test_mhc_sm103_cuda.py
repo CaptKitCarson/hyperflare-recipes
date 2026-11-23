@@ -29,7 +29,7 @@ def test_composed_mhc_matches_reference(operation, model, norm_dtype):
     from b12x.preparation import PreparationSession
     from b12x.testing.mhc import post_reference, pre_reference
 
-    from ignition.components.mhc import MHCScratch, MHCWeights, PreparedMHC
+    from hyperflare_recipes.components.mhc import MHCScratch, MHCWeights, PreparedMHC
     from ignition.preparation.scratch import ScratchArena
 
     if not os.environ.get("CUDA_VISIBLE_DEVICES"):
@@ -83,8 +83,8 @@ def _prepare_composed(operation, hidden, rows, norm_dtype, *, residual_scale=1.0
     """Capture one composed mHC call; returns the operator, its scratch, inputs, weights and graph."""
     from b12x.preparation import PreparationSession
 
-    from ignition.components import mhc_sm103
-    from ignition.components.mhc import MHCScratch, MHCWeights, PreparedMHC
+    from hyperflare_recipes.components import mhc_sm103
+    from hyperflare_recipes.components.mhc import MHCScratch, MHCWeights, PreparedMHC
     from ignition.preparation.scratch import ScratchArena
 
     if not os.environ.get("CUDA_VISIBLE_DEVICES"):

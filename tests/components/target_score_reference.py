@@ -4,7 +4,7 @@
 """Unfused target distribution implementation used as the compiled score oracle."""
 
 import torch
-from ignition.components.speculation import _geometry, _metadata, _tensor, _live, _sliced
+from hyperflare_recipes.components.speculation import _geometry, _metadata, _tensor, _live, _sliced
 from flashinfer import sampling
 from flashinfer.utils import device_support_pdl
 from ignition.preparation.tensor_metadata import record_numeric_tensor
@@ -67,7 +67,7 @@ class UnfusedSpeculativeDistributions:
         for name, tensor in bind_scratch(self.scratch_layout(batch, width, vocab),
                                         device=device, workspace=workspace).items():
             setattr(self, name, tensor)
-        from ignition.components.probability_normalization import PreparedProbabilityNormalization
+        from hyperflare_recipes.components.probability_normalization import PreparedProbabilityNormalization
         self.normalization = PreparedProbabilityNormalization(self.probabilities, self.valid)
         self._prepared = False
 

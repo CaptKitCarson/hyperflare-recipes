@@ -18,7 +18,7 @@ import pytest
 import torch
 
 from ignition.components.completion import CompletionOutputs
-from ignition.components.paged_batch import BatchInputs
+from hyperflare_recipes.components.paged_batch import BatchInputs
 from ignition.components.sampling import AdmissionBuffers
 from ignition.components.state import StateLayout, StateStorage
 from ignition.components.state_transfer import StateCommands
@@ -36,13 +36,13 @@ def _vision_buffers(recipe):
     if recipe in ("gemma4", "qwen38_dense"):
         return {}
     if recipe in ("deepseek4", "deepseek41"):
-        from ignition.components.deepseek_vision import VisionInputs
+        from hyperflare_recipes.components.deepseek_vision import VisionInputs
 
-        capacities = importlib.import_module(f"ignition.recipes.{recipe}.bootstrap").PATCH_CAPACITIES
+        capacities = importlib.import_module(f"hyperflare_recipes.recipes.{recipe}.bootstrap").PATCH_CAPACITIES
         inputs = VisionInputs.allocate("cpu", patches=max(capacities))
     else:
         module = "vision_state" if recipe in ("qwen38", "glm53") else "vision"
-        inputs = importlib.import_module(f"ignition.recipes.{recipe}.{module}").VisionInputs.allocate("cpu")
+        inputs = importlib.import_module(f"hyperflare_recipes.recipes.{recipe}.{module}").VisionInputs.allocate("cpu")
     from ignition.components.vision_state import PrefillVisionInputs
 
     values = inputs.buffers()
@@ -51,8 +51,8 @@ def _vision_buffers(recipe):
 
 
 def _recipe_metadata(recipe, *, all_variants=True, config_options=None, completion_capacity=None):
-    module = importlib.import_module(f"ignition.recipes.{recipe}.contract")
-    bootstrap = importlib.import_module(f"ignition.recipes.{recipe}.bootstrap")
+    module = importlib.import_module(f"hyperflare_recipes.recipes.{recipe}.contract")
+    bootstrap = importlib.import_module(f"hyperflare_recipes.recipes.{recipe}.bootstrap")
     options = {}
     if recipe == "deepseek41":
         options = dict(max_active=32, prefill_chunk_size=4096,
@@ -95,7 +95,7 @@ def _recipe_metadata(recipe, *, all_variants=True, config_options=None, completi
     if vision_buffers:
         from ignition.components.vision_state import PrefillVisionInputs
         buffers.update(PrefillVisionInputs.allocate(config.prefill_chunk_size, "cpu").buffers())
-    from ignition.components.prompt_logprobs import PromptOutputs
+    from hyperflare_recipes.components.prompt_logprobs import PromptOutputs
     buffers.update(PromptOutputs(config.prefill_chunk_size, "cpu").buffers())
     signatures = {}
 
@@ -139,7 +139,7 @@ def _recipe_metadata(recipe, *, all_variants=True, config_options=None, completi
     for tokens in getattr(config, "prefill_capacities", prefill_capacities(config.prefill_chunk_size)):
         for enabled in ((True, False) if recipe == "deepseek41" else (None,)):
             add("prefill", 1, tokens, enabled=enabled)
-    from ignition.components.prompt_logprobs import scored_prefill_capacities
+    from hyperflare_recipes.components.prompt_logprobs import scored_prefill_capacities
     for tokens in scored_prefill_capacities(config.prefill_chunk_size):
         for enabled in ((True, False) if recipe == "deepseek41" else (None,)):
             add("scored_prefill", 1, tokens, enabled=enabled)
@@ -166,7 +166,7 @@ def _recipe_metadata(recipe, *, all_variants=True, config_options=None, completi
     if recipe == "glm53" and not config.mtp:
         kwargs["draft_lag"] = None
     if "frontend" in arguments:
-        kwargs["frontend"] = importlib.import_module(f"ignition.recipes.{recipe}.frontend").FRONTEND
+        kwargs["frontend"] = importlib.import_module(f"hyperflare_recipes.recipes.{recipe}.frontend").FRONTEND
     if vision_buffers:
         add("vision", 1, 1)
     contract = module.prepare(signatures, buffers, pool, **kwargs)
@@ -221,7 +221,7 @@ def test_deepseek41_export_geometry_passes_native_bootstrap():
     import flare_heliopause
     from huggingface_hub import try_to_load_from_cache
     from ignition.preparation.frontend import prepare_frontend, PromptEncoder
-    from ignition.recipes.deepseek41.recipe import RECIPE
+    from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE
 
     checkpoint = RECIPE.checkpoints[0]
     tokenizer = try_to_load_from_cache(

@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.window_attention import stage_windows
-from ignition.components.window_staging import PreparedWindowStaging
+from hyperflare_recipes.components.window_attention import stage_windows
+from hyperflare_recipes.components.window_staging import PreparedWindowStaging
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.tuning import RecordedPreparationSession
 

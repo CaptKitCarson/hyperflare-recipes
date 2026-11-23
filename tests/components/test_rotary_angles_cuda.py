@@ -9,11 +9,11 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.rotary import CompressedRotary, PreparedRotaryAngles
+from hyperflare_recipes.components.rotary import CompressedRotary, PreparedRotaryAngles
 from ignition.preparation.compile_pool import CompilePool
 from ignition.preparation.graphs import PreparedGraphBundle
 from tests.tensor_examples import TensorExamples
-from ignition.recipes.deepseek4.attention import normalize_rotate
+from hyperflare_recipes.recipes.deepseek4.attention import normalize_rotate
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                               reason="requires an assigned CUDA device")

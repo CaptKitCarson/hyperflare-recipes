@@ -82,10 +82,10 @@ class SamplingRound:
 
 
 def _rank(rank, world, rendezvous, result_channel=False, divergent_invalid=False, compiled=True):
-    from ignition.components.draft_sampling import PreparedDraftDistribution
-    from ignition.components.parallel_draft import prepare_sampling_broadcasts
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
+    from hyperflare_recipes.components.parallel_draft import prepare_sampling_broadcasts
     from ignition.components.sampling import DeviceRequestState, RequestAdmission
-    from ignition.components.speculation import PreparedStochasticVerification, SpeculativeAcceptance, SpeculativeRngState
+    from hyperflare_recipes.components.speculation import PreparedStochasticVerification, SpeculativeAcceptance, SpeculativeRngState
     from ignition.preparation.collectives import (CollectivePreparation, create_all_gather_runtime,
                                                 create_result_broadcast_runtime)
     from ignition.preparation.compilation import compile_forward

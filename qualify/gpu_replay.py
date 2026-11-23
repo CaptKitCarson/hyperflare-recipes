@@ -50,7 +50,7 @@ def prepare(args):
 def flare(args, corpus):
     import torch
 
-    from ignition.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
+    from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
     from qualify.performance_trace import prepared_graph_map
     from qualify.replay_floor import ReplayCase
 

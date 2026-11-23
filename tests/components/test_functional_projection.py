@@ -11,7 +11,7 @@ import pytest
 import torch
 from torch.fx.experimental.proxy_tensor import make_fx
 
-from ignition.components import linear
+from hyperflare_recipes.components import linear
 
 
 @torch.library.custom_op("flare_test::functional_projection_out", mutates_args=("output", "workspace"))

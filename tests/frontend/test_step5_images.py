@@ -27,7 +27,7 @@ def reference(tmp_path_factory):
         Step3p7ImageProcessor,
     )
 
-    from ignition.recipes.step5.frontend import inference_template
+    from hyperflare_recipes.recipes.step5.frontend import inference_template
     assets = tmp_path_factory.mktemp("step5-assets")
     (assets / "chat_template.jinja").write_text(inference_template(CHECKPOINT))
     subprocess.run(["cargo", "build", "--quiet", "--manifest-path", str(ROOT / "helios/Cargo.toml"),
@@ -40,7 +40,7 @@ def test_native_chat_template(reference, tmp_path):
 
     _, tokenizer, assets = reference
     original = _compile_jinja_template((CHECKPOINT / "chat_template.jinja").read_text())
-    from ignition.recipes.step5.contract import FRONTEND
+    from hyperflare_recipes.recipes.step5.contract import FRONTEND
     from tests.frontend import literal_reference
 
     source = (CHECKPOINT / "chat_template.jinja").read_text()

@@ -62,11 +62,11 @@ class BroadcastIndexSelection:
     def __init__(self, query, weights, cache, metadata, shards, context, buffers, *,
                  start, end, session, name, workspace):
         import torch
-        from ignition.components.candidate_rows import PreparedCandidateRows
+        from hyperflare_recipes.components.candidate_rows import PreparedCandidateRows
         from ignition.components.collectives import PreparedAllGather, PreparedBroadcast
-        from ignition.components.fp8_indexer import PreparedFP8Indexer
-        from ignition.components.row_topk import PreparedRowTopK
-        from ignition.recipes.kimi31.indexer import SharedBuffers
+        from hyperflare_recipes.components.fp8_indexer import PreparedFP8Indexer
+        from hyperflare_recipes.components.row_topk import PreparedRowTopK
+        from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
 
         rows, width = end - start, metadata.token_page_table.shape[1]
         self.positions, self.tables = metadata.positions[start:end], metadata.token_page_table[start:end]
@@ -103,7 +103,7 @@ class BroadcastIndexSelection:
 
     def prepare_local(self):
         import torch
-        from ignition.recipes.kimi31.dcp import index_pages, pack_candidates
+        from hyperflare_recipes.recipes.kimi31.dcp import index_pages, pack_candidates
 
         index_pages(self.tables[:1], self.pages)
         self.lengths.copy_(self.shards.local_tokens((self.positions + 1).clamp(min=0)).to(torch.int32))
@@ -126,7 +126,7 @@ class BroadcastIndexSelection:
 class SelectionFixture:
     def __init__(self, weights, source, latent, cache, metadata, context, session, arena, *, eps):
         import torch
-        from ignition.recipes.kimi31.indexer import PreparedDSAIndexer
+        from hyperflare_recipes.recipes.kimi31.indexer import PreparedDSAIndexer
 
         self.source, self.metadata, self.cache = source, metadata, cache
         self.index = PreparedDSAIndexer(weights, source, latent, metadata, cache, context.shards,
@@ -198,8 +198,8 @@ class WindowScores:
 
     def __init__(self, cache, *, session, arena, maximum):
         import torch
-        from ignition.components.fp8_indexer import PreparedFP8Indexer
-        from ignition.recipes.kimi31.indexer import SharedBuffers
+        from hyperflare_recipes.components.fp8_indexer import PreparedFP8Indexer
+        from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
 
         device = cache.device
         self.width = min(maximum, 131072)
@@ -240,16 +240,17 @@ def _worker(rank, rendezvous, checkpoint, destination, policy, compiled, maximum
     from types import SimpleNamespace
     from b12x.attention import dense_mla
     from ignition import runtime_patches
-    from ignition.components.dense_mla import PreparedDenseMLA
-    from ignition.components.fp8_indexer import write_fp8_index_keys
-    from ignition.components.shared_pages import SharedPages
-    from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime, create_head_exchange
+    from hyperflare_recipes.components.dense_mla import PreparedDenseMLA
+    from hyperflare_recipes.components.fp8_indexer import write_fp8_index_keys
+    from hyperflare_recipes.components.shared_pages import SharedPages
+    from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.dcp import ContextShards
-    from ignition.recipes.kimi31.dcp import ContextParallel, AttentionConstants
+    from hyperflare_recipes.recipes.kimi3.dcp import ContextShards
+    from hyperflare_recipes.recipes.kimi31.dcp import ContextParallel, AttentionConstants
 
     runtime_patches.apply()
     torch.set_num_threads(2)

@@ -9,7 +9,7 @@ import torch
 
 from ignition.components.sampling import AdmissionBuffers, RequestAdmission
 from ignition.components.state_transfer import StateCommands
-from ignition.recipes.glm53.batch import BatchInputs
+from hyperflare_recipes.recipes.glm53.batch import BatchInputs
 
 
 def run_cached_generation(worker, bundle, pool, requests, scratch, resume, tokens, eos, capacity, progress, *, resume_readback):

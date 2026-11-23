@@ -18,18 +18,18 @@ cuda = pytest.mark.skipif(os.getenv("FLARE_RUN_CUDA_TESTS") != "1", reason="requ
 def test_checkpoint_kda_verification_commits_only_accepted_prefix(tmp_path, monkeypatch):
     monkeypatch.setenv("TRITON_CACHE_DIR", str(tmp_path / "triton"))
     monkeypatch.setenv("TORCHINDUCTOR_CACHE_DIR", str(tmp_path / "inductor"))
-    from ignition.components.kda_speculation import KDARecords, PreparedKDAReplay
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.recurrent import DeltaMetadata
+    from hyperflare_recipes.components.kda_speculation import KDARecords, PreparedKDAReplay
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.recurrent import DeltaMetadata
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.config import ModelConfig
-    from ignition.recipes.kimi3.decoder import _commit_convolution
-    from ignition.recipes.kimi3.kda import PreparedKDA
-    from ignition.recipes.kimi3.pool import ContinuationPool
-    from ignition.recipes.kimi3.weights import KimiWeightLoader
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig
+    from hyperflare_recipes.recipes.kimi3.decoder import _commit_convolution
+    from hyperflare_recipes.recipes.kimi3.kda import PreparedKDA
+    from hyperflare_recipes.recipes.kimi3.pool import ContinuationPool
+    from hyperflare_recipes.recipes.kimi3.weights import KimiWeightLoader
 
     if not TARGET.is_dir():
         pytest.skip("Kimi K3 checkpoint is unavailable")

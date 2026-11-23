@@ -17,13 +17,13 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", r
 def test_real_qwen_prompt_head_and_reduction():
     from tokenizers import Tokenizer
     from ignition.preparation.core_storage import CoreStorage
-    from ignition.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
-    from ignition.recipes.qwen38.decoder import DecoderScratch, ModelWeights
-    from ignition.recipes.qwen38.decoder_state import DecoderInputs
-    from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-    from ignition.recipes.qwen38.state import HybridStatePool
-    from ignition.recipes.qwen38.ple import PLETable, ROWS_PER_PLANE
-    from ignition.components.prompt_logprobs import PromptScoring
+    from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
+    from hyperflare_recipes.recipes.qwen38.decoder import DecoderScratch, ModelWeights
+    from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.state import HybridStatePool
+    from hyperflare_recipes.recipes.qwen38.ple import PLETable, ROWS_PER_PLANE
+    from hyperflare_recipes.components.prompt_logprobs import PromptScoring
 
     snapshot = Path(os.environ.get("FLARE_QWEN38_SNAPSHOT", "/data/checkpoint-releases/Qwen3.8-Flash-Next-NVFP4-MXFP8-CSF-QAD"))
     if not snapshot.is_dir():

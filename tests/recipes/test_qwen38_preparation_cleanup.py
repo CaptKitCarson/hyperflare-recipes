@@ -11,7 +11,7 @@ import pytest
 import torch
 
 from ignition.preparation.core_storage import CoreStorage
-from ignition.recipes.qwen38 import bootstrap
+from hyperflare_recipes.recipes.qwen38 import bootstrap
 
 
 class Routing:

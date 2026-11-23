@@ -10,11 +10,11 @@ from pathlib import Path
 
 import pytest
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes import resolve
-from ignition.recipes.step5.config import ModelConfig
-from ignition.recipes.step5.frontend import prepare_frontend
-from ignition.recipes.step5.pool import continuation_layout, page_bytes
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes import resolve
+from hyperflare_recipes.recipes.step5.config import ModelConfig
+from hyperflare_recipes.recipes.step5.frontend import prepare_frontend
+from hyperflare_recipes.recipes.step5.pool import continuation_layout, page_bytes
 
 
 @pytest.fixture(scope="module")
@@ -67,7 +67,7 @@ def test_sampling_defaults():
 def test_serial_expert_layers_share_scale_storage(checkpoint_config, world):
     import torch
 
-    from ignition.recipes.step5.weights import Step5WeightLoader
+    from hyperflare_recipes.recipes.step5.weights import Step5WeightLoader
 
     loader = Step5WeightLoader.__new__(Step5WeightLoader)
     loader.config = ModelConfig.from_dict(checkpoint_config)
@@ -102,8 +102,8 @@ def test_vision_text_and_draft_scratch_share_storage(checkpoint_config):
     from dataclasses import fields, is_dataclass
     import torch
     from ignition.preparation.scratch import GraphBufferPool
-    from ignition.recipes.step5.decoder import Scratch
-    from ignition.recipes.step5.vision import VisionScratch
+    from hyperflare_recipes.recipes.step5.decoder import Scratch
+    from hyperflare_recipes.recipes.step5.vision import VisionScratch
 
     config = ModelConfig.from_dict(checkpoint_config)
     shard = TensorParallelShard(0, 4)

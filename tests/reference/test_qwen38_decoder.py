@@ -14,20 +14,20 @@ import pytest
 import torch
 import torch.nn.functional as F
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import (
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import (
     MODEL_ID,
     REVISION,
     TEXT_PREFIX,
     TRANSFORMERS_VERSION,
 )
-from ignition.reference.qwen38_decoder import (
+from hyperflare_recipes.reference.qwen38_decoder import (
     CanonicalTextReference,
     _SelectedEmbedding,
     _SelectedExperts,
     _StreamLinear,
 )
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors,
     mxfp8_linear_reference,
     nvfp4_expert_reference,

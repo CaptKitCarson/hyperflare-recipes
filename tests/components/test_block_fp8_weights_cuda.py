@@ -12,9 +12,9 @@ import pytest
 import torch
 from safetensors.torch import save_file
 
-from ignition.components.block_fp8_weights import BlockFP8WeightLoader
+from hyperflare_recipes.components.block_fp8_weights import BlockFP8WeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-from ignition.reference.qwen38_quant import decode_mxfp8
+from hyperflare_recipes.reference.qwen38_quant import decode_mxfp8
 
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",

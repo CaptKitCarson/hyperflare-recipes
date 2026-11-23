@@ -10,18 +10,18 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.expert_overlap import ConcurrentSharedExpert
-from ignition.components.linear import UnquantizedProjection
-from ignition.components.mlp import PreparedMLP
-from ignition.components.moe import PreparedRouter, PreparedRoutedExperts
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.expert_overlap import ConcurrentSharedExpert
+from hyperflare_recipes.components.linear import UnquantizedProjection
+from hyperflare_recipes.components.mlp import PreparedMLP
+from hyperflare_recipes.components.moe import PreparedRouter, PreparedRoutedExperts
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.deepseek41.weights import DeepSeekWeightLoader
-from ignition.recipes.deepseek41.decoder import Scratch
-from ignition.recipes.deepseek41.recipe import RECIPE
+from hyperflare_recipes.recipes.deepseek41.weights import DeepSeekWeightLoader
+from hyperflare_recipes.recipes.deepseek41.decoder import Scratch
+from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE
 
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",

@@ -14,8 +14,8 @@ from ignition.cli import _parser, display, preparation
 from ignition.components.capacity import batch_capacities, prefill_capacities, serving_modes
 from ignition.errors import UsageError
 from ignition.preparation import rebuild_manifest, runtime_core_pb2 as proto
-from ignition.recipes import ResolvedModel, recipes, resolve
-from ignition.recipes.declaration import Speculation
+from hyperflare_recipes.recipes import ResolvedModel, recipes, resolve
+from ignition.declaration import Speculation
 from tests.cli.test_planning import derive, gpu
 
 
@@ -81,7 +81,7 @@ def test_recipe_adapters_preserve_mtp_only_and_validate_direct_configs(monkeypat
     import huggingface_hub
 
     name = {"kimi31": "kimi3", "inkling2_mini": "inkling2"}.get(recipe.name, recipe.name)
-    bootstrap = import_module(f"ignition.recipes.{name}.bootstrap")
+    bootstrap = import_module(f"hyperflare_recipes.recipes.{name}.bootstrap")
     world = recipe.tensor_parallel[0]
     devices = tuple(replace(gpu(i, 4096), total_bytes=4096 << 30) for i in range(world))
     plan = derive(model=recipe, gpus=devices, selected=tuple(range(world)),
@@ -118,9 +118,9 @@ def test_recipe_adapters_preserve_mtp_only_and_validate_direct_configs(monkeypat
 
 @pytest.mark.parametrize("concurrency,normal,only", [(1, 42, 27), (4, 104, 79)])
 def test_kimi_catalog_geometry_keeps_width_one_and_vision(concurrency, normal, only):
-    from ignition.components.prompt_logprobs import prefill_modes
-    from ignition.recipes.kimi3.bootstrap import PreparationConfig
-    from ignition.recipes.kimi3.vision import PATCH_CAPACITIES
+    from hyperflare_recipes.components.prompt_logprobs import prefill_modes
+    from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.kimi3.vision import PATCH_CAPACITIES
 
     catalogs = []
     for mtp_only, expected in ((False, normal), (True, only)):
@@ -145,7 +145,7 @@ def test_kimi_catalog_geometry_keeps_width_one_and_vision(concurrency, normal, o
 
 
 def test_qwen_mixed_shapes_agree_with_the_plan_for_mtp_only():
-    from ignition.recipes.qwen38.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig
 
     recipe = resolve("qwen3.8-flash").recipe
     for mtp_only in (False, True):
@@ -161,7 +161,7 @@ def test_mtp_only_preserves_selected_benchmark_geometry(name):
     from ignition.preparation.selection import BenchmarkSelection
 
     selection = BenchmarkSelection(batches=(1, 4))
-    config_type = import_module(f"ignition.recipes.{name}.bootstrap").PreparationConfig
+    config_type = import_module(f"hyperflare_recipes.recipes.{name}.bootstrap").PreparationConfig
     options = dict(draft_checkpoint="fixture") if name == "kimi3" else dict(mtp=True, draft_snapshot="fixture")
     config = config_type(benchmark_selection=selection, mtp_only=True, speculative_token_capacity=128, **options)
     assert config.speculative_round_shapes == selection.speculative_round_shapes

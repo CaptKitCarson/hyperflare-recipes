@@ -45,7 +45,7 @@ class SharedExpertOverlap:
 
 @pytest.mark.parametrize("overlap", [True, False])
 def test_glm_shared_expert_overlaps_routing_or_follows_routed_experts(monkeypatch, overlap):
-    from ignition.recipes.glm53 import moe
+    from hyperflare_recipes.recipes.glm53 import moe
 
     launches, constructed, rows = [], [], 4
     routed = torch.full((rows, 4096), 2, dtype=torch.bfloat16)
@@ -77,7 +77,7 @@ def test_glm_shared_expert_overlaps_routing_or_follows_routed_experts(monkeypatc
 
 @pytest.mark.parametrize("overlap", [True, False])
 def test_qwen_shared_expert_overlaps_routing_or_precedes_it_on_the_main_stream(monkeypatch, overlap):
-    from ignition.recipes.qwen38 import moe
+    from hyperflare_recipes.recipes.qwen38 import moe
 
     launches, constructed, rows = [], [], 2
     routed = torch.full((rows, 2560), 2, dtype=torch.bfloat16)
@@ -119,7 +119,7 @@ def test_qwen_shared_expert_overlaps_routing_or_precedes_it_on_the_main_stream(m
 
 @pytest.mark.parametrize("overlap", [True, False])
 def test_glm_kda_gate_chain_overlaps_input_projections_or_follows_them(monkeypatch, overlap):
-    from ignition.recipes.glm53 import kda
+    from hyperflare_recipes.recipes.glm53 import kda
 
     launches = []
     scratch = kda.KDAScratch.allocate(2, 16, "cpu")

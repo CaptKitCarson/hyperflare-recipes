@@ -10,8 +10,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.recipes.qwen38.draft_state import DraftMetadata
-from ignition.recipes.qwen38.state import HybridStatePool
+from hyperflare_recipes.recipes.qwen38.draft_state import DraftMetadata
+from hyperflare_recipes.recipes.qwen38.state import HybridStatePool
 
 
 @pytest.mark.parametrize("shared", [False, True])
@@ -60,9 +60,9 @@ CUDA = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @CUDA
 @torch.no_grad()
 def test_live_row_state_survives_width_one_and_retains_accepted_endpoint():
-    from ignition.recipes.qwen38.decoder_state import DecoderInputs
-    from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-    from ignition.recipes.qwen38.speculative_state import PreparedVerificationState
+    from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.speculative_state import PreparedVerificationState
 
     device = torch.device("cuda", 0)
     pool = HybridStatePool.allocate(34, device, speculative_tokens=7)
@@ -127,8 +127,8 @@ def test_live_row_state_survives_width_one_and_retains_accepted_endpoint():
 @pytest.mark.parametrize("temperature", [.7, 1.])
 @pytest.mark.parametrize("copy_epoch", [12, 13])
 def test_recursive_draft_reorders_residuals_and_physical_copy_hints(temperature, copy_epoch):
-    from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-    from ignition.recipes.qwen38.speculative_model import PreparedSpeculativeRound
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.speculative_model import PreparedSpeculativeRound
 
     batch, width = 2, 4
     requests = DeviceRequestState.allocate("cpu", vocab_size=128)
@@ -140,7 +140,7 @@ def test_recursive_draft_reorders_residuals_and_physical_copy_hints(temperature,
     regions = {"target_residual": torch.zeros((5, 10240), dtype=torch.bfloat16),
                "target_residual_position": torch.zeros((5, 3), dtype=torch.int64)}
     pool = SimpleNamespace(region=lambda name: regions[name], rope_delta=torch.zeros((5, 1), dtype=torch.int64))
-    from ignition.recipes.qwen38.draft_state import DRAFT_RAW_FIELDS
+    from hyperflare_recipes.recipes.qwen38.draft_state import DRAFT_RAW_FIELDS
 
     cache = SimpleNamespace(**{name: torch.zeros((1,), dtype=torch.int64) for name in DRAFT_RAW_FIELDS})
     owner = SimpleNamespace(requests=requests, pool=pool,
@@ -227,9 +227,9 @@ def test_recursive_draft_reorders_residuals_and_physical_copy_hints(temperature,
 
 @pytest.mark.parametrize("copy_epoch, expected_mask", [(13, 7), (12, 0)])
 def test_functional_round_passes_physical_copy_mask_to_commit(copy_epoch, expected_mask):
-    from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-    from ignition.recipes.qwen38.speculative_model import PreparedSpeculativeRound
-    from ignition.recipes.qwen38.draft_state import DRAFT_RAW_FIELDS
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.speculative_model import PreparedSpeculativeRound
+    from hyperflare_recipes.recipes.qwen38.draft_state import DRAFT_RAW_FIELDS
 
     batch, width = 1, 4
     requests = DeviceRequestState.allocate("cpu", vocab_size=128)
@@ -300,9 +300,9 @@ def test_functional_round_passes_physical_copy_mask_to_commit(copy_epoch, expect
 @CUDA
 @torch.no_grad()
 def test_fixed_verification_masks_context_tail_without_changing_shape():
-    from ignition.recipes.qwen38.decoder_state import DecoderInputs
-    from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-    from ignition.recipes.qwen38.speculative_state import PreparedVerificationState
+    from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.speculative_state import PreparedVerificationState
 
     pool = HybridStatePool.allocate(34, "cuda", speculative_tokens=7)
     requests = DeviceRequestState.allocate("cuda", consumed_tokens=pool.consumed_tokens[1:5, 0],

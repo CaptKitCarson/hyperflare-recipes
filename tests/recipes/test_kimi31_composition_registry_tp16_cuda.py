@@ -18,16 +18,17 @@ def worker(rank, rendezvous, output, rows_catalog=(8, 7, 6, 5, 4, 3, 2, 1), worl
     runtime_patches.apply()
     import torch.distributed as dist
     from b12x.comm.pcie.pcie_dcp_topk import PCIeDCPTopKOwnerExchange
-    from ignition.components.candidate_selection import PreparedCandidateSelection, CandidateSelectionForward
-    from ignition.components.published_candidates import PublishedCandidateStorage
+    from hyperflare_recipes.components.candidate_selection import PreparedCandidateSelection, CandidateSelectionForward
+    from hyperflare_recipes.components.published_candidates import PublishedCandidateStorage
     from ignition.preparation.capture import capture_forwards
-    from ignition.preparation.collectives import CollectivePreparation, create_head_exchange, create_all_reduce_runtime
+    from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.dcp import ContextShards
-    from ignition.recipes.kimi31.indexer import SharedBuffers
-    from ignition.recipes.kimi31.selection_tuning import CandidateSelectionTuning, _candidate_pattern
+    from hyperflare_recipes.recipes.kimi3.dcp import ContextShards
+    from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
+    from hyperflare_recipes.recipes.kimi31.selection_tuning import CandidateSelectionTuning, _candidate_pattern
     from tests.recipes.test_kimi31_selection_agreement_tp16_cuda import MergePipeline
 
     torch.set_num_threads(2)
@@ -80,7 +81,7 @@ def worker(rank, rendezvous, output, rows_catalog=(8, 7, 6, 5, 4, 3, 2, 1), worl
                     registry.register(operation)
                     controls[rows] = MergePipeline(rows, rank, gather, session, coordinator, reference_buffers, ordered=True)
                 session.tune(show_progress=False)
-                from ignition.recipes.kimi31 import selection_tuning
+                from hyperflare_recipes.recipes.kimi31 import selection_tuning
 
                 trial_forwards = []
                 capture_trials = selection_tuning.capture_forwards
@@ -207,7 +208,7 @@ if __name__ == "__main__":
     from ignition.cli.config import Configuration
     from ignition.cli.environment import apply
     from ignition.cli.preparation import Host
-    from ignition.recipes.kimi31.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)

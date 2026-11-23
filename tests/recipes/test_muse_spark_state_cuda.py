@@ -9,10 +9,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.components.sampling import DeviceRequestState
 from ignition.components.state_transfer import PreparedStateTransfer, StateCommands
-from ignition.recipes.muse_spark.pool import ContinuationPool
+from hyperflare_recipes.recipes.muse_spark.pool import ContinuationPool
 
 from .test_muse_spark_attention import Geometry
 

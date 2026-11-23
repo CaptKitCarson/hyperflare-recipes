@@ -13,7 +13,7 @@ import torch
 
 
 def _context(selection_tuning=None, *, records=object()):
-    from ignition.recipes.glm53.dcp import ContextParallel, ContextShards
+    from hyperflare_recipes.recipes.glm53.dcp import ContextParallel, ContextShards
 
     coordinator = SimpleNamespace(ranks=(0, 1, 2, 3), group=object(), barrier=lambda *args: None)
     return ContextParallel(ContextShards.on(0, 4, "cpu"), heads=None, candidates=None,
@@ -26,14 +26,14 @@ def _scratch(positions=4096, window=1024):
 
 
 def test_trial_context_must_not_register_the_models_gathers():
-    from ignition.recipes.glm53 import selection_tuning as tuning
+    from hyperflare_recipes.recipes.glm53 import selection_tuning as tuning
 
     with pytest.raises(ValueError):
         tuning.ContextGatherTuning(_context(selection_tuning=object()))
 
 
 def test_gathers_of_one_preparation_share_one_slab_shape(monkeypatch):
-    from ignition.recipes.glm53 import dcp, selection_tuning as tuning
+    from hyperflare_recipes.recipes.glm53 import dcp, selection_tuning as tuning
 
     monkeypatch.setattr(dcp, "PreparedVarlenGather", lambda *args, **kwargs: object())
     registry = tuning.ContextGatherTuning(_context())
@@ -44,9 +44,9 @@ def test_gathers_of_one_preparation_share_one_slab_shape(monkeypatch):
 
 
 def _prefill_gather(monkeypatch, *, remote, records, window=True):
-    from ignition.recipes.glm53 import dcp
-    from ignition.recipes.glm53.dcp import ContextParallel, ContextShards
-    from ignition.recipes.glm53.mla import MLAScratch
+    from hyperflare_recipes.recipes.glm53 import dcp
+    from hyperflare_recipes.recipes.glm53.dcp import ContextParallel, ContextShards
+    from hyperflare_recipes.recipes.glm53.mla import MLAScratch
 
     monkeypatch.setattr(dcp, "PreparedVarlenGather", lambda *args, **kwargs: object())
     scratch = MLAScratch.allocate(1, 16, 1, "prefill", "cpu", context_ranks=4,
@@ -88,7 +88,7 @@ def test_context_gather_binds_only_prepared_implementations(monkeypatch):
     ("prefill", False, False, None, False),
     ("decode", False, False, None, False)])
 def test_forward_allocates_records_only_for_the_selected_ring(monkeypatch, mode, remote, records, bound, allocated):
-    from ignition.recipes.glm53.mla import MLAScratch, PreparedGlmMLA
+    from hyperflare_recipes.recipes.glm53.mla import MLAScratch, PreparedGlmMLA
 
     prepared = object.__new__(PreparedGlmMLA)
     prepared.heads, prepared.blocks, prepared.mode, prepared.device = 16, 1, mode, "cpu"
@@ -115,8 +115,8 @@ def test_forward_allocates_records_only_for_the_selected_ring(monkeypatch, mode,
 
 
 def test_context_across_hosts_requires_its_records_runtime(monkeypatch):
-    from ignition.recipes.glm53 import dcp
-    from ignition.recipes.glm53.dcp import ContextParallel, ContextShards
+    from hyperflare_recipes.recipes.glm53 import dcp
+    from hyperflare_recipes.recipes.glm53.dcp import ContextParallel, ContextShards
 
     context = ContextParallel(ContextShards.on(0, 4, "cpu"), heads=None, candidates=None,
                               coordinator=None, remote=True, records=None)
@@ -126,7 +126,7 @@ def test_context_across_hosts_requires_its_records_runtime(monkeypatch):
 
 @pytest.mark.parametrize("agreed", [True, False])
 def test_every_rank_must_select_the_same_transport(agreed):
-    from ignition.recipes.glm53 import selection_tuning as tuning
+    from hyperflare_recipes.recipes.glm53 import selection_tuning as tuning
 
     context = _context()
     context.coordinator.same_on_every_rank = lambda value: agreed

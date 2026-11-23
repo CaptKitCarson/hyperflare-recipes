@@ -18,7 +18,7 @@ import torch.multiprocessing as mp
 def _run(rank, world, rendezvous=None):
     from b12x.preparation import PreparationSession
 
-    from ignition.components.maintenance import PreparedMaintenance as LocalMaintenance
+    from hyperflare_recipes.components.maintenance import PreparedMaintenance as LocalMaintenance
     from ignition.components.sampling import (
         AdmissionBuffers,
         DeviceRequestState,
@@ -31,9 +31,9 @@ def _run(rank, world, rendezvous=None):
     )
     from ignition.preparation.graphs import PreparedGraphBundle
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.glm53.batch import BatchInputs
-    from ignition.recipes.glm53.maintenance import PreparedMaintenance
-    from ignition.recipes.glm53.pool import ContinuationPool
+    from hyperflare_recipes.recipes.glm53.batch import BatchInputs
+    from hyperflare_recipes.recipes.glm53.maintenance import PreparedMaintenance
+    from hyperflare_recipes.recipes.glm53.pool import ContinuationPool
 
     torch.cuda.set_device(rank)
     device = torch.device("cuda", rank)

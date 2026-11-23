@@ -8,7 +8,7 @@ import os
 import pytest
 import torch
 
-from ignition.components.varlen_attention import PreparedVarlenAttention
+from hyperflare_recipes.components.varlen_attention import PreparedVarlenAttention
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession

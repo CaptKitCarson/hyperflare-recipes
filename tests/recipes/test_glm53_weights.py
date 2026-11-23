@@ -13,12 +13,12 @@ import pytest
 import torch
 from safetensors import safe_open
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-from ignition.recipes.glm53 import weights as glm_weights
-from ignition.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader, _expert_scales
-from ignition.reference.qwen38_quant import decode_csf_scales, decode_csf_slab_scales
+from hyperflare_recipes.recipes.glm53 import weights as glm_weights
+from hyperflare_recipes.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader, _expert_scales
+from hyperflare_recipes.reference.qwen38_quant import decode_csf_scales, decode_csf_slab_scales
 
 
 @pytest.fixture(scope="module")
@@ -125,8 +125,8 @@ class ProceededPastRefusal(Exception):
 def test_mxfp8_draft_experts_are_refused_on_sm103_before_any_layer_loads(monkeypatch, sm103, declaration, mtp,
                                                                           refused):
     """Drive ModelWeights.load with a loader that fails on the first tensor request."""
-    from ignition.components import sm103 as capability
-    from ignition.recipes.glm53 import model
+    from hyperflare_recipes.components import sm103 as capability
+    from hyperflare_recipes.recipes.glm53 import model
 
     class Loader:
         quantization = {f"{TEXT_PREFIX}.layers.45.mlp.experts": declaration}
@@ -246,9 +246,9 @@ def test_mxfp8_draft_experts_preserve_tp_partitions(manifest):
 
 @cuda
 def test_nvfp4_draft_head_bytes_match_the_declared_expansion():
-    from ignition.components.vocabulary import nvfp4_draft_head
+    from hyperflare_recipes.components.vocabulary import nvfp4_draft_head
     from ignition.preparation.persistent import allocated_tensor_bytes
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     device = torch.device("cuda:0")
     shard = torch.randn(154880 // 4, 4096, device=device).bfloat16()

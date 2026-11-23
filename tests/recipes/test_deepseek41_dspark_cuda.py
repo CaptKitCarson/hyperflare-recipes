@@ -15,12 +15,12 @@ from b12x.sequence._shared.disk_table import MappedHostAllocation
 
 from ignition.components.engram import EngramInputs, PreparedEngramRequests
 from ignition.components.readiness import ReadinessTimings
-from ignition.components.embedding_partition import EmbeddingHeadPartition
-from ignition.components.compressed_mla import PreparedCompressedCacheWriter, PreparedCompressedMLA
+from hyperflare_recipes.components.embedding_partition import EmbeddingHeadPartition
+from hyperflare_recipes.components.compressed_mla import PreparedCompressedCacheWriter, PreparedCompressedMLA
 from ignition.preparation.compilation import compile_forward
-from ignition.recipes.deepseek41.attention import _commit_window, PreparedCompressor
-from ignition.components.paged_batch import Metadata
-from ignition.recipes.deepseek41.pool import ContinuationPool
+from hyperflare_recipes.recipes.deepseek41.attention import _commit_window, PreparedCompressor
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.recipes.deepseek41.pool import ContinuationPool
 
 from .test_deepseek41_pool import config
 
@@ -194,8 +194,8 @@ def test_noncausal_draft_block_attends_to_future_positions_without_crossing_requ
 @pytest.mark.parametrize("world", [3, 4])
 def test_recipe_requests_replay_full_table_rows_with_tp_projection_ownership(world):
     from types import SimpleNamespace
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.deepseek41.engram import Tables, PreparedTableRequests
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.deepseek41.engram import Tables, PreparedTableRequests
 
     device = torch.device("cuda:0")
     tokens, rows = 12, 3

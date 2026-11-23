@@ -9,9 +9,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.quantization import expert_format, linear_format, projection_group_format, quantized_layers
-from ignition.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
 
 
 def config(layers):
@@ -183,7 +183,7 @@ def test_projection_fusion_requires_matching_formats():
 @pytest.mark.parametrize("algo,group,scale_dtype", [("NVFP4", 16, "F8_E4M3"),
     ("W4A16_NVFP4", 16, "F8_E4M3"), ("MXFP4", 32, "U8")])
 def test_qwen_declares_ordinary_expert_storage(algo, group, scale_dtype):
-    from ignition.preparation.qwen38 import _mlp
+    from hyperflare_recipes.recipes.qwen38.checkpoint_schema import _mlp
 
     layers = {"layer.mlp.experts": {"quant_algo": algo, "group_size": group}}
     tensors = {name: (dtype, shape) for name, dtype, shape in _mlp("layer.mlp", quantization=layers)}
@@ -199,8 +199,8 @@ def test_qwen_declares_ordinary_expert_storage(algo, group, scale_dtype):
     ("W4A16_NVFP4", 16, "a16"), ("MXFP4", 32, "a8")])
 def test_mtp_experts_use_declared_format_and_mtp_scales(tmp_path, monkeypatch, algo, group, mode):
     import torch
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.qwen38.mtp_weights import MTPWeightLoader
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.qwen38.mtp_weights import MTPWeightLoader
 
     prefix = "mtp.layers.0.mlp.experts"
     (tmp_path / "config.json").write_text(json.dumps(config({prefix: {"quant_algo": algo, "group_size": group}})))
@@ -318,7 +318,7 @@ def test_nvfp4_group_rejects_calibration_mismatch_before_payload(tmp_path, diffe
 
 
 def test_mxfp8_experts_refuse_sm103(monkeypatch):
-    from ignition.components import sm103
+    from hyperflare_recipes.components import sm103
 
     loader = DirectWeightLoader(SimpleNamespace(), "cpu")
     loader._session = object()

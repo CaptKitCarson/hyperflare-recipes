@@ -11,7 +11,7 @@ import torch
 from b12x.attention import dsa_indexer
 from b12x.attention.dsa_indexer.reference import pack_index_k_cache_reference
 
-from ignition.components.indexer import PreparedSparseIndexer
+from hyperflare_recipes.components.indexer import PreparedSparseIndexer
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.scratch import ScratchArena

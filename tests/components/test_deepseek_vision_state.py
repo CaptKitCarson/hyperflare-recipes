@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.deepseek_vision import PrefillVisionInputs, VisionState
+from hyperflare_recipes.components.deepseek_vision import PrefillVisionInputs, VisionState
 
 
 def state_with_arena(arena):

@@ -12,8 +12,8 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", r
 @torch.no_grad()
 def test_markov_bias_and_sampled_distribution_replay():
     from b12x.preparation import PreparationSession
-    from ignition.recipes.kimi3.dspark import PreparedMarkov
-    from ignition.components.draft_sampling import PreparedDraftDistribution
+    from hyperflare_recipes.recipes.kimi3.dspark import PreparedMarkov
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
     from ignition.components.sampling import DeviceRequestState, RUNNING
     from ignition.preparation.compilation import compile_forward
 

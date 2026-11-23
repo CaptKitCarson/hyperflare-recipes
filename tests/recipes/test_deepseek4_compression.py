@@ -9,8 +9,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.gated_compression import commit_gated, pool_gated
-from ignition.components.paged_batch import Metadata
+from hyperflare_recipes.components.gated_compression import commit_gated, pool_gated
+from hyperflare_recipes.components.paged_batch import Metadata
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="CUDA tests are opt-in")
 

@@ -18,23 +18,23 @@ import torch.nn.functional as F
 from b12x.preparation import PreparationSession
 from b12x.preparation.types import require_prepared
 
-from ignition.components.linear import UnquantizedProjection
-from ignition.components.moe import PreparedRoutedExperts, PreparedRouter, RouterScratch
-from ignition.components.parallel import TensorParallelShard
-from ignition.preparation import inspect_qwen38_checkpoint
+from hyperflare_recipes.components.linear import UnquantizedProjection
+from hyperflare_recipes.components.moe import PreparedRoutedExperts, PreparedRouter, RouterScratch
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.preparation.qwen38 import REVISION, TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import REVISION, TEXT_PREFIX
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.qwen38.moe import (
+from hyperflare_recipes.recipes.qwen38.moe import (
     PreparedQwenMoe,
     PreparedSharedExpert,
     QwenMoeScratch,
     QwenMoeWeights,
     SharedExpertWeights,
 )
-from ignition.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
-from ignition.recipes.qwen38.tuning import preparation_session
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
+from hyperflare_recipes.recipes.qwen38.tuning import preparation_session
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors,
     decode_mxfp8,
     nvfp4_expert_reference,
@@ -484,7 +484,7 @@ def test_actual_complete_layer_512_experts_graph(manifest, complete_layer, token
 @torch.no_grad()
 def test_actual_packed_a16_decode_and_calibrated_a4_prefill_graphs(manifest):
     from ignition.preparation.compilation import compile_forward
-    from ignition.reference.qwen38_quant import nvfp4_linear_reference
+    from hyperflare_recipes.reference.qwen38_quant import nvfp4_linear_reference
 
     prefix = f"{TEXT_PREFIX}.layers.0.mlp"
     with QwenWeightLoader(manifest, "cuda:0", prefixes=(prefix + ".",),

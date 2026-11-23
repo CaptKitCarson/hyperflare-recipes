@@ -9,7 +9,7 @@ from importlib import import_module
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 
 
 def tensors(value):
@@ -31,7 +31,7 @@ def tensors(value):
     ("recipes.step5.vision", 256, 64, True, {}),
 ])
 def test_vision_capacities_preserve_row_geometry(module, large, small, sharded, options):
-    scratch_type = import_module(f"ignition.{module}").VisionScratch
+    scratch_type = import_module(f"hyperflare_recipes.{module}").VisionScratch
     args = (TensorParallelShard(0, 4), "cpu") if sharded else ("cpu",)
     full = scratch_type.allocate(large, *args, **options)
     expected = scratch_type.allocate(small, *args, **options)
@@ -47,8 +47,8 @@ def test_vision_capacities_preserve_row_geometry(module, large, small, sharded, 
 
 
 def test_qwen_decoder_and_vision_examples_are_disjoint():
-    from ignition.recipes.qwen38.decoder import DecoderScratch
-    from ignition.recipes.qwen38.vision import VisionMetadata, VisionScratch
+    from hyperflare_recipes.recipes.qwen38.decoder import DecoderScratch
+    from hyperflare_recipes.recipes.qwen38.vision import VisionMetadata, VisionScratch
 
     decoder = DecoderScratch.allocate(128, "cpu", sample_rows=4, world_size=4)
     decoder_storage = {t.untyped_storage()._cdata for t in tensors(decoder)}

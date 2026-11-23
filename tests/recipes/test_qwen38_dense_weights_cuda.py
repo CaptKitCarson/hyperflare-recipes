@@ -9,11 +9,11 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-from ignition.recipes.qwen38_dense.config import ModelConfig, TEXT_PREFIX
-from ignition.recipes.qwen38_dense.weights import _gdn_projection_groups
-from ignition.reference.qwen38_quant import CheckpointTensors
+from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig, TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38_dense.weights import _gdn_projection_groups
+from hyperflare_recipes.reference.qwen38_quant import CheckpointTensors
 
 
 @pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires assigned CUDA GPU")

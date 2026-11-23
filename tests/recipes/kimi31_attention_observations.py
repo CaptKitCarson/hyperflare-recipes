@@ -63,7 +63,7 @@ class AttentionTail:
         self.output = torch.empty_like(observations.output)
 
     def __call__(self):
-        from ignition.recipes.kimi31.dcp import selection_slots
+        from hyperflare_recipes.recipes.kimi31.dcp import selection_slots
 
         operation, result = self.operation, self.observations
         stage = result.last_stage

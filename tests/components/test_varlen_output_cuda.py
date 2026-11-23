@@ -10,7 +10,7 @@ import torch
 from b12x.attention import varlen
 from b12x.preparation import PreparationSession
 
-from ignition.components.varlen_attention import PreparedVarlenAttention
+from hyperflare_recipes.components.varlen_attention import PreparedVarlenAttention
 from ignition.preparation.compilation import compile_forward
 from tests.tensor_examples import TensorExamples
 from ignition.preparation.scratch import ScratchArena
@@ -22,7 +22,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @pytest.mark.parametrize("rows", [129, 65536])
 @torch.no_grad()
 def test_attention_tuning_reuses_output_without_mutating_serving_inputs(rows):
-    from ignition.preparation.fixtures import varlen_attention as fixtures
+    from hyperflare_recipes.fixtures import varlen_attention as fixtures
 
     device = torch.device("cuda", 0)
     q, k, v = [torch.zeros((rows, 12, 128), dtype=torch.bfloat16, device=device) for _ in range(3)]

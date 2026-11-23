@@ -8,14 +8,14 @@ import torch
 from b12x.gemm.blockscaled import NVFP4LinearWeight
 from transformers.activations import SiLUActivation
 
-from ignition.components import sm103_projection
-from ignition.recipes.qwen38_dense.config import ModelConfig, TEXT_PREFIX
-from ignition.recipes.qwen38_dense.decoder import Scratch, _allocate_mlp_intermediate
+from hyperflare_recipes.components import sm103_projection
+from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig, TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38_dense.decoder import Scratch, _allocate_mlp_intermediate
 
 
 @pytest.fixture
 def bf16_projection_calls(monkeypatch):
-    from ignition.components import linear
+    from hyperflare_recipes.components import linear
 
     plan = SimpleNamespace(request=lambda **kwargs: object())
     monkeypatch.setattr(linear.bf16_gemv, "query_from_call", lambda *args, **kwargs: object())
@@ -31,7 +31,7 @@ def bf16_projection_calls(monkeypatch):
 
 @torch.no_grad()
 def test_grouped_mlp_drops_preparation_buffers_and_returns_local_output(bf16_projection_calls):
-    from ignition.recipes.qwen38_dense.decoder import GroupedMLP
+    from hyperflare_recipes.recipes.qwen38_dense.decoder import GroupedMLP
 
     source = torch.randn((4, 8), dtype=torch.bfloat16)
     gate_up_weight = torch.randn((32, 8), dtype=torch.bfloat16)
@@ -56,7 +56,7 @@ def test_grouped_mlp_drops_preparation_buffers_and_returns_local_output(bf16_pro
 
 def test_grouped_mlp_trace_has_local_intermediates(bf16_projection_calls):
     from ignition.preparation.compilation import ForwardTracer, _lower_storage
-    from ignition.recipes.qwen38_dense.decoder import GroupedMLP
+    from hyperflare_recipes.recipes.qwen38_dense.decoder import GroupedMLP
 
     source = torch.randn((4, 8), dtype=torch.bfloat16)
     operation = GroupedMLP(SimpleNamespace(act_fn=torch.nn.SiLU()), source,

@@ -8,8 +8,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.recipes.kimi31 import indexer
-from ignition.recipes.kimi31.dcp import ContextShards
+from hyperflare_recipes.recipes.kimi31 import indexer
+from hyperflare_recipes.recipes.kimi31.dcp import ContextShards
 
 
 def _assert_geometry(actual, expected):
@@ -59,7 +59,7 @@ def test_equal_selection_stages_reuse_owners_and_preserve_representative_geometr
     def operation(*args, **kwargs):
         return SimpleNamespace(args=args, kwargs=kwargs, plan=object(), functional=lambda **options: None)
 
-    from ignition.components import candidate_selection
+    from hyperflare_recipes.components import candidate_selection
 
     for name in ("PreparedFP8Indexer", "UnquantizedProjection"):
         monkeypatch.setattr(indexer, name, operation)
@@ -122,8 +122,8 @@ def test_worker_serialization_preserves_shared_prefix_identity():
 
 @pytest.mark.parametrize("sequences", [1, 2])
 def test_selected_attention_reuses_only_identical_record_and_constant_views(monkeypatch, sequences):
-    from ignition.recipes.kimi31 import attention
-    from ignition.recipes.kimi31.dcp import RECORD_BYTES, TOPK
+    from hyperflare_recipes.recipes.kimi31 import attention
+    from hyperflare_recipes.recipes.kimi31.dcp import RECORD_BYTES, TOPK
 
     bounds = ((0, 2), (2, 4), (4, 5))
 

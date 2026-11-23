@@ -16,12 +16,12 @@ import pytest
 import torch
 
 from ignition.components.collectives import PreparedAllReduce
-from ignition.components.packed_speculation import PreparedPackedSpeculativeRound
-from ignition.components.paged_batch import BatchInputs, Metadata, PreparedBatch
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.parallel_draft import DraftProposalState, PreparedParallelDraftRound
+from hyperflare_recipes.components.packed_speculation import PreparedPackedSpeculativeRound
+from hyperflare_recipes.components.paged_batch import BatchInputs, Metadata, PreparedBatch
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel_draft import DraftProposalState, PreparedParallelDraftRound
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
-from ignition.components.speculation import (PreparedSpeculativeCommit, PreparedSpeculativeDistributions,
+from hyperflare_recipes.components.speculation import (PreparedSpeculativeCommit, PreparedSpeculativeDistributions,
                                              PreparedStochasticVerification, SpeculativeRngState)
 from tests.tensor_examples import TensorExamples
 from ignition.preparation.compilation import compile_forward
@@ -222,7 +222,7 @@ def _fixture(depth, *, token_capacity=12, rank=0, world=1, runtime=None, broadca
 
     target.distributions, target.stochastic, target.commit = distributions, stochastic, commit
     from unittest.mock import patch
-    with patch("ignition.components.packed_speculation.PreparedDraftConfidence", return_value=confidence):
+    with patch("hyperflare_recipes.components.packed_speculation.PreparedDraftConfidence", return_value=confidence):
         operation = PreparedPackedSpeculativeRound(source, target, prefix_limits, confidence_output,
                                                   name="test.packed")
     operation.confidence = torch.empty((batch, depth), device=device)
@@ -1030,7 +1030,7 @@ def _ordinary_generation_rank(rank, rendezvous):
     from contextlib import ExitStack
     from datetime import timedelta
     import torch.distributed as dist
-    from ignition.components.paged_generation import PreparedGeneration
+    from hyperflare_recipes.components.paged_generation import PreparedGeneration
     from ignition.preparation.collectives import (CollectivePreparation, create_all_reduce_runtime,
                                                   create_result_broadcast_runtime)
     from ignition.preparation.tuning import RecordedPreparationSession

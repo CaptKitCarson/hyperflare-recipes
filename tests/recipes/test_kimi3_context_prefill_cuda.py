@@ -13,12 +13,12 @@ pytestmark = pytest.mark.skipif(os.getenv("FLARE_RUN_CUDA_TESTS") != "1", reason
 @pytest.mark.parametrize("start,tokens", [(0, 100), (200, 128), (1000, 128), (1900, 100)])
 def test_windowed_context_matches_attention_over_every_position(start, tokens):
     import torch
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.attention import PreparedContextPrefill
-    from ignition.recipes.kimi3.config import PAGE_TOKENS
-    from ignition.recipes.kimi3.dcp import RECORD_BYTES, ContextParallel, ContextShards
+    from hyperflare_recipes.recipes.kimi3.attention import PreparedContextPrefill
+    from hyperflare_recipes.recipes.kimi3.config import PAGE_TOKENS
+    from hyperflare_recipes.recipes.kimi3.dcp import RECORD_BYTES, ContextParallel, ContextShards
 
     device = torch.device("cuda:0")
     torch.cuda.set_device(device)

@@ -9,7 +9,7 @@ import pytest
 import torch
 
 from ignition.components.sampling import DeviceRequestState, RUNNING
-from ignition.components.speculation import PreparedSpeculativeDistributions
+from hyperflare_recipes.components.speculation import PreparedSpeculativeDistributions
 from ignition.preparation.compilation import compile_forward
 from .target_score_reference import UnfusedSpeculativeDistributions
 
@@ -171,7 +171,7 @@ def test_conditional_score_empty_and_slot_boundaries(mode):
 def test_native_filtered_target_probabilities_match_with_reusable_scratch():
     from ignition.preparation.graphs import PreparedGraphBundle
     from ignition.preparation.scratch import bind_scratch
-    from ignition.components.speculation import PreparedStochasticVerification, SpeculativeRngState
+    from hyperflare_recipes.components.speculation import PreparedStochasticVerification, SpeculativeRngState
 
     reference, candidate = _fixture(4, 6, torch.float32, prefix_masks=True)
     candidate.candidates.fill_(7)
@@ -182,7 +182,7 @@ def test_native_filtered_target_probabilities_match_with_reusable_scratch():
     work = bind_scratch(candidate.scratch_layout(4, 6, 10000), device="cuda:0", workspace=None)
     for name, tensor in work.items():
         setattr(candidate, name, tensor)
-    from ignition.components.probability_normalization import PreparedProbabilityNormalization
+    from hyperflare_recipes.components.probability_normalization import PreparedProbabilityNormalization
     candidate.normalization = PreparedProbabilityNormalization(candidate.probabilities, candidate.valid)
     candidate.prepare()
     generator = torch.Generator().manual_seed(177)
@@ -237,8 +237,8 @@ def test_native_filtered_target_probabilities_match_with_reusable_scratch():
 
 
 def test_native_c32_full_vocabulary_filter_and_verification():
-    from ignition.components.probability_normalization import PreparedProbabilityNormalization
-    from ignition.components.speculation import PreparedStochasticVerification, SpeculativeRngState
+    from hyperflare_recipes.components.probability_normalization import PreparedProbabilityNormalization
+    from hyperflare_recipes.components.speculation import PreparedStochasticVerification, SpeculativeRngState
     from ignition.preparation.graphs import PreparedGraphBundle
     from ignition.preparation.scratch import bind_scratch
 

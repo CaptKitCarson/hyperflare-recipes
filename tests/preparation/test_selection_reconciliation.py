@@ -12,7 +12,7 @@ import torch
 from b12x._lib.scratch import ScratchBufferSpec
 from b12x.preparation import DetectedDevice, MemoryRequirements, Plan, PreparationSession, PreparedCall
 
-from ignition.components.native_operator import NativeConfig, native_contract
+from hyperflare_recipes.components.native_operator import NativeConfig, native_contract
 from ignition.preparation.collectives import CollectivePreparation, _selected_plan_catalog, dist
 
 

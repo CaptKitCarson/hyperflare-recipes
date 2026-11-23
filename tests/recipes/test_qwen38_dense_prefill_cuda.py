@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires assigned CUDA GPU")
 
@@ -18,14 +18,14 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", r
 @torch.no_grad()
 def test_checkpoint_captured_chunked_prefill_preserves_counts_and_state(checkpoint, online_mxfp8):
     from b12x.preparation import PreparationSession
-    from ignition.components.dflash2 import PreparedContext
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.dflash2 import PreparedContext
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38_dense.decoder import PreparedDecoder, Scratch
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
-    from ignition.recipes.qwen38_dense.weights import ModelWeights
+    from hyperflare_recipes.recipes.qwen38_dense.decoder import PreparedDecoder, Scratch
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.weights import ModelWeights
 
     device = torch.device("cuda:0")
     hub = Path(os.environ.get("HF_HUB_CACHE", Path.home() / ".cache/huggingface/hub"))
@@ -121,13 +121,13 @@ def test_compact_prefill_context_rotates_at_the_temporal_axis():
     from dataclasses import replace
 
     from b12x.preparation import PreparationSession
-    from ignition.components.dflash2 import PreparedContext
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.dflash2 import PreparedContext
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
-    from ignition.recipes.qwen38_dense.weights import ModelWeights
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.weights import ModelWeights
 
     device = torch.device("cuda:0")
     hub = Path(os.environ.get("HF_HUB_CACHE", Path.home() / ".cache/huggingface/hub"))
@@ -194,7 +194,7 @@ def compact_metadata(chunk, device, three_axis):
     """One-request prompt metadata for a chunk, with token or per-axis positions."""
     from dataclasses import replace
 
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
 
     metadata = Metadata.allocate(chunk, 1, 1, device)
     starts = torch.zeros(1, dtype=torch.int64, device=device)
@@ -221,11 +221,11 @@ def test_text_only_compact_prefill_context_matches_the_temporal_axis():
     run eagerly at each size and must write the same draft KV rings.
     """
     from b12x.preparation import PreparationSession
-    from ignition.components.dflash2 import PreparedContext
+    from hyperflare_recipes.components.dflash2 import PreparedContext
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
-    from ignition.recipes.qwen38_dense.weights import ModelWeights
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.weights import ModelWeights
 
     device = torch.device("cuda:0")
     hub = Path(os.environ.get("HF_HUB_CACHE", Path.home() / ".cache/huggingface/hub"))
@@ -275,7 +275,7 @@ def _decode_dense_reference(manifest, device):
     from transformers import Qwen3_5Config, Qwen3_5ForConditionalGeneration
 
     from ignition.preparation.quantization import linear_format
-    from ignition.reference.qwen38_quant import decode_nvfp4
+    from hyperflare_recipes.reference.qwen38_quant import decode_nvfp4
 
     raw = json.loads((manifest.snapshot / "config.json").read_text())
     quant = raw.get("quantization_config", {}).get("quantized_layers", {})
@@ -340,7 +340,7 @@ def test_image_prompt_features_and_logits_match_transformers_reference():
     )
 
     from ignition.components.completion import CompletionOutputs, VECTOR_TOKENS_FIELD
-    from ignition.components.paged_batch import (
+    from hyperflare_recipes.components.paged_batch import (
         Metadata,
         ROTARY_OFFSET,
         RotaryBatchInputs,
@@ -350,17 +350,17 @@ def test_image_prompt_features_and_logits_match_transformers_reference():
     from ignition.components.vision_state import PrefillVisionInputs, VisionState
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38.vision import PreparedVision, VisionMetadata, VisionScratch
-    from ignition.recipes.qwen38_dense.decoder import PreparedDecoder, Scratch
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
-    from ignition.recipes.qwen38_dense.vision_state import (
+    from hyperflare_recipes.recipes.qwen38.vision import PreparedVision, VisionMetadata, VisionScratch
+    from hyperflare_recipes.recipes.qwen38_dense.decoder import PreparedDecoder, Scratch
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.vision_state import (
         FEATURES,
         IMAGE_TOKEN_ID,
         PreparedVisionGeneration,
         VisionInputs,
         vision_math_mode,
     )
-    from ignition.recipes.qwen38_dense.weights import ModelWeights
+    from hyperflare_recipes.recipes.qwen38_dense.weights import ModelWeights
 
     device = torch.device("cuda:0")
     torch.cuda.set_device(device)

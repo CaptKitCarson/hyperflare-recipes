@@ -23,10 +23,10 @@ def _worker(rank, rendezvous):
     from ignition.preparation.collectives import CollectivePreparation, create_varlen_gather_runtime
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.glm53.dcp import ContextParallel, ContextShards
+    from hyperflare_recipes.recipes.glm53.dcp import ContextParallel, ContextShards
     # The trial fixture is private to the tuning module; this test drives it directly to replay
     # each transport against the race's oracle.
-    from ignition.recipes.glm53.selection_tuning import ContextGatherTuning, _Fixture
+    from hyperflare_recipes.recipes.glm53.selection_tuning import ContextGatherTuning, _Fixture
 
     torch.set_num_threads(2)
     torch.set_grad_enabled(False)
@@ -128,7 +128,7 @@ class _FixedSelection:
         self.attention, self.physical, self.lengths = attention, physical, lengths
 
     def __call__(self, s, m, query, selected, selected_lengths):
-        from ignition.recipes.glm53.mla import PreparedGlmMLA
+        from hyperflare_recipes.recipes.glm53.mla import PreparedGlmMLA
 
         selected.copy_(self.physical)
         selected_lengths.copy_(self.lengths)
@@ -181,8 +181,8 @@ def _model_worker(rank, rendezvous, snapshot, indexer_selects=False):
     from ignition import runtime_patches
     runtime_patches.apply()
     import torch.distributed as dist
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.shared_pages import SharedPages
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.shared_pages import SharedPages
     from ignition.preparation.capture import capture_forwards
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.collectives import (CollectivePreparation, create_all_gather_runtime,
@@ -190,11 +190,11 @@ def _model_worker(rank, rendezvous, snapshot, indexer_selects=False):
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.glm53.dcp import ContextParallel, ContextShards
-    from ignition.recipes.glm53.indexer import IndexMetadata
-    from ignition.recipes.glm53.mla import MLAScratch, MLAState, PreparedGlmMLA
-    from ignition.recipes.glm53.model import create_model_tree
-    from ignition.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
+    from hyperflare_recipes.recipes.glm53.dcp import ContextParallel, ContextShards
+    from hyperflare_recipes.recipes.glm53.indexer import IndexMetadata
+    from hyperflare_recipes.recipes.glm53.mla import MLAScratch, MLAState, PreparedGlmMLA
+    from hyperflare_recipes.recipes.glm53.model import create_model_tree
+    from hyperflare_recipes.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
 
     torch.set_num_threads(2)
     torch.set_grad_enabled(False)

@@ -16,8 +16,8 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @torch.no_grad()
 def test_shared_index_metadata_matches_per_layer_operations(rows):
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.kimi31.dcp import ContextShards, index_pages
-    from ignition.recipes.kimi31.indexer import SharedIndexMetadata
+    from hyperflare_recipes.recipes.kimi31.dcp import ContextShards, index_pages
+    from hyperflare_recipes.recipes.kimi31.indexer import SharedIndexMetadata
 
     torch.cuda.set_device(0)
     device = torch.device("cuda", 0)

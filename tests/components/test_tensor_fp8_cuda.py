@@ -10,8 +10,8 @@ import pytest
 import torch
 from safetensors.torch import save_file
 
-from ignition.components.tensor_fp8 import TensorFP8Projection
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.tensor_fp8 import TensorFP8Projection
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",

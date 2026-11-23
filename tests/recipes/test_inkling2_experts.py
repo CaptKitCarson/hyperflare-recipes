@@ -8,8 +8,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.inkling2.experts import _expert_scale_vectors, load_experts
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.inkling2.experts import _expert_scale_vectors, load_experts
 
 
 def _sources(prefixes):

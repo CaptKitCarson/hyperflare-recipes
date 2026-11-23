@@ -15,11 +15,11 @@ import torch
 
 from tests.components.completion_support import completion_outputs
 
-from ignition.preparation import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.qwen38.vision import PreparedVision, VisionMetadata, VisionScratch, VisionWeights
-from ignition.recipes.qwen38.weights import QwenWeightLoader
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes.qwen38.vision import PreparedVision, VisionMetadata, VisionScratch, VisionWeights
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors, decode_mxfp8, decode_nvfp4, quantize_mxfp8_activation,
     read_nvfp4_projection,
 )
@@ -61,7 +61,7 @@ def test_vision_rotation_selects_by_model_class():
     from transformers.models.qwen4_exp.configuration_qwen4_exp import Qwen4ExpVisionConfig
     from transformers.models.qwen4_exp.modeling_qwen4_exp import Qwen4ExpVisionModel
 
-    from ignition.recipes.qwen38.vision import _vision_rotation
+    from hyperflare_recipes.recipes.qwen38.vision import _vision_rotation
 
     geometry = dict(depth=1, hidden_size=32, num_heads=2, intermediate_size=64,
                     out_hidden_size=32, in_channels=3, patch_size=16)
@@ -316,8 +316,8 @@ def test_dense_vision_encoder_native_replay(dense_manifest, capacity, record_pro
     from transformers.vision_utils import (
         get_vision_position_ids, get_vision_interpolation_indices_and_weights,
     )
-    from ignition.components.weights import DirectWeightLoader
-    from ignition.recipes.qwen38_dense.vision_state import vision_math_mode
+    from hyperflare_recipes.components.weights import DirectWeightLoader
+    from hyperflare_recipes.recipes.qwen38_dense.vision_state import vision_math_mode
 
     if not os.environ.get("CUDA_VISIBLE_DEVICES"):
         pytest.fail("assign a CUDA device explicitly")
@@ -436,8 +436,8 @@ def test_vision_generation_compiles_in_worker_and_replays_after_poisoning(manife
     from b12x.preparation import PreparationSession
     from ignition.preparation.compile_pool import CompilePool
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38.sampling import DeviceRequestState
-    from ignition.recipes.qwen38.vision_state import (
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState
+    from hyperflare_recipes.recipes.qwen38.vision_state import (
         PreparedVisionHandoff, VisionFeatureState, VisionInputs,
     )
     from transformers.vision_utils import get_vision_position_ids, get_vision_interpolation_indices_and_weights

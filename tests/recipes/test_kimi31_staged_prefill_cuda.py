@@ -21,7 +21,7 @@ def _rank(rank, rendezvous, rows, maximum, compiled):
     from ignition import runtime_patches
     runtime_patches.apply()
     import torch.distributed as dist
-    from ignition.components.shared_pages import SharedPages
+    from hyperflare_recipes.components.shared_pages import SharedPages
     from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.core_storage import CoreStorage

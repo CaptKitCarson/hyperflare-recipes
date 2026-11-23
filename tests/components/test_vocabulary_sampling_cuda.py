@@ -13,8 +13,8 @@ import triton
 import triton.language as tl
 
 from ignition.components.sampling import DeviceRequestState, RUNNING
-from ignition.components.speculation import DRAFT_RNG_DOMAIN, SpeculativeRngState
-from ignition.components.vocabulary_sampling import PreparedVocabularySoftmax, PreparedVocabularyBlockVerification
+from hyperflare_recipes.components.speculation import DRAFT_RNG_DOMAIN, SpeculativeRngState
+from hyperflare_recipes.components.vocabulary_sampling import PreparedVocabularySoftmax, PreparedVocabularyBlockVerification
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                                reason="requires an explicitly assigned CUDA device")
@@ -33,7 +33,7 @@ def fixture(batch=4, depth=3, vocab=8, rank=64, fp8=False):
     embedding = torch.randn(vocab, rank, device="cuda", dtype=torch.bfloat16) / 8
     head = torch.randn_like(embedding) / 8
     if fp8:
-        from ignition.components.markov_sampling import fp8_markov_head
+        from hyperflare_recipes.components.markov_sampling import fp8_markov_head
 
         head = fp8_markov_head(head)
     logits = torch.randn(batch, depth, vocab, device="cuda", dtype=torch.bfloat16)
@@ -320,7 +320,7 @@ def _append_fixed_sequence(Tokens, Counts, Pending, Sequence, Proposed, Witness,
 def test_conditional_block_rejection_joint_law_with_truncated_rounds():
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.triton import prepare_triton
-    from ignition.components.speculation import TARGET_RNG_DOMAIN
+    from hyperflare_recipes.components.speculation import TARGET_RNG_DOMAIN
 
     op = fixture(batch=64, depth=2, vocab=3)
     op.embedding.zero_()

@@ -30,7 +30,7 @@ def test_full_encoder_matches_torch_norm_after_scratch_reuse(side):
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.vision import PreparedVision, VisionScratch, VisionWeights
+    from hyperflare_recipes.recipes.kimi3.vision import PreparedVision, VisionScratch, VisionWeights
 
     if not (CHECKPOINT / "config.json").is_file():
         pytest.skip("Kimi K3.1 checkpoint is not installed")

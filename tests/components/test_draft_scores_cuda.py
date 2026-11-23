@@ -38,8 +38,8 @@ def _state(generator):
 @pytest.mark.parametrize("live", [4, 3])
 @pytest.mark.parametrize("layout", ["duplicate", "stopped"])
 def test_fused_draft_scores_match_reference(prefix, live, layout):
-    from ignition.components.draft_sampling import PreparedDraftDistribution
-    from ignition.components.speculation import PreparedSpeculativeDistributions
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
+    from hyperflare_recipes.components.speculation import PreparedSpeculativeDistributions
 
     generator = torch.Generator().manual_seed(prefix * 10 + live)
     state = _state(generator)
@@ -88,7 +88,7 @@ def _exact(actual, expected):
 @pytest.mark.parametrize("prefix", [0, 3, 7])
 @torch.no_grad()
 def test_draft_policy_branches_preserve_scores_draws_and_native_replay(batch, vocab, dtype, compiled, prefix):
-    from ignition.components.draft_sampling import PreparedDraftDistribution
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
     from ignition.components.sampling import DeviceRequestState, RUNNING
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.graphs import PreparedGraphBundle

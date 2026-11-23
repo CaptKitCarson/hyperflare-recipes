@@ -105,7 +105,7 @@ class Layer3QSARecorder:
     def __enter__(self):
         import torch
 
-        from ignition.recipes.qwen38.attention import PreparedAttention
+        from hyperflare_recipes.recipes.qwen38.attention import PreparedAttention
 
         self.attention_type = PreparedAttention
         self.original_init = PreparedAttention.__init__
@@ -240,12 +240,12 @@ def main():
     from transformers import AutoTokenizer
 
     from ignition.components.sampling import AdmissionBuffers
-    from ignition.preparation.qwen38 import MODEL_ID, REVISION
-    from ignition.recipes.qwen38.attention import PreparedAttention
-    from ignition.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
-    from ignition.recipes.qwen38.decoder import DecoderScratch, PreparedDecoder
-    from ignition.recipes.qwen38.sampling import RequestAdmission
-    from ignition.recipes.qwen38.state import HybridStatePool
+    from hyperflare_recipes.recipes.qwen38.checkpoint_schema import MODEL_ID, REVISION
+    from hyperflare_recipes.recipes.qwen38.attention import PreparedAttention
+    from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
+    from hyperflare_recipes.recipes.qwen38.decoder import DecoderScratch, PreparedDecoder
+    from hyperflare_recipes.recipes.qwen38.sampling import RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.state import HybridStatePool
 
     torch.set_grad_enabled(False)
     torch.set_num_threads(8)
@@ -300,7 +300,7 @@ def main():
         "record_layer3_qsa": args.record_qsa,
         "native_extension_sha256": hashlib.sha256(extensions[0].read_bytes()).hexdigest(),
         "source_sha256": {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
-            for p in sorted((ROOT / "ignition/recipes/qwen38").glob("*.py"))},
+            for p in sorted((ROOT / "hyperflare_recipes/recipes/qwen38").glob("*.py"))},
         "diagnostic": "All model mutations use native graph submissions. CPU state readbacks occur after completed fences.",
         "checkpoint_source": "An independent execution of tokens [0, B) at the monolithic graph capacity supplies the live checkpoint at B. The monolithic [0, P) comparison remains separate.",
         "state_comparison": "All 77 continuation regions are compared; checkpoint-only qsa.* storage is retained raw and checked against logical live caches during snapshot/restore.",

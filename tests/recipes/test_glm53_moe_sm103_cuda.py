@@ -37,7 +37,7 @@ def _run(experts, tokens, reference):
     """Route, run, capture and replay a small expert subset against a CPU reference."""
     from b12x.preparation import PreparationSession
 
-    from ignition.components.moe import PreparedRoutedExperts, PreparedRouter, RouterScratch
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts, PreparedRouter, RouterScratch
     from ignition.preparation.scratch import ScratchArena
 
     count, hidden = experts.num_experts, experts.hidden_size
@@ -90,9 +90,9 @@ def _run(experts, tokens, reference):
 @pytest.mark.parametrize("tokens", [1, 6, 64])
 @pytest.mark.parametrize("activation", ["a4", "a16"])
 def test_clamped_swiglu_experts_match_checkpoint_reference(manifest, tokens, activation):
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.glm53.weights import GlmWeightLoader
-    from ignition.reference.qwen38_quant import (
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.glm53.weights import GlmWeightLoader
+    from hyperflare_recipes.reference.qwen38_quant import (
         CheckpointTensors,
         decode_nvfp4,
         nvfp4_linear_reference,

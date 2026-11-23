@@ -8,7 +8,7 @@ import torch
 from b12x.norm.hyperconnection import api as hyperconnection
 from b12x.preparation import PreparedCall
 
-from ignition.preparation.fixtures.hyperconnection import HyperconnectionBenchmarkInputs
+from hyperflare_recipes.fixtures.hyperconnection import HyperconnectionBenchmarkInputs
 from ignition.preparation.tuning import benchmark_resource, declare
 
 

@@ -6,7 +6,7 @@
 
 import pytest
 
-from ignition.recipes.glm53.bootstrap import PreparationConfig
+from hyperflare_recipes.recipes.glm53.bootstrap import PreparationConfig
 
 
 def test_default_catalog_covers_4096_prefill_and_four_requests():
@@ -56,7 +56,7 @@ def test_mtp_catalog_defaults_to_five_drafts_and_reserves_draft_pages():
     ({}, 4, (10, 3), False)])
 def test_context_transport_race_runs_only_on_the_qualified_cell(monkeypatch, settings, world, capability, races):
     import torch
-    from ignition.recipes.glm53.bootstrap import races_context_transport
+    from hyperflare_recipes.recipes.glm53.bootstrap import races_context_transport
 
     monkeypatch.setattr(torch.cuda, "get_device_capability", lambda device: capability)
     assert races_context_transport(PreparationConfig(**settings), world, "cpu") is races

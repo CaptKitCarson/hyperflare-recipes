@@ -16,7 +16,7 @@ import torch
 
 from tests.components.completion_support import completion_outputs
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.components.sampling import (
     AdmissionBuffers,
     DeviceRequestState,
@@ -27,8 +27,8 @@ from ignition.components.sampling import (
 )
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.execution import GraphSignature, PreparedExecution
-from ignition.recipes.glm53.batch import BatchInputs, PreparedBatch
-from ignition.recipes.glm53.state import DecoderMetadata
+from hyperflare_recipes.recipes.glm53.batch import BatchInputs, PreparedBatch
+from hyperflare_recipes.recipes.glm53.state import DecoderMetadata
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
     reason="requires an explicitly assigned CUDA device")

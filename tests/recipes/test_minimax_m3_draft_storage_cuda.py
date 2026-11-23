@@ -12,12 +12,12 @@ import pytest
 import torch
 from b12x.preparation import PreparationSession
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.minimax_m3.config import ModelConfig
-from ignition.recipes.minimax_m3.draft import (
+from hyperflare_recipes.recipes.minimax_m3.config import ModelConfig
+from hyperflare_recipes.recipes.minimax_m3.draft import (
     PREFIX, DraftConfig, DraftScratch, _Attention, _DraftLoader,
 )
 

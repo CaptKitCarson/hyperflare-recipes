@@ -24,7 +24,7 @@ class _Interpolation:
         self.weight, self.indices, self.factors, self.output = weight, indices, factors, output
 
     def __call__(self):
-        from ignition.recipes.kimi3.vision import interpolate_positions
+        from hyperflare_recipes.recipes.kimi3.vision import interpolate_positions
 
         values = torch.empty_like(self.output)
         interpolate_positions(self.weight, self.indices, self.factors, values)
@@ -37,7 +37,7 @@ def _rank(rank, rendezvous):
     from safetensors import safe_open
 
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.kimi3.vision import PATCH_CAPACITIES
+    from hyperflare_recipes.recipes.kimi3.vision import PATCH_CAPACITIES
 
     torch.set_num_threads(1)
     torch.cuda.set_device(rank)

@@ -32,14 +32,16 @@ def _records(tokens):
 def _rank(rank, rendezvous):
     import torch.distributed as dist
     from b12x.attention import dense_mla
-    from ignition.components.collectives import PreparedAllGather, PreparedBroadcast, PreparedLseReduceScatter
-    from ignition.components.dense_mla import PreparedDenseMLA
-    from ignition.components.row_topk import PreparedRowTopK
-    from ignition.preparation.collectives import CollectivePreparation, create_head_exchange
+    from ignition.components.collectives import PreparedAllGather, PreparedBroadcast
+    from hyperflare_recipes.components.head_exchange import PreparedLseReduceScatter
+    from hyperflare_recipes.components.dense_mla import PreparedDenseMLA
+    from hyperflare_recipes.components.row_topk import PreparedRowTopK
+    from ignition.preparation.collectives import CollectivePreparation
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi31.dcp import ContextShards, pack_candidates, selection_slots
+    from hyperflare_recipes.recipes.kimi31.dcp import ContextShards, pack_candidates, selection_slots
 
     torch.set_num_threads(1)
     torch.cuda.set_device(rank)

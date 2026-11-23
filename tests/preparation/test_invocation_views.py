@@ -62,7 +62,7 @@ def test_independent_scalar_view_does_not_reset_runtime_slice():
 
 class CountedEmbedding:
     def __init__(self, session):
-        from ignition.components.embedding import PreparedEmbedding
+        from hyperflare_recipes.components.embedding import PreparedEmbedding
 
         self.counts = torch.tensor([143, 1], dtype=torch.int32, device='cuda')
         self.count = torch.zeros(1, dtype=torch.int32, device='cuda')
@@ -140,7 +140,7 @@ def test_copy_lowering_preserves_destination_for_sources_gathered_from_it(overla
 class CountedShortConvolution:
     def __init__(self, session):
         from b12x.sequence import short_conv
-        from ignition.components.recurrent import prepare_sequence_binding
+        from hyperflare_recipes.components.recurrent import prepare_sequence_binding
 
         self.counts = torch.tensor([4, 0], dtype=torch.int32, device='cuda')
         self.num_seqs = torch.zeros(1, dtype=torch.int32, device='cuda')

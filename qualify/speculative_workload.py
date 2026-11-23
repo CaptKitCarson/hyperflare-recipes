@@ -19,7 +19,7 @@ import struct
 import subprocess
 
 from qualify.provenance import digest, write_json
-from ignition.preparation.qwen38 import (
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import (
     CONFIG_SHA256, FRONTEND_SHA256, GENERATION_SHA256, INDEX_SHA256,
     MODEL_ID, REVISION, require_transformers_version,
 )

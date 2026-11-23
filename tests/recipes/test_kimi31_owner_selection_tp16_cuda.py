@@ -22,9 +22,9 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_TP_CUDA_TESTS") != "1"
 
 class OwnerPipeline:
     def __init__(self, rows, rank, owner, reduction, session, coordinator, buffers):
-        from ignition.components.owner_topk import PreparedOwnerTopK
-        from ignition.recipes.kimi3.dcp import ContextShards
-        from ignition.recipes.kimi31.indexer import SharedBuffers
+        from hyperflare_recipes.components.owner_topk import PreparedOwnerTopK
+        from hyperflare_recipes.recipes.kimi3.dcp import ContextShards
+        from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
 
         self.shards = ContextShards.on(rank, 16, owner.device)
         storage = SharedBuffers(buffers, owner.device)
@@ -61,9 +61,10 @@ def worker(rank, rendezvous, destination, compile_components, rows_catalog=(128,
     import torch.distributed as dist
     from b12x.comm.pcie.pcie_dcp_topk import PCIeDCPTopKOwnerExchange
     from ignition.components.collectives import PreparedAllReduce
-    from ignition.components import row_ownership
+    from hyperflare_recipes.components import row_ownership
     from ignition.preparation.capture import capture_forwards
-    from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime, create_head_exchange
+    from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.tuning import RecordedPreparationSession
@@ -394,7 +395,7 @@ if __name__ == "__main__":
         from ignition.cli.config import Configuration
         from ignition.cli.environment import apply
         from ignition.cli.preparation import Host
-        from ignition.recipes.kimi31.recipe import RECIPE
+        from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
         apply(Configuration.load(args.config), Host.discover().gpus[:16], RECIPE.b12x_environment)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     # Compiler workers deserialize forwards by importable class identity.

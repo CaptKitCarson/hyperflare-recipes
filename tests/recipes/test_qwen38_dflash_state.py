@@ -15,11 +15,11 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 
 @torch.no_grad()
 def test_packed_target_metadata_capture_and_width_one_transition():
-    from ignition.components.paged_batch import Metadata
-    from ignition.recipes.qwen38.decoder_state import DecoderInputs
-    from ignition.recipes.qwen38.dflash import PreparedTargetState
-    from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-    from ignition.recipes.qwen38.state import HybridStatePool
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs
+    from hyperflare_recipes.recipes.qwen38.dflash import PreparedTargetState
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.state import HybridStatePool
 
     device = torch.device("cuda:0")
     requests = DeviceRequestState.allocate(device, vocab_size=248320, capacity=4)
@@ -95,13 +95,13 @@ def test_packed_target_metadata_capture_and_width_one_transition():
 
 @torch.no_grad()
 def test_dflash_snapshot_restore_and_slot_reuse_normalize_selected_tail():
-    from ignition.components.dflash2_geometry import DraftAttentionGeometry
+    from hyperflare_recipes.components.dflash2_geometry import DraftAttentionGeometry
     from ignition.components.sampling import AdmissionBuffers
-    from ignition.recipes.qwen38.attention import QSAState
-    from ignition.recipes.qwen38.decoder_state import DecoderInputs
-    from ignition.recipes.qwen38.maintenance import PreparedMaintenance
-    from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-    from ignition.recipes.qwen38.state import HybridStatePool, StateTransferMetadata
+    from hyperflare_recipes.recipes.qwen38.attention import QSAState
+    from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs
+    from hyperflare_recipes.recipes.qwen38.maintenance import PreparedMaintenance
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.state import HybridStatePool, StateTransferMetadata
     from tests.components.completion_support import completion_outputs
 
     device = torch.device("cuda:0")

@@ -8,7 +8,7 @@ import pytest
 import torch
 from b12x.preparation import PreparationSession
 
-from ignition.components.rms_norm import PreparedRMSNorm
+from hyperflare_recipes.components.rms_norm import PreparedRMSNorm
 from ignition.preparation.graphs import PreparedGraphBundle
 
 pytestmark = pytest.mark.skipif(os.environ.get('FLARE_RUN_CUDA_TESTS') != '1',
@@ -238,7 +238,7 @@ class ProjectedNormForward:
 @torch.no_grad()
 def test_projection_to_strided_norm_native_order(tokens, tmp_path):
     from b12x.gemm.blockscaled import pack_weight
-    from ignition.components.linear import QuantizedProjection
+    from hyperflare_recipes.components.linear import QuantizedProjection
     from ignition.preparation.compile_pool import CompilePool
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession

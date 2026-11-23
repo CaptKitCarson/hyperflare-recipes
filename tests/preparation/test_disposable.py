@@ -5,7 +5,7 @@
 """Scalar capacity metadata does not hide disposable tensor backing."""
 import pytest
 import torch
-from ignition.components.paged_batch import Metadata
+from hyperflare_recipes.components.paged_batch import Metadata
 from ignition.preparation.disposable import storage_ranges
 
 

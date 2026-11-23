@@ -7,10 +7,10 @@
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.recipes.deepseek41.bootstrap import PreparationConfig
-from ignition.recipes.deepseek41.config import DSparkConfig
-from ignition.recipes.deepseek41.recipe import RECIPE
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig
+from hyperflare_recipes.recipes.deepseek41.config import DSparkConfig
+from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE
 
 
 def test_dspark_preparation_and_recipe_draft_defaults():
@@ -29,7 +29,7 @@ def test_dspark_preparation_and_recipe_draft_defaults():
 
 @pytest.mark.parametrize("draft,markov", [(None, None), ("nvfp4", None), (None, "nvfp4"), ("nvfp4", "nvfp4")])
 def test_draft_precision_preserves_graph_capacities(draft, markov):
-    from ignition.recipes.deepseek4.bootstrap import PreparationConfig as V4Config
+    from hyperflare_recipes.recipes.deepseek4.bootstrap import PreparationConfig as V4Config
 
     for configuration in (PreparationConfig, V4Config):
         control = configuration(max_active=16)
@@ -47,7 +47,7 @@ def test_draft_precision_preserves_graph_capacities(draft, markov):
 
 def test_mxfp8_draft_head_preserves_deepseek41_capacities_and_markov_precision():
     from dataclasses import replace
-    from ignition.recipes.deepseek4.bootstrap import PreparationConfig as V4Config
+    from hyperflare_recipes.recipes.deepseek4.bootstrap import PreparationConfig as V4Config
 
     control = PreparationConfig(max_active=16)
     candidate = replace(control, draft_head_quantization="mxfp8")
@@ -105,7 +105,7 @@ def test_single_token_verification_packs_page_tables_across_inactive_rows():
 @pytest.mark.parametrize("world", [1, 4])
 def test_decode_page_tables_follow_packed_tokens_across_inactive_rows(world):
     from types import SimpleNamespace
-    from ignition.components.paged_batch import BatchInputs, PreparedBatch
+    from hyperflare_recipes.components.paged_batch import BatchInputs, PreparedBatch
 
     inputs = BatchInputs.allocate(4, 8, "cpu", capacity=4)
     inputs.row_slot_ids.copy_(torch.tensor([3, 1, 0, 2]))
@@ -146,9 +146,9 @@ def test_vocabulary_parallel_sampling_requires_exact_retained_proposal_formats()
 def test_draft_confidence_consumes_local_hidden_before_head_normalization():
     from types import SimpleNamespace
 
-    from ignition.components.parallel_draft import DraftProposalState
-    from ignition.components.split_draft import PreparedDraftConfidence
-    from ignition.recipes.deepseek41.dspark import PreparedDraft
+    from hyperflare_recipes.components.parallel_draft import DraftProposalState
+    from hyperflare_recipes.components.split_draft import PreparedDraftConfidence
+    from hyperflare_recipes.recipes.deepseek41.dspark import PreparedDraft
 
     embedding = torch.arange(32, dtype=torch.float32).view(8, 4).bfloat16() / 8
     norm = torch.tensor([1., 2., 3., 4.], dtype=torch.bfloat16)

@@ -10,8 +10,8 @@ import pytest
 from ignition.preparation.frontend import PromptEncoder, prepare_frontend
 from ignition.preparation.core_proto import serving
 from ignition.preparation.runtime_core_pb2 import ModelIndex
-from ignition.recipes.deepseek4.recipe import RECIPE
-from ignition.recipes.deepseek4.config import MODEL_ID, REVISION
+from hyperflare_recipes.recipes.deepseek4.recipe import RECIPE
+from hyperflare_recipes.recipes.deepseek4.config import MODEL_ID, REVISION
 
 
 def test_native_prompt_export():
@@ -23,7 +23,7 @@ def test_native_prompt_export():
     frontend = prepare_frontend(snapshot, eos_token_ids=[1],
         prompt_encoder=PromptEncoder.DEEPSEEK_V4,
         image_profile="deepseek4",
-        preprocessor=Path("ignition/recipes/deepseek4/assets/preprocessor_config.json"))
+        preprocessor=Path("hyperflare_recipes/recipes/deepseek4/assets/preprocessor_config.json"))
     assert frontend["prompt_encoder"] == PromptEncoder.DEEPSEEK_V4
     assert frontend.get("image_placeholder_token_id") == 129264
     index = ModelIndex()

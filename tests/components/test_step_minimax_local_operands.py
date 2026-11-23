@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import torch
 
-from ignition.components import paged_attention, paged_schedule, rms_norm
+from hyperflare_recipes.components import paged_attention, paged_schedule, rms_norm
 
 
 def test_kv_writer_accepts_runtime_cache_views_without_retaining_examples(monkeypatch):

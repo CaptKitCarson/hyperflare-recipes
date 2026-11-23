@@ -26,7 +26,7 @@ def run(args):
     from b12x.sequence import engram
 
     from ignition.components.engram import EngramInputs
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.capture import capture_forwards
     from ignition.preparation.collectives import (
         CollectivePreparation, create_all_reduce_runtime, create_roce_runtime,
@@ -35,7 +35,7 @@ def run(args):
     from ignition.preparation.host_ranks import _use_interface
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.deepseek41.engram import EngramScratch, PreparedEngram
+    from hyperflare_recipes.recipes.deepseek41.engram import EngramScratch, PreparedEngram
 
     torch.cuda.set_device(args.device)
     device = torch.device('cuda', args.device)

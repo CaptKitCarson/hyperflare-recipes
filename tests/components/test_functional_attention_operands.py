@@ -15,7 +15,7 @@ def plan():
 
 
 def test_varlen_releases_templates_and_preserves_strided_output(monkeypatch):
-    from ignition.components import varlen_attention as module
+    from hyperflare_recipes.components import varlen_attention as module
     op = object.__new__(module.PreparedVarlenAttention)
     template = torch.zeros(4, 2, 3)
     reference = weakref.ref(template)
@@ -48,7 +48,7 @@ def test_varlen_releases_templates_and_preserves_strided_output(monkeypatch):
 
 
 def test_dense_attention_runtime_cache_lengths_and_lse(monkeypatch):
-    from ignition.components import dense_mla as module
+    from hyperflare_recipes.components import dense_mla as module
     op = object.__new__(module.PreparedDenseMLA)
     template = torch.zeros(3, 2, 4)
     op.arguments = dict(q=template, kv_cache=template, output=template,
@@ -77,7 +77,7 @@ def test_dense_attention_runtime_cache_lengths_and_lse(monkeypatch):
 
 
 def test_window_attention_consumes_runtime_metadata_and_proposals(monkeypatch):
-    from ignition.components import window_attention as module
+    from hyperflare_recipes.components import window_attention as module
     op = object.__new__(module.PreparedWindowAttention)
     q = torch.ones(2, 1, 4)
     history = torch.zeros(3, 8, 1, 4)
@@ -106,7 +106,7 @@ def test_window_attention_consumes_runtime_metadata_and_proposals(monkeypatch):
 
 
 def test_projection_pending_keeps_every_operand_through_join(monkeypatch):
-    from ignition.components import projection_overlap as module
+    from hyperflare_recipes.components import projection_overlap as module
     op = object.__new__(module.ConcurrentProjectionChain)
     op.projections = None
     op.output_layouts = (((2, 4), (4, 1), torch.float32),)
@@ -130,7 +130,7 @@ def test_projection_pending_keeps_every_operand_through_join(monkeypatch):
 
 @pytest.mark.parametrize("with_angles", [False, True])
 def test_compressor_join_carries_runtime_metadata_and_angles(monkeypatch, with_angles):
-    from ignition.components import compressor_overlap as module
+    from hyperflare_recipes.components import compressor_overlap as module
     op = object.__new__(module.ConcurrentGatedCompression)
     op.outputs = None
     op.output_layouts = (((2, 4), (4, 1), torch.float32),)
@@ -198,7 +198,7 @@ def test_fused_reduction_runtime_addends_and_residual_mutation(monkeypatch, comp
 
 
 def test_selected_attention_preserves_noncontiguous_output_layout(monkeypatch):
-    from ignition.components import selected_attention as module
+    from hyperflare_recipes.components import selected_attention as module
     op = object.__new__(module.PreparedSelectedAttention)
     q = torch.ones(3, 2, 4)
     output = torch.empty_strided(q.shape, (24, 4, 1))
@@ -212,7 +212,7 @@ def test_selected_attention_preserves_noncontiguous_output_layout(monkeypatch):
 
 
 def test_dense_declaration_survives_repeated_functional_finalization(monkeypatch):
-    from ignition.components import dense_mla as module
+    from hyperflare_recipes.components import dense_mla as module
     callbacks, requests = [], []
     selected = plan()
     selected.request = lambda **kwargs: requests.append(kwargs) or kwargs
@@ -244,7 +244,7 @@ def test_dense_declaration_survives_repeated_functional_finalization(monkeypatch
 @pytest.mark.parametrize("encoded", [False, True])
 def test_projection_chain_rebinds_contextual_plan_before_runtime_launch(monkeypatch, encoded):
     from types import SimpleNamespace
-    from ignition.components import projection_overlap as module
+    from hyperflare_recipes.components import projection_overlap as module
 
     def plan(handle, size):
         return SimpleNamespace(handle=handle, memory_requirements=lambda: SimpleNamespace(scratch_nbytes=size))

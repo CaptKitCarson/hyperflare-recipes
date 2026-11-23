@@ -14,7 +14,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @pytest.mark.parametrize("rows", [1, 5, 8, 32])
 @torch.no_grad()
 def test_direct_mla_projection_matches_bmm_copy_and_replay(rows):
-    from ignition.components.linear import BatchedUnquantizedProjection
+    from hyperflare_recipes.components.linear import BatchedUnquantizedProjection
     from ignition.preparation.compilation import compile_forward
 
     torch.cuda.set_device(0)

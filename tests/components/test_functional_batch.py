@@ -10,8 +10,8 @@ import weakref
 import pytest
 import torch
 
-from ignition.components import paged_batch, token_state
-from ignition.components.paged_batch import BatchInputs, Metadata, PreparedBatch
+from hyperflare_recipes.components import paged_batch, token_state
+from hyperflare_recipes.components.paged_batch import BatchInputs, Metadata, PreparedBatch
 from ignition.components.state import StateLayout
 from ignition.components.sampling import DeviceRequestState, ERROR, RUNNING
 from ignition.preparation.triton import PreparedTriton

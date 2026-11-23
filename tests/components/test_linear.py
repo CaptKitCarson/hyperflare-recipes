@@ -12,11 +12,11 @@ import weakref
 import pytest
 import torch
 
-from ignition.components import block_fp8, linear
-from ignition.components import weights as linear_weights
+from hyperflare_recipes.components import block_fp8, linear
+from hyperflare_recipes.components import weights as linear_weights
 from ignition.preparation.scratch import ScratchArena
-from ignition.preparation.fixtures import bf16_gemv, blockscaled_gemm
-from ignition.preparation.fixtures.projection import input_factory
+from hyperflare_recipes.fixtures import bf16_gemv, blockscaled_gemm
+from hyperflare_recipes.fixtures.projection import input_factory
 
 
 @dataclass

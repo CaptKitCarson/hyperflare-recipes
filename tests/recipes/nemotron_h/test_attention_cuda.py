@@ -24,14 +24,14 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 def test_checkpoint_paged_attention(width, mode, batch, packed, autotune, kv_dtype):
     from b12x.preparation import PreparationSession
     from b12x.testing.q8_0_reference import dequantize_blocks
-    from ignition.components.paged_batch import Metadata
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.nemotron_h.attention import PreparedAttention
-    from ignition.recipes.nemotron_h.weights import NemotronWeightLoader
-    from ignition.reference.qwen38_quant import CheckpointTensors
+    from hyperflare_recipes.recipes.nemotron_h.attention import PreparedAttention
+    from hyperflare_recipes.recipes.nemotron_h.weights import NemotronWeightLoader
+    from hyperflare_recipes.reference.qwen38_quant import CheckpointTensors
 
     path = Path(os.environ.get("FLARE_NEMOTRON_CHECKPOINT",
         "/data/models/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB"))

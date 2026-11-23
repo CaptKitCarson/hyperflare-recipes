@@ -64,7 +64,7 @@ with CoreStorage(device=0) as storage:
 def test_projection_fixture_pools_release_after_trial_owners(mailbox_storage):
     import gc
     import torch
-    from ignition.preparation.fixtures.projection import input_factory
+    from hyperflare_recipes.fixtures.projection import input_factory
     from ignition.preparation.tuning import RecordedPreparationSession
 
     torch.cuda.set_device(0)
@@ -104,7 +104,7 @@ def test_attention_fixture_releases_before_projection_tuning(mailbox_storage):
     import gc
     import weakref
     import torch
-    from ignition.preparation.fixtures import projection, varlen_attention
+    from hyperflare_recipes.fixtures import projection, varlen_attention
 
     storage = mailbox_storage
     source = torch.zeros((65536, 12, 128), dtype=torch.bfloat16, device="cuda:0")

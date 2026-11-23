@@ -10,10 +10,10 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes import resolve
-from ignition.recipes.minimax_m3.config import ModelConfig
-from ignition.recipes.minimax_m3.pool import ContinuationPool, continuation_layout, page_bytes
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes import resolve
+from hyperflare_recipes.recipes.minimax_m3.config import ModelConfig
+from hyperflare_recipes.recipes.minimax_m3.pool import ContinuationPool, continuation_layout, page_bytes
 
 
 def configuration():
@@ -121,7 +121,7 @@ def test_recipe_costs_cover_actual_tp4_checkpoint_cache_geometry():
     shard = TensorParallelShard(0, 4)
     config.validate_shard(shard)
     assert model.recipe.plain_ranks[4].state_row_bytes == continuation_layout(config, shard).row_bytes
-    from ignition.recipes.minimax_m3.draft import DraftConfig
+    from hyperflare_recipes.recipes.minimax_m3.draft import DraftConfig
 
     config = replace(config, draft=DraftConfig.load(snapshot, config))
     layout = continuation_layout(config, shard)
@@ -143,9 +143,9 @@ def test_recipe_costs_cover_actual_tp4_checkpoint_cache_geometry():
 
 
 def test_packed_tp4_defaults_match_deepseek_dspark_capacities():
-    from ignition.recipes.minimax_m3.bootstrap import PreparationConfig
-    from ignition.recipes.deepseek41.bootstrap import PreparationConfig as DeepSeekConfig
-    from ignition.recipes.minimax_m3.recipe import RECIPE
+    from hyperflare_recipes.recipes.minimax_m3.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig as DeepSeekConfig
+    from hyperflare_recipes.recipes.minimax_m3.recipe import RECIPE
 
     config, deepseek = PreparationConfig(), DeepSeekConfig()
     assert config.max_active == RECIPE.concurrency == deepseek.max_active == 32
@@ -162,7 +162,7 @@ def test_packed_tp4_defaults_match_deepseek_dspark_capacities():
 
 
 def test_rectangular_verification_is_retained_for_explicit_diagnostics():
-    from ignition.recipes.minimax_m3.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.minimax_m3.bootstrap import PreparationConfig
 
     config = PreparationConfig(max_active=4, speculative_widths=tuple(range(1, 9)),
         speculative_token_capacity=32, diagnostic_graphs=("speculative4x8",), speculative_fixed_width=8)
@@ -173,14 +173,14 @@ def test_rectangular_verification_is_retained_for_explicit_diagnostics():
 @pytest.mark.parametrize("options", [dict(packed_verification=False), dict(draft_prefix_selection="cpu"),
                                     dict(speculative_fixed_width=6)])
 def test_serving_dspark_requires_adaptive_packed_gpu_rounds(options):
-    from ignition.recipes.minimax_m3.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.minimax_m3.bootstrap import PreparationConfig
 
     with pytest.raises(ValueError, match="adaptive packed GPU"):
         PreparationConfig(**options)
 
 
 def test_multihost_placements_keep_the_complete_tp4_catalog():
-    from ignition.recipes.minimax_m3.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.minimax_m3.bootstrap import PreparationConfig
 
     config = PreparationConfig(devices=(0, 0, 0, 0), hosts=("rank0", "rank1", "rank2", "rank3"),
         max_active=4, prefill_chunk_size=4096, image_concurrency=4, speculative_token_capacity=32)
@@ -197,7 +197,7 @@ def test_multihost_placements_keep_the_complete_tp4_catalog():
 
 def test_recipe_routes_multihost_preparation_through_shared_rank_group(monkeypatch):
     from types import SimpleNamespace
-    from ignition.recipes.minimax_m3.recipe import RECIPE, prepare
+    from hyperflare_recipes.recipes.minimax_m3.recipe import RECIPE, prepare
     import ignition.preparation.rank_group as rank_group
 
     rendezvous = SimpleNamespace(hosts=("rank0", "rank1", "rank2", "rank3"))
@@ -234,8 +234,8 @@ def test_contract_preserves_cache_planes_and_complete_round_bindings(vision):
     from google.protobuf.json_format import ParseDict
     from ignition.preparation import contract as c, runtime_core_pb2 as p
     from ignition.preparation.execution import GraphSignature
-    from ignition.recipes.minimax_m3.contract import prepare
-    from ignition.recipes.minimax_m3.frontend import FRONTEND
+    from hyperflare_recipes.recipes.minimax_m3.contract import prepare
+    from hyperflare_recipes.recipes.minimax_m3.frontend import FRONTEND
     from types import SimpleNamespace
 
     pool = ContinuationPool.for_model(ModelConfig.from_dict(configuration()), TensorParallelShard(0, 4), 3, 2, "cpu")

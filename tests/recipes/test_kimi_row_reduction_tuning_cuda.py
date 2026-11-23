@@ -15,8 +15,8 @@ def _worker(rank, directory):
     from ignition.components.collectives import PreparedChunkedAllReduce
     from ignition.preparation.collectives import CollectivePreparation
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.row_reductions import RowGeometry, RowReductionTuning
-    from ignition.recipes.kimi31.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi3.row_reductions import RowGeometry, RowReductionTuning
+    from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
 
     for name, value in RECIPE.b12x_environment.items():
         os.environ.setdefault(name, value)

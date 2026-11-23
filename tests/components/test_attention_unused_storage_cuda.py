@@ -8,12 +8,12 @@ import os
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.dense_mla import PreparedDenseMLA
-from ignition.components.paged_attention import PreparedPagedAttention
-from ignition.components.selected_attention import PreparedSelectedAttention
-from ignition.components.varlen_attention import PreparedVarlenAttention
-from ignition.components.window_attention import PreparedWindowAttention
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.dense_mla import PreparedDenseMLA
+from hyperflare_recipes.components.paged_attention import PreparedPagedAttention
+from hyperflare_recipes.components.selected_attention import PreparedSelectedAttention
+from hyperflare_recipes.components.varlen_attention import PreparedVarlenAttention
+from hyperflare_recipes.components.window_attention import PreparedWindowAttention
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession

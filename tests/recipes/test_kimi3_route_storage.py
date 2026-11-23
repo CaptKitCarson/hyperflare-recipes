@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.recipes.kimi3 import routing
+from hyperflare_recipes.recipes.kimi3 import routing
 
 
 @pytest.mark.parametrize("rows", [1, 4, 8])

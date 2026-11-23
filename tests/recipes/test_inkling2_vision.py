@@ -14,10 +14,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import IndexedCheckpoint, _read_header
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.inkling2.vision import PreparedVision, VisionMetadata, VisionScratch, VisionWeights
+from hyperflare_recipes.recipes.inkling2.vision import PreparedVision, VisionMetadata, VisionScratch, VisionWeights
 
 CUDA = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                          reason="requires explicit GPU assignment and FLARE_RUN_CUDA_TESTS=1")
@@ -103,8 +103,8 @@ def _reference(manifest, weights, device):
 
 def _weights(manifest, module, device):
     if "model.llm.embed.weight" in manifest.tensors:
-        from ignition.components.parallel import TensorParallelShard
-        from ignition.recipes.inkling2.mini_weights import MiniWeightLoader
+        from hyperflare_recipes.components.parallel import TensorParallelShard
+        from hyperflare_recipes.recipes.inkling2.mini_weights import MiniWeightLoader
         context = MiniWeightLoader(manifest, device, shard=TensorParallelShard(0, 1))
     else:
         context = DirectWeightLoader(manifest, device, prefixes=("model.vision_tower.",))
@@ -330,7 +330,7 @@ def test_generation_publishes_features_and_rejects_invalid_uploads(manifest, com
     from ignition.components.completion import CompletionOutputs
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.vision_state import PrefillVisionInputs, VisionState
-    from ignition.recipes.inkling2.vision_state import PreparedVisionGeneration, VisionInputs
+    from hyperflare_recipes.recipes.inkling2.vision_state import PreparedVisionGeneration, VisionInputs
 
     assert os.environ.get("CUDA_VISIBLE_DEVICES")
     device = torch.device("cuda:0")

@@ -7,8 +7,8 @@
 import pytest
 import torch
 
-from ignition.recipes.deepseek41.bootstrap import PreparationConfig
-from ignition.recipes.deepseek41.decoder import Scratch
+from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig
+from hyperflare_recipes.recipes.deepseek41.decoder import Scratch
 
 
 def _overlap(left, right):
@@ -97,7 +97,7 @@ def test_target_logits_remain_fp32_across_capacity_views(world):
 
 
 def test_draft_logits_keep_bf16_storage_independently_of_target():
-    from ignition.recipes.deepseek41.decoder import DraftScratch
+    from hyperflare_recipes.recipes.deepseek41.decoder import DraftScratch
 
     scratch = DraftScratch.allocate(32, 32, 4, "meta")
     assert scratch.local_logits.dtype == scratch.logits.dtype == torch.bfloat16

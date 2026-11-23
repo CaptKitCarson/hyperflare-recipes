@@ -18,8 +18,8 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_TP_CUDA_TESTS") != "1"
 
 
 def _rank(rank, world, rendezvous, snapshot, mode, capacity, layer_index, following_dense=False):
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.recurrent import DeltaMetadata, DeltaState
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.recurrent import DeltaMetadata, DeltaState
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.collectives import (
         CollectivePreparation,
@@ -29,11 +29,11 @@ def _rank(rank, world, rendezvous, snapshot, mode, capacity, layer_index, follow
     from ignition.preparation.execution import GraphSignature, PreparedExecution
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.glm53.decoder import LayerScratch, PreparedGlmLayer
-    from ignition.recipes.glm53.indexer import IndexMetadata
-    from ignition.recipes.glm53.mla import MLAState
-    from ignition.recipes.glm53.model import create_model_tree
-    from ignition.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
+    from hyperflare_recipes.recipes.glm53.decoder import LayerScratch, PreparedGlmLayer
+    from hyperflare_recipes.recipes.glm53.indexer import IndexMetadata
+    from hyperflare_recipes.recipes.glm53.mla import MLAState
+    from hyperflare_recipes.recipes.glm53.model import create_model_tree
+    from hyperflare_recipes.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
 
     torch.cuda.set_device(rank)
     device = torch.device("cuda", rank)

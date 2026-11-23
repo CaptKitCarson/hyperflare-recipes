@@ -60,8 +60,8 @@ def test_layers_and_components_group_by_declaration():
 
 
 def test_named_draft_root_keeps_layers_in_its_component_once():
-    from ignition.components.dflash2_weights import DraftLayerWeights, DraftWeights
-    from ignition.components.weights import MLPWeights
+    from hyperflare_recipes.components.dflash2_weights import DraftLayerWeights, DraftWeights
+    from hyperflare_recipes.components.weights import MLPWeights
 
     def tensor():
         return torch.zeros(2, 2)
@@ -368,7 +368,7 @@ def test_provenance_records_bounded_swizzle_byte_piece():
 def test_q8_0_producer_does_not_claim_iq2_metadata():
     import gc
     from types import SimpleNamespace
-    from ignition.components import weights as weight_components
+    from hyperflare_recipes.components import weights as weight_components
     from ignition.preparation import provenance
 
     owners = {name: torch.zeros(8, dtype=torch.uint8)
@@ -400,7 +400,7 @@ def test_provenance_records_piece_encoding_without_bytes():
 def test_fp4_expert_producer_maps_retained_owners_to_checkpoint_bytes():
     from types import SimpleNamespace
     from b12x._lib.intrinsics.reference import swizzle_block_scale as swizzle
-    from ignition.components import weights as weight_components
+    from hyperflare_recipes.components import weights as weight_components
     from ignition.preparation import provenance
 
     hidden, local, group = 128, 128, 16
@@ -541,7 +541,7 @@ def qwen_dense_weights(first_layer_seed=1.0):
 
 
 def declared_group_bytes(weights):
-    from ignition.recipes.qwen38_dense.bootstrap import _declared_weight_roots
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import _declared_weight_roots
 
     roots, components = _declared_weight_roots(weights)
     groups = {}
@@ -552,7 +552,7 @@ def declared_group_bytes(weights):
 
 
 def test_qwen_dense_layer_projections_are_grouped_per_layer():
-    from ignition.recipes.qwen38_dense.bootstrap import _declared_weight_roots
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import _declared_weight_roots
 
     weights = qwen_dense_weights()
     roots, components = _declared_weight_roots(weights)
@@ -608,7 +608,7 @@ def test_provenance_statistic_domain_reaches_the_declaration():
 
 def test_nvfp4_linear_provenance_uses_packed_source_columns():
     from b12x.gemm.blockscaled._a16 import NVFP4LinearWeight
-    from ignition.components.weights import _record_nvfp4_linear_provenance
+    from hyperflare_recipes.components.weights import _record_nvfp4_linear_provenance
     from ignition.preparation import provenance
 
     # Real _load_nvfp4_linear geometry: logical columns 2048 -> stored_k 2048 ->
@@ -635,7 +635,7 @@ def test_nvfp4_linear_provenance_uses_packed_source_columns():
 
 def test_nvfp4_linear_padding_is_not_claimed_to_be_covered():
     from b12x.gemm.blockscaled._a16 import NVFP4LinearWeight
-    from ignition.components.weights import _record_nvfp4_linear_provenance
+    from hyperflare_recipes.components.weights import _record_nvfp4_linear_provenance
 
     # Logical 2032 columns pad to stored_k 2048: 1016 packed columns are sourced,
     # 8 packed columns are zero padding the record does not claim.
@@ -674,9 +674,9 @@ def test_misc_preserves_stable_and_tuned_storage_classes():
 @pytest.mark.parametrize('with_draft', [False, True])
 def test_deepseek_weight_catalog_preserves_recipe_fields(recipe, with_draft):
     from importlib import import_module
-    from ignition.components.weights import MLPWeights
+    from hyperflare_recipes.components.weights import MLPWeights
 
-    module = import_module(f'ignition.recipes.{recipe}.weights')
+    module = import_module(f'hyperflare_recipes.recipes.{recipe}.weights')
 
     def tensor():
         return torch.arange(4, dtype=torch.float32)
@@ -729,29 +729,32 @@ def test_declared_container_fields_exist_on_their_dataclasses():
     import importlib
     from pathlib import Path
 
-    import ignition.components.weights  # noqa: F401  (registers shared b12x declarations)
+    import hyperflare_recipes
+    import hyperflare_recipes.components.weights  # noqa: F401  (registers shared b12x declarations)
+    import ignition
     from ignition.preparation.rebuild_manifest import CONTAINER_FIELDS
 
     # Recipe containers register themselves on import via @weight_container, so
-    # import every module under ignition/ that declares a weight container.
-    root = Path(ignition.__file__).resolve().parent
-    for path in sorted(root.rglob("*.py")):
-        if "@weight_container(" in path.read_text(encoding="utf-8"):
-            rel = path.relative_to(root.parent).with_suffix("")
-            importlib.import_module(".".join(rel.parts))
+    # import every module under ignition/ and hyperflare_recipes/ that declares one.
+    for pkg in (ignition, hyperflare_recipes):
+        root = Path(pkg.__file__).resolve().parent
+        for path in sorted(root.rglob("*.py")):
+            if "@weight_container(" in path.read_text(encoding="utf-8"):
+                rel = path.relative_to(root.parent).with_suffix("")
+                importlib.import_module(".".join(rel.parts))
 
     missing = {}
-    ignition_containers = 0
+    declared_containers = 0
     for key, declared in CONTAINER_FIELDS.items():
         module, _, name = key.rpartition('.')
-        if not module.startswith('ignition.'):
+        if not module.startswith(('ignition.', 'hyperflare_recipes.')):
             continue
-        ignition_containers += 1
+        declared_containers += 1
         cls = getattr(importlib.import_module(module), name)
         if not is_dataclass(cls):
             continue
         absent = [field for field in declared if field not in {f.name for f in fields(cls)}]
         if absent:
             missing[key] = absent
-    assert ignition_containers >= 49
+    assert declared_containers >= 49
     assert not missing, missing

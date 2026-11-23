@@ -20,7 +20,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @torch.no_grad()
 def test_confidence_head_preserves_fp32_bias_and_preceding_token_features(with_bias, weight_dtype):
     from types import SimpleNamespace
-    from ignition.components.split_draft import PreparedDraftConfidence
+    from hyperflare_recipes.components.split_draft import PreparedDraftConfidence
     from ignition.preparation.tuning import RecordedPreparationSession
 
     torch.manual_seed(811)

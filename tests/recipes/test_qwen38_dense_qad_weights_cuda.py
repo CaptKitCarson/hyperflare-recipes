@@ -6,11 +6,11 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-from ignition.recipes import resolve
-from ignition.recipes.qwen38_dense.config import TEXT_PREFIX
-from ignition.reference.qwen38_quant import CheckpointTensors
+from hyperflare_recipes.recipes import resolve
+from hyperflare_recipes.recipes.qwen38_dense.config import TEXT_PREFIX
+from hyperflare_recipes.reference.qwen38_quant import CheckpointTensors
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires assigned CUDA GPU")
 
@@ -42,7 +42,7 @@ def test_qad_packed_groups_preserve_serialized_rows(names):
 @torch.no_grad()
 def test_qad_combined_gdn_projection_captured_numerics(rows):
     from b12x.gemm._shared.wo_mxfp8 import quantize_mxfp8_rows_torch, dequantize_mxfp8_rows_torch
-    from ignition.components.linear import QuantizedProjection
+    from hyperflare_recipes.components.linear import QuantizedProjection
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
@@ -117,8 +117,8 @@ def test_qad_gdn_output_split_reduction_live_replay(tile_k):
     from b12x.gemm._shared.wo_mxfp8 import quantize_mxfp8_rows_torch, dequantize_mxfp8_rows_torch
     from b12x.preparation import PreparedCall
     from b12x.preparation.device import detect_device
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
-    from ignition.components.linear import QuantizedProjection
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.linear import QuantizedProjection
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession, declare

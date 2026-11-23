@@ -52,10 +52,10 @@ def replay(graph):
 
 @pytest.fixture(scope="module")
 def weights():
-    from ignition.components.dflash2_weights import DraftWeights
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.qwen38_dense.config import ModelConfig
-    from ignition.recipes.qwen38_dense.draft_config import load as load_draft
+    from hyperflare_recipes.components.dflash2_weights import DraftWeights
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig
+    from hyperflare_recipes.recipes.qwen38_dense.draft_config import load as load_draft
     if not all((path / "config.json").is_file() for path in (TARGET, DRAFT)):
         pytest.skip("requires pinned Qwen3.8-27B target and DFlash2 checkpoints")
     target = ModelConfig.load(TARGET)
@@ -106,7 +106,7 @@ def test_checkpoint_body_geometry_context_consistency_and_preserved_weights(weig
 
 
 def metadata(rows=1):
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
     return Metadata.allocate(8 * rows, rows, 1, "cuda", samples=8 * rows)
 
 
@@ -126,7 +126,7 @@ def rings():
 @torch.no_grad()
 def test_context_compiled_mutable_replay_ring_wrap_and_inactive_rows(weights):
     from b12x.preparation import PreparationSession
-    from ignition.components.dflash2 import PreparedContext
+    from hyperflare_recipes.components.dflash2 import PreparedContext
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     torch.manual_seed(5027)
@@ -178,9 +178,9 @@ def test_context_compiled_mutable_replay_ring_wrap_and_inactive_rows(weights):
 @torch.no_grad()
 def test_attention_mlp_compiled_mutable_replay(weights, index):
     from b12x.preparation import PreparationSession
-    from ignition.components.dflash2 import DraftAttention, DraftScratch, _draft_templates
+    from hyperflare_recipes.components.dflash2 import DraftAttention, DraftScratch, _draft_templates
     from tests.components.dflash_readback_support import ProjectionReadback
-    from ignition.components.mlp import PreparedMLP
+    from hyperflare_recipes.components.mlp import PreparedMLP
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     torch.manual_seed(2718 + index)

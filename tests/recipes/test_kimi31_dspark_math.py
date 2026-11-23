@@ -9,9 +9,9 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.kimi3.dcp import ContextShards
-from ignition.recipes.kimi31 import dspark
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.kimi3.dcp import ContextShards
+from hyperflare_recipes.recipes.kimi31 import dspark
 
 
 @pytest.fixture

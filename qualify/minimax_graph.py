@@ -166,7 +166,7 @@ def _rank(rank, args, rendezvous):
     import torch
     import torch.distributed as dist
     from ignition.preparation.core_storage import CoreStorage
-    from ignition.recipes.minimax_m3.bootstrap import PreparationConfig, prepare_rank
+    from hyperflare_recipes.recipes.minimax_m3.bootstrap import PreparationConfig, prepare_rank
 
     torch.set_num_threads(1)
     torch.cuda.set_device(rank)

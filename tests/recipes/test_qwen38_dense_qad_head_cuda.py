@@ -13,12 +13,12 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", r
 @torch.no_grad()
 def test_qad_proposal_head_captured_arithmetic(format):
     from b12x.moe._shared.kernels.w4a16.host import unswizzle_block_scale
-    from ignition.components.vocabulary import PreparedVocabularyProjection, mxfp8_draft_head, nvfp4_draft_head
-    from ignition.components.weights import DirectWeightLoader
+    from hyperflare_recipes.components.vocabulary import PreparedVocabularyProjection, mxfp8_draft_head, nvfp4_draft_head
+    from hyperflare_recipes.components.weights import DirectWeightLoader
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     snapshot = resolve("qwen3.8-27b-qad").snapshot(Path.home() / ".cache/huggingface/hub")
     with DirectWeightLoader(inspect_indexed_checkpoint(snapshot), "cuda:0", prefixes=("lm_head.",)) as loader:

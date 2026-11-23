@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import compressed_mla
+from hyperflare_recipes.components import compressed_mla
 
 
 def test_auto_passes_selector_to_the_constraint_api(monkeypatch):
@@ -51,7 +51,7 @@ def test_explicit_bf16_is_operator_metadata_and_has_no_complete_override(monkeyp
 
 
 def test_preparation_config_rejects_missing_api_before_weight_loading(monkeypatch):
-    from ignition.recipes.deepseek41.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig
 
     monkeypatch.setattr(compressed_mla.mla, "Caps", lambda: None)
     assert PreparationConfig().mla_compute_mode == "auto"
@@ -60,7 +60,7 @@ def test_preparation_config_rejects_missing_api_before_weight_loading(monkeypatc
 
 
 def test_target_prefill_and_draft_factories_keep_the_selected_arithmetic(monkeypatch):
-    from ignition.recipes.deepseek41 import bootstrap
+    from hyperflare_recipes.recipes.deepseek41 import bootstrap
 
     calls = []
     monkeypatch.setattr(bootstrap, "PreparedDecoder", lambda **kwargs: calls.append(("target", kwargs)))

@@ -12,9 +12,9 @@ import subprocess
 
 import pytest
 
-from ignition.recipes.gemma4.bootstrap import chat_template_asset
-from ignition.recipes.gemma4.config import ModelConfig
-from ignition.recipes.gemma4.recipe import RECIPE
+from hyperflare_recipes.recipes.gemma4.bootstrap import chat_template_asset
+from hyperflare_recipes.recipes.gemma4.config import ModelConfig
+from hyperflare_recipes.recipes.gemma4.recipe import RECIPE
 
 
 ROOT = Path(__file__).resolve().parents[2]

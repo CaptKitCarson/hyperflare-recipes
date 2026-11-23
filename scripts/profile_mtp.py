@@ -23,8 +23,8 @@ import torch
 from transformers import AutoTokenizer
 
 from ignition.components.sampling import AdmissionBuffers
-from ignition.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
-from ignition.recipes.qwen38.sampling import RequestAdmission
+from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig, prepare_model
+from hyperflare_recipes.recipes.qwen38.sampling import RequestAdmission
 
 
 class Replay:

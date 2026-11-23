@@ -17,8 +17,8 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_TP_CUDA_TESTS") != "1"
 
 def _rank(rank, rendezvous, fp8):
     from ignition.components.sampling import DeviceRequestState, RUNNING
-    from ignition.components.speculation import DRAFT_RNG_DOMAIN, SpeculativeRngState
-    from ignition.components.vocabulary_sampling import PreparedVocabularySoftmax, PreparedVocabularyBlockVerification
+    from hyperflare_recipes.components.speculation import DRAFT_RNG_DOMAIN, SpeculativeRngState
+    from hyperflare_recipes.components.vocabulary_sampling import PreparedVocabularySoftmax, PreparedVocabularyBlockVerification
     from ignition.preparation.collectives import CollectivePreparation, create_all_gather_runtime
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.graphs import PreparedGraphBundle
@@ -44,7 +44,7 @@ def _rank(rank, rendezvous, fp8):
     local_head = torch.zeros(local, features, device=device, dtype=torch.bfloat16)
     local_head[:covered].copy_(head[start:start + covered])
     if fp8:
-        from ignition.components.markov_sampling import fp8_markov_head
+        from hyperflare_recipes.components.markov_sampling import fp8_markov_head
 
         local_head = fp8_markov_head(local_head)
         full_fp8 = fp8_markov_head(head)

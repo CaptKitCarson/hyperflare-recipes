@@ -115,7 +115,7 @@ class _TargetForward:
         self.query_start_loc = None if observations is None else torch.empty_like(variant.metadata.query_start_loc)
 
     def __call__(self):
-        from ignition.components.paged_batch import Metadata
+        from hyperflare_recipes.components.paged_batch import Metadata
 
         metadata = Metadata.pack(self.starts, self.lengths, self.states, self.tables, self.tokens, self.live,
             token_capacity=self.source.shape[0], sample_count=self.tokens.numel(), max_query_tokens=self.width)
@@ -136,18 +136,19 @@ def _rank(rank, rendezvous, compile_decoder, force_external, cache_root):
     from unittest.mock import patch
     import torch.distributed as dist
 
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation import capture as capture_module
     from ignition.preparation.aot import BoundForward, ForwardCache
     from ignition.preparation.capture import capture_forwards
-    from ignition.preparation.collectives import CollectivePreparation, create_head_exchange
+    from ignition.preparation.collectives import CollectivePreparation
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.compilation import _OPTIONS
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi31.attention import PreparedDSA
-    from ignition.recipes.kimi31.dcp import AttentionConstants, ContextParallel, ContextShards
+    from hyperflare_recipes.recipes.kimi31.attention import PreparedDSA
+    from hyperflare_recipes.recipes.kimi31.dcp import AttentionConstants, ContextParallel, ContextShards
 
     torch.set_num_threads(1)
     torch.cuda.set_device(rank)

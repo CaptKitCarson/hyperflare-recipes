@@ -11,16 +11,16 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.recurrent import DeltaMetadata
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.recurrent import DeltaMetadata
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.glm53.kda import KDARecords, KDAScratch, PreparedGlmKDA
-from ignition.recipes.glm53.model import create_model_tree
-from ignition.recipes.glm53.pool import ContinuationPool
-from ignition.recipes.glm53.speculative import PreparedKDACommit, PreparedRound, convolution_regions
-from ignition.recipes.glm53.weights import GlmWeightLoader, TEXT_PREFIX
+from hyperflare_recipes.recipes.glm53.kda import KDARecords, KDAScratch, PreparedGlmKDA
+from hyperflare_recipes.recipes.glm53.model import create_model_tree
+from hyperflare_recipes.recipes.glm53.pool import ContinuationPool
+from hyperflare_recipes.recipes.glm53.speculative import PreparedKDACommit, PreparedRound, convolution_regions
+from hyperflare_recipes.recipes.glm53.weights import GlmWeightLoader, TEXT_PREFIX
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                                reason="requires an explicitly assigned CUDA device")

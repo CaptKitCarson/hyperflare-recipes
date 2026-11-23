@@ -12,7 +12,7 @@ def _worker(rank, directory):
     import torch.distributed as dist
     from ignition.preparation.collectives import CollectivePreparation
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.routing import PreparedRouteGather, create_route_runtime
+    from hyperflare_recipes.recipes.kimi3.routing import PreparedRouteGather, create_route_runtime
 
     torch.cuda.set_device(rank)
     device = torch.device("cuda", rank)

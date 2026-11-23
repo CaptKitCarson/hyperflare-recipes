@@ -7,8 +7,8 @@ from types import SimpleNamespace
 
 import torch
 
-from ignition.components.parallel_draft import PreparedParallelDraftRound
-from ignition.components.speculation import DRAFT_RNG_DOMAIN
+from hyperflare_recipes.components.parallel_draft import PreparedParallelDraftRound
+from hyperflare_recipes.components.speculation import DRAFT_RNG_DOMAIN
 
 
 class Proposal:
@@ -87,7 +87,7 @@ def test_proposal_metadata_and_rng_use_runtime_rows_without_retaining_destinatio
 
 
 def test_verification_passes_local_metadata_through_commit_and_preserves_inactive_hidden_rows():
-    from ignition.components.parallel_draft import DraftProposalState
+    from hyperflare_recipes.components.parallel_draft import DraftProposalState
 
     proposal = DraftProposalState(torch.tensor([9, 3]), torch.tensor([True, False]),
         torch.tensor([[3, 6, 5], [1, 0, 0]]), torch.tensor([[6, 5], [0, 0]]),
@@ -158,7 +158,7 @@ def test_verification_passes_local_metadata_through_commit_and_preserves_inactiv
 def test_rotary_offsets_follow_the_layout_declaration():
     """A declared layout region selects offsets; every other pool keeps token positions."""
     import pytest
-    from ignition.components.paged_batch import Metadata, rotary_offset_region
+    from hyperflare_recipes.components.paged_batch import Metadata, rotary_offset_region
     from ignition.components.state import StateLayout
 
     region = torch.tensor([[0], [3], [7]], dtype=torch.int64)
@@ -182,7 +182,7 @@ def test_rotary_offsets_follow_the_layout_declaration():
 def test_verification_rotates_target_rows_at_the_offsets_its_proposal_carries():
     """Proposals carry each row's rotary offset from the proposing round's batch to verification."""
     import pytest
-    from ignition.components.parallel_draft import DraftProposalState
+    from hyperflare_recipes.components.parallel_draft import DraftProposalState
 
     proposal = DraftProposalState(torch.tensor([9, 3]), torch.tensor([True, False]),
         torch.tensor([[3, 6, 5], [1, 0, 0]]), torch.tensor([[6, 5], [0, 0]]),
@@ -211,9 +211,9 @@ def test_verification_rotates_target_rows_at_the_offsets_its_proposal_carries():
 
 
 def test_draft_round_builds_its_batch_from_the_layout_declaration(monkeypatch):
-    import ignition.components.parallel_draft as module
-    import ignition.components.paged_batch as batch_module
-    from ignition.components.paged_batch import BatchInputs, PreparedBatch, RotaryBatch
+    import hyperflare_recipes.components.parallel_draft as module
+    import hyperflare_recipes.components.paged_batch as batch_module
+    from hyperflare_recipes.components.paged_batch import BatchInputs, PreparedBatch, RotaryBatch
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.state import StateLayout
 

@@ -14,8 +14,8 @@ from ignition.preparation.frontend import image_settings, prepare_frontend, toke
 from ignition.preparation.core_file import combine, read_index, write_sources
 from ignition.preparation.core_proto import serving
 from ignition.preparation.runtime_core_pb2 import BundleIndex, ModelIndex
-from ignition.recipes import recipes
-from ignition.recipes.declaration import SamplingDefaults, SamplingRange
+from hyperflare_recipes.recipes import recipes
+from ignition.declaration import SamplingDefaults, SamplingRange
 
 
 @pytest.mark.parametrize("recipe", recipes(), ids=lambda recipe: recipe.name)
@@ -278,7 +278,7 @@ def test_cached_checkpoint_structural_metadata_extracts_without_model_weights(re
     if not (snapshot / "tokenizer_config.json").exists():
         pytest.skip("checkpoint structural metadata is not cached")
     profiles = {"qwen38": "qwen", "mimo_v2": "mimo", "deepseek4": "deepseek4", "deepseek41": "deepseek_row_major"}
-    preprocessor = Path("ignition/recipes/deepseek4/assets/preprocessor_config.json") if recipe.name == "deepseek4" else None
+    preprocessor = Path("hyperflare_recipes/recipes/deepseek4/assets/preprocessor_config.json") if recipe.name == "deepseek4" else None
     token_source = snapshot / "generation_config.json"
     if not token_source.exists():
         token_source = snapshot / "config.json"

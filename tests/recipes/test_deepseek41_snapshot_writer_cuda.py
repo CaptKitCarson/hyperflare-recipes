@@ -10,11 +10,11 @@ import torch
 from b12x.preparation import PreparationSession
 from cuda.bindings import driver as cuda
 
-from ignition.components.compressed_mla import PreparedCompressedCacheWriter
-from ignition.components.paged_batch import Metadata
-from ignition.components.ring_commit import PreparedRingCommit
+from hyperflare_recipes.components.compressed_mla import PreparedCompressedCacheWriter
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.ring_commit import PreparedRingCommit
 from ignition.components.state import StateLayout, StateStorage, gather_rows
-from ignition.components.window_indices import PreparedWindowIndices
+from hyperflare_recipes.components.window_indices import PreparedWindowIndices
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 

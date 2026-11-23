@@ -16,8 +16,8 @@ def test_vocabulary_completion_kernels_with_cpu_interpreter():
 
 
 def kernel_cases():
-    from ignition.components.speculation import SpeculativeAcceptance, TARGET_RNG_DOMAIN
-    from ignition.components import vocabulary_sampling as v
+    from hyperflare_recipes.components.speculation import SpeculativeAcceptance, TARGET_RNG_DOMAIN
+    from hyperflare_recipes.components import vocabulary_sampling as v
 
     # Triton's CPU interpreter cannot combine tensor wrappers with global constexpr wrappers.
     v._TARGET_DOMAIN = TARGET_RNG_DOMAIN

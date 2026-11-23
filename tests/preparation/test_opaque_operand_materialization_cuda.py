@@ -124,7 +124,7 @@ class PendingForward:
     def __call__(self):
         from tests.preparation import test_graph_local_scratch_cuda as serial
         from tests.preparation.test_graph_local_overlap_cuda import _start
-        from ignition.components.projection_overlap import _join
+        from hyperflare_recipes.components.projection_overlap import _join
 
         source = self.source * 2 + .125
         auxiliary, auxiliary_scratch = torch.empty_like(source), torch.empty_like(source)

@@ -6,9 +6,9 @@
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.aot import _signature
-from ignition.recipes.qwen38.dflash import draft_embedding
+from hyperflare_recipes.recipes.qwen38.dflash import draft_embedding
 
 
 def _table():

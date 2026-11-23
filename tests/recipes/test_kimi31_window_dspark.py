@@ -11,10 +11,10 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.kimi3.pool import continuation_layout, page_bytes
-from ignition.recipes.kimi31.dspark_config import WINDOW_REPOSITORY, WINDOW_REVISION, window_draft
-from ignition.recipes.kimi31.recipe import RECIPE
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.kimi3.pool import continuation_layout, page_bytes
+from hyperflare_recipes.recipes.kimi31.dspark_config import WINDOW_REPOSITORY, WINDOW_REVISION, window_draft
+from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
 from .test_kimi31 import config, raw_config
 
 
@@ -57,7 +57,7 @@ def test_windowed_draft_planner_and_state(config, snapshot):
 
 def test_recipe_selects_the_windowed_draft_and_records_its_precision(tmp_path, monkeypatch):
     from ignition.preparation.rebuild_manifest import from_plan
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
     from .test_declarations import fitted
 
     model = resolve("kimi-k3.1-pro")
@@ -80,7 +80,7 @@ def test_recipe_selects_the_windowed_draft_and_records_its_precision(tmp_path, m
 @pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires an assigned CUDA device")
 def test_source_draft_shared_vocabulary_and_converted_weights(config, snapshot):
     from safetensors import safe_open
-    from ignition.recipes.kimi3.dspark_weights import DraftWeights
+    from hyperflare_recipes.recipes.kimi3.dspark_weights import DraftWeights
 
     if not (snapshot / "model.safetensors").is_file():
         pytest.skip("Inferact Kimi K3.1 sliding-window DSpark weights are not installed")

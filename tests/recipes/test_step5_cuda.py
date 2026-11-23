@@ -13,7 +13,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 
 
 def metadata(positions, *, starts=None, state_rows=None, pages=None):
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
 
     positions = torch.tensor(positions, device="cuda", dtype=torch.int64)
     rows = 1 if starts is None else len(starts)
@@ -33,8 +33,8 @@ def metadata(positions, *, starts=None, state_rows=None, pages=None):
 
 
 def test_region_compression_chunk_boundaries():
-    from ignition.components.gated_compression import commit_gated
-    from ignition.recipes.step5.compression import compress
+    from hyperflare_recipes.components.gated_compression import commit_gated
+    from hyperflare_recipes.recipes.step5.compression import compress
 
     torch.manual_seed(832)
     key = torch.randn(33, 256, dtype=torch.bfloat16, device="cuda")

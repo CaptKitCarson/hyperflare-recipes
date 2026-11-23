@@ -204,7 +204,7 @@ def metadata_inputs(device='cpu', *, rows=3, width=32768, topk=2048):
 
 @pytest.mark.parametrize('device', ['cpu', 'meta'])
 def test_validation_accepts_independent_storage_and_adjacent_output_views(device):
-    from ignition.components.ordered_row_topk import validate_ordered_topk
+    from hyperflare_recipes.components.ordered_row_topk import validate_ordered_topk
 
     operands = metadata_inputs(device)
     validate_ordered_topk(*operands)
@@ -219,7 +219,7 @@ def test_validation_accepts_independent_storage_and_adjacent_output_views(device
 
 @pytest.mark.parametrize('index', range(8))
 def test_validation_rejects_changed_dtype_shape_or_stride(index):
-    from ignition.components.ordered_row_topk import validate_ordered_topk
+    from hyperflare_recipes.components.ordered_row_topk import validate_ordered_topk
 
     operands = metadata_inputs()
     operands[index] = operands[index].to(torch.float64)
@@ -239,7 +239,7 @@ def test_validation_rejects_changed_dtype_shape_or_stride(index):
 
 @pytest.mark.parametrize('index', range(3, 8))
 def test_mutable_outputs_and_metadata_cannot_overlap_input_storage(index):
-    from ignition.components.ordered_row_topk import validate_ordered_topk
+    from hyperflare_recipes.components.ordered_row_topk import validate_ordered_topk
 
     operands = metadata_inputs()
     destination = operands[index]
@@ -251,14 +251,14 @@ def test_mutable_outputs_and_metadata_cannot_overlap_input_storage(index):
 
 @pytest.mark.parametrize('topk', [512, 1024, 2048])
 def test_underfull_widths_do_not_require_a_full_selection_budget(topk):
-    from ignition.components.ordered_row_topk import validate_ordered_topk
+    from hyperflare_recipes.components.ordered_row_topk import validate_ordered_topk
 
     validate_ordered_topk(*metadata_inputs(width=17, topk=topk))
 
 
 @pytest.mark.parametrize('width', [1, 64, 511, 512, 513])
 def test_radix_launch_has_complete_count_tiles_for_underfull_widths(monkeypatch, width):
-    from ignition.components import ordered_row_topk as component
+    from hyperflare_recipes.components import ordered_row_topk as component
 
     operands = metadata_inputs(width=width, topk=512)
     operation = object.__new__(component.PreparedOrderedRowTopK)
@@ -290,7 +290,7 @@ def test_radix_launch_has_complete_count_tiles_for_underfull_widths(monkeypatch,
 
 def test_fake_tensor_alias_validation_uses_storage_identity():
     from torch._subclasses.fake_tensor import FakeTensorMode
-    from ignition.components.ordered_row_topk import validate_ordered_topk
+    from hyperflare_recipes.components.ordered_row_topk import validate_ordered_topk
 
     with FakeTensorMode():
         operands = metadata_inputs()

@@ -6,8 +6,8 @@
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.recipes.deepseek4.attention import AttentionIndices
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.recipes.deepseek4.attention import AttentionIndices
 from tests.components.window_indices_reference import LiteralDeepSeek4WindowIndices
 
 
@@ -102,7 +102,7 @@ def test_window_and_compression_metadata_trace_without_bound_inputs(tracer):
 @pytest.mark.parametrize("mode", ["prefill", "decode", "verify", "draft"])
 def test_window_only_layer_omits_decoder_shared_dense_indices(monkeypatch, mode):
     from types import SimpleNamespace
-    from ignition.recipes.deepseek4 import attention as module
+    from hyperflare_recipes.recipes.deepseek4 import attention as module
 
     monkeypatch.setattr(module, "normalize_rotate", lambda *args, **kwargs: None)
     monkeypatch.setattr(module, "transfer_window", lambda *args, **kwargs: None)

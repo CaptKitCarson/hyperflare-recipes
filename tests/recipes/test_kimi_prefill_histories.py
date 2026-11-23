@@ -22,8 +22,8 @@ class _HistoryCopies:
                     reason="requires an explicitly assigned CUDA GPU")
 @torch.no_grad()
 def test_compiled_serial_history_copies_preserve_bytes_with_changed_pages_and_tails():
-    from ignition.components.interleaved_history import PreparedInterleavedHistory
-    from ignition.components.planar_index_history import PreparedPlanarIndexHistory
+    from hyperflare_recipes.components.interleaved_history import PreparedInterleavedHistory
+    from hyperflare_recipes.components.planar_index_history import PreparedPlanarIndexHistory
     from ignition.preparation.compilation import compile_forward
 
     device = torch.device("cuda:0")

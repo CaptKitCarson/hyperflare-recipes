@@ -15,11 +15,15 @@ from pathlib import Path
 import pytest
 
 from ignition import planning
-from ignition.cli import environment, main, serve
+from ignition.cli import environment, main as _cli_main, serve
 from ignition.cli.config import Configuration
 from ignition.preparation.model import PreparedModel
-from ignition.recipes import ResolvedModel, recipes, resolve
-from ignition.recipes.declaration import RankUsage
+from hyperflare_recipes.recipes import ResolvedModel, recipes, resolve
+from ignition.declaration import RankUsage
+
+
+def main(argv=None):
+    return _cli_main(argv, recipes=recipes())
 
 GIB = 1 << 30
 FREE = 95 * GIB
@@ -87,6 +91,8 @@ def host(monkeypatch, tmp_path):
     monkeypatch.setitem(sys.modules, "flare_heliopause", types.SimpleNamespace(
         CliSignals=CliSignals, Server=object,
         export_source_identity=flare_heliopause.export_source_identity,
+        build_source_identity=flare_heliopause.build_source_identity,
+        embedded_publishers=flare_heliopause.embedded_publishers,
         export_reuse_weights=flare_heliopause.export_reuse_weights,
         export_development_publisher=flare_heliopause.export_development_publisher))
     monkeypatch.setitem(sys.modules, "torch", types.SimpleNamespace(
@@ -536,7 +542,7 @@ def test_environment_leaves_pip_cuda_toolchain_selection_to_cutile(monkeypatch, 
 
 def test_environment_sets_the_recipe_b12x_settings_over_inherited_values(monkeypatch, tmp_path):
     from ignition.cli.config import Configuration
-    from ignition.recipes.kimi3.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi3.recipe import RECIPE
 
     monkeypatch.setattr(environment.runtime_patches, "apply", lambda: ())
     monkeypatch.setenv("HOME", str(tmp_path))

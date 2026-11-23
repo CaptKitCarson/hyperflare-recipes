@@ -495,9 +495,9 @@ def _proposal_state(metadata, rank):
 def _sequence_draft(prepared, metadata, rank):
     """Sequence native primitives without calling a draft, layer, or attention forward."""
     from b12x.norm import hyperconnection
-    from ignition.recipes.kimi3.dcp import write_records
-    from ignition.recipes.kimi3.pointwise import rms_norm_columns
-    from ignition.recipes.kimi31.dspark import merge_attention, proposal_metadata
+    from hyperflare_recipes.recipes.kimi3.dcp import write_records
+    from hyperflare_recipes.recipes.kimi3.pointwise import rms_norm_columns
+    from hyperflare_recipes.recipes.kimi31.dspark import merge_attention, proposal_metadata
 
     local = prepared.embedding.lookup(token_ids=metadata.token_ids, num_rows=metadata.live_counts[:1])
     hidden = prepared.embedding.gather(local)
@@ -697,25 +697,25 @@ def _rank(rank, rendezvous, cache_root, compile_decoder):
     import traceback
     import torch.distributed as dist
 
-    from ignition.components.paged_batch import Metadata
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.weights import DirectWeightLoader
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.weights import DirectWeightLoader
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.capture import capture_forwards
-    from ignition.preparation.collectives import (CollectivePreparation, create_all_gather_runtime,
-        create_all_reduce_runtime, create_head_exchange)
+    from ignition.preparation.collectives import (CollectivePreparation, create_all_gather_runtime, create_all_reduce_runtime)
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.config import ModelConfig
-    from ignition.recipes.kimi3.dspark import PreparedMarkov
-    from ignition.recipes.kimi3.pool import ContinuationPool
-    from ignition.recipes.kimi31.dcp import ContextShards
-    from ignition.recipes.kimi31.dspark import (DraftScratch, PreparedContext, PreparedDraft, Rotary,
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig
+    from hyperflare_recipes.recipes.kimi3.dspark import PreparedMarkov
+    from hyperflare_recipes.recipes.kimi3.pool import ContinuationPool
+    from hyperflare_recipes.recipes.kimi31.dcp import ContextShards
+    from hyperflare_recipes.recipes.kimi31.dspark import (DraftScratch, PreparedContext, PreparedDraft, Rotary,
                                                inverse_frequencies, rotary_gain)
-    from ignition.recipes.kimi31.dspark_config import DSparkConfig
-    from ignition.recipes.kimi31.dspark_weights import DraftWeights
+    from hyperflare_recipes.recipes.kimi31.dspark_config import DSparkConfig
+    from hyperflare_recipes.recipes.kimi31.dspark_weights import DraftWeights
 
     torch.set_num_threads(1)
     torch.cuda.set_device(rank)
@@ -726,7 +726,7 @@ def _rank(rank, rendezvous, cache_root, compile_decoder):
     runtimes, graphs, compiled = [], [], {}
     try:
         with CoreStorage(rank=rank, world=WORLD, device=rank) as storage:
-            from ignition.recipes.kimi3.dcp import write_records
+            from hyperflare_recipes.recipes.kimi3.dcp import write_records
 
             records = torch.linspace(-1024, 1024, 3 * RECORD, device=device).view(3, RECORD).bfloat16()
             slots = torch.tensor([1, -1, 0], device=device)

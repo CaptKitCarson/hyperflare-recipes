@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 
 @torch.no_grad()
 def test_checkpoint_text_reference_bos_repeatability():
-    from ignition.reference.muse_spark import text_logits
+    from hyperflare_recipes.reference.muse_spark import text_logits
 
     assert os.environ.get("CUDA_VISIBLE_DEVICES"), "assign a CUDA device explicitly"
     checkpoint = Path(os.environ.get("FLARE_MUSE_SPARK_CHECKPOINT",

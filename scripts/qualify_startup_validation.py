@@ -28,7 +28,7 @@ import weakref
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from ignition.preparation.qwen38 import (
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import (
     FRONTEND_SHA256, MODEL_ID, REVISION,
 )
 
@@ -115,7 +115,7 @@ def fixture(snapshot):
             host += (nbytes + 7) & ~7
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.contract import text_inputs
-    from ignition.recipes.qwen38.contract import prepare
+    from hyperflare_recipes.recipes.qwen38.contract import prepare
 
     graphs, signatures = [], {}
     for kind, capacities in GRAPH_CAPACITIES.items():
@@ -138,7 +138,7 @@ def fixture(snapshot):
     manifest = {"abi_version": ABI_VERSION, "completion_token_capacity": 8, "context": 1, "device": 0, "max_active": 4,
         "input_frame_bytes": host, "buffers": buffers, "graphs": graphs}
     from ignition.preparation.frontend import annotated_template_asset, prepare_frontend
-    from ignition.recipes.qwen38.recipe import RECIPE
+    from hyperflare_recipes.recipes.qwen38.recipe import RECIPE
 
     pool = SimpleNamespace(layout=layout)
     contract = prepare(signatures, dict.fromkeys(item["name"] for item in buffers), pool,
@@ -153,7 +153,7 @@ def fixture(snapshot):
         "assets": {"tokenizer": {"path": str((snapshot / "tokenizer.json").resolve(strict=True)),
             "sha256": FRONTEND_SHA256["tokenizer.json"]},
             "chat_template": annotated_template_asset((snapshot / "chat_template.jinja").read_bytes(),
-                ROOT / "ignition/recipes/qwen38/assets/chat_template.patch.json")}}
+                ROOT / "hyperflare_recipes/recipes/qwen38/assets/chat_template.patch.json")}}
     return manifest, config
 
 

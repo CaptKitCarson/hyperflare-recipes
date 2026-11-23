@@ -6,7 +6,7 @@
 import pytest
 import torch
 
-from ignition.recipes.mimo_v2.attention import commit_window, stage_window
+from hyperflare_recipes.recipes.mimo_v2.attention import commit_window, stage_window
 
 
 class PrefillWindowForward:
@@ -93,8 +93,8 @@ def test_restored_window_can_branch_without_touching_prefix(cache_dtype):
 
 @pytest.mark.parametrize("cache_dtype", [torch.bfloat16, torch.float8_e4m3fn])
 def test_packed_candidate_windows_preserve_committed_history(cache_dtype):
-    from ignition.components.paged_batch import Metadata
-    from ignition.recipes.mimo_v2.attention import stage_windows
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.recipes.mimo_v2.attention import stage_windows
 
     generator = torch.Generator().manual_seed(5021)
     history = torch.randn((5, 128, 1, 16), generator=generator).to(cache_dtype)
@@ -131,11 +131,11 @@ def test_compiled_window_replay_commits_only_accepted_tokens(window, dimension, 
     import os
     if os.environ.get('FLARE_RUN_CUDA_TESTS') != '1':
         pytest.skip('requires FLARE_RUN_CUDA_TESTS=1 and an assigned GPU')
-    from ignition.components.paged_attention import PreparedPagedKVWriter
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_attention import PreparedPagedKVWriter
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.mimo_v2.attention import stage_windows
+    from hyperflare_recipes.recipes.mimo_v2.attention import stage_windows
 
     device = torch.device('cuda', 0)
     history = torch.randn((5, window, 1, dimension), device=device).to(cache_dtype)

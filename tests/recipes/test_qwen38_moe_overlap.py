@@ -13,15 +13,15 @@ import pytest
 import torch
 from cuda.bindings import driver as cuda
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.preparation import inspect_qwen38_checkpoint
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
 from ignition.preparation.compilation import compile_forward
-from ignition.preparation.qwen38 import TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TEXT_PREFIX
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.qwen38.moe import PreparedQwenMoe, QwenMoeWeights, QwenMoeScratch
+from hyperflare_recipes.recipes.qwen38.moe import PreparedQwenMoe, QwenMoeWeights, QwenMoeScratch
 from tests.recipes.test_qwen38_moe_cuda import observe_moe
-from ignition.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader, allocate_expert_scale_scratch
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
     reason="explicit CUDA assignment required")

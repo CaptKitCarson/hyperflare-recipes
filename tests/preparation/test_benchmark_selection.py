@@ -11,7 +11,7 @@ import pytest
 from ignition import planning
 from ignition.errors import UsageError
 from ignition.preparation.selection import BenchmarkSelection
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 
 
 def _plan():
@@ -47,7 +47,7 @@ def test_kimi_tp16_eight_request_benchmark_plan():
 
 
 def test_fifteen_draft_native_catalog_and_completion_capacity():
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     selection = BenchmarkSelection(batches=(1,), contexts=(4096,), width=16)
     original = _plan()
@@ -79,7 +79,7 @@ def test_prefill_catalog_has_exact_chunk_and_prefix_remainder():
 
 @pytest.mark.parametrize("mtp", [False, True])
 def test_prefill_plan_and_recipe_accept_no_decode_catalog(mtp):
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     selection = BenchmarkSelection(batches=(1,), contexts=(0, 512, 4096), prefill_chunk=2048)
     plan = _plan()
@@ -139,7 +139,7 @@ def test_plan_rejects_unavailable_geometry(changes, match):
 
 
 def test_recipe_config_selects_rounds_without_changing_default_catalog():
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     normal = PreparationConfig(draft_snapshot=Path("draft"))
     selected = replace(normal, max_active=4, benchmark_selection=BenchmarkSelection())
@@ -155,7 +155,7 @@ def test_subset_contract_without_decode():
     from types import SimpleNamespace
     from ignition.components.state import StateLayout, StateStorage
     from ignition.preparation.execution import GraphSignature
-    from ignition.recipes.qwen38_dense.contract import prepare
+    from hyperflare_recipes.recipes.qwen38_dense.contract import prepare
 
     layout = StateLayout.from_specs((("consumed_tokens", (1,), torch.int64),))
     storage = StateStorage.allocate(layout, 9, "cpu")
@@ -167,7 +167,7 @@ def test_subset_contract_without_decode():
 
 
 def test_packed_catalog_retains_logical_sample_capacity():
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     config = PreparationConfig(max_active=8, speculative_widths=(1, 8),
                                speculative_token_capacity=16, draft_snapshot=Path("draft"))
@@ -178,7 +178,7 @@ def test_packed_catalog_retains_logical_sample_capacity():
 
 @pytest.mark.parametrize("width", [8, 13, 16])
 def test_study_geometry_keeps_native_setup_catalog(width):
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     selection = BenchmarkSelection(batches=(1,), contexts=(8192,), width=width, speculation_study=True)
     plan = replace(_plan(), concurrency=1, benchmark_selection=selection)
@@ -189,7 +189,7 @@ def test_study_geometry_keeps_native_setup_catalog(width):
 
 
 def test_shared_study_catalog_sizes_pool_without_widening_native_catalog():
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     selection = BenchmarkSelection(batches=(1,), contexts=(8192,), width=16,
                                    speculation_study=True, study_widths=(8, 13, 16))

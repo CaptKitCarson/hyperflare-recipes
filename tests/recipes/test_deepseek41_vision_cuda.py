@@ -17,22 +17,22 @@ import torch
 from tests.components.completion_support import completion_outputs
 from b12x.preparation import PreparationSession
 
-from ignition.components.paged_batch import BatchInputs
+from hyperflare_recipes.components.paged_batch import BatchInputs
 from ignition.components.sampling import DeviceRequestState
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.checkpoint import IndexedCheckpoint, _read_header
-from ignition.components.deepseek_vision import (
+from hyperflare_recipes.components.deepseek_vision import (
     PreparedVision,
     VisionInputs,
     VisionScratch,
 )
-from ignition.components.deepseek_vision import (
+from hyperflare_recipes.components.deepseek_vision import (
     PrefillVisionInputs,
     PreparedVisionGeneration,
     VisionState,
 )
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.weights import DirectWeightLoader
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires an assigned CUDA device"

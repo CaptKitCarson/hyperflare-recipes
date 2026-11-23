@@ -12,7 +12,7 @@ import subprocess
 import pytest
 from huggingface_hub.constants import HF_HUB_CACHE
 
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -22,7 +22,7 @@ def test_native_minimax_chat_matches_checkpoint(tmp_path):
     from tokenizers import Tokenizer
     from transformers.utils.chat_template_utils import _compile_jinja_template
 
-    from ignition.recipes.minimax_m3.frontend import prepare, runtime_assets
+    from hyperflare_recipes.recipes.minimax_m3.frontend import prepare, runtime_assets
 
     snapshot = Path(os.environ.get("FLARE_MINIMAX_M3_SNAPSHOT", str(resolve("minimax-m3-1-flash").snapshot(Path(HF_HUB_CACHE)))))
     if not (snapshot / "tokenizer.json").is_file():

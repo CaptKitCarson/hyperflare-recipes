@@ -5,9 +5,9 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import candidate_selection, owner_topk
-from ignition.components.candidate_rows import PreparedCandidateRows, validate_candidate_rows
-from ignition.recipes.kimi31.indexer import SharedBuffers
+from hyperflare_recipes.components import candidate_selection, owner_topk
+from hyperflare_recipes.components.candidate_rows import PreparedCandidateRows, validate_candidate_rows
+from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
 
 
 def inputs(device="cpu"):

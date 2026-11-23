@@ -13,7 +13,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 
 def test_locked_tuning_resets_clocks_before_graph_capture(tmp_path, monkeypatch):
     import torch
-    from ignition.components.linear import UnquantizedProjection
+    from hyperflare_recipes.components.linear import UnquantizedProjection
     from ignition.preparation import clocks
     from ignition.preparation.tuning import RecordedPreparationSession
 

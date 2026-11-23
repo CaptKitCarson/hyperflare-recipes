@@ -14,8 +14,8 @@ import pytest
 from ignition import planning
 from ignition.cli import display
 from ignition.errors import CapacityError, UsageError
-from ignition.recipes.declaration import Checkpoint, RankCosts, Recipe, SamplingDefaults, SamplingRange, Speculation
-from ignition.recipes import ResolvedModel, recipes
+from ignition.declaration import Checkpoint, RankCosts, Recipe, SamplingDefaults, SamplingRange, Speculation
+from hyperflare_recipes.recipes import ResolvedModel, recipes
 
 GIB, MIB = 1 << 30, 1 << 20
 
@@ -90,7 +90,7 @@ def test_pages_take_all_remaining_supply():
 
 
 def test_vocabulary_sampling_rejects_tp3_before_weight_loading():
-    from ignition.recipes.deepseek41.recipe import RECIPE
+    from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE
 
     speculation = replace(RECIPE.speculation, vocabulary_parallel_sampling=True)
     with pytest.raises(UsageError, match="no TP3 gather"):
@@ -104,7 +104,7 @@ def test_vocabulary_sampling_rejects_unsupported_transition_storage():
 
 
 def test_vocabulary_sampling_selects_tp4_and_rejects_tp3_hosts():
-    from ignition.recipes.deepseek41.recipe import RECIPE
+    from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE
 
     speculation = replace(RECIPE.speculation, vocabulary_parallel_sampling=True)
     gpus = tuple(gpu(i, 140) for i in range(4))
@@ -118,7 +118,7 @@ def test_vocabulary_sampling_selects_tp4_and_rejects_tp3_hosts():
 @pytest.mark.parametrize("filtering", [{"ranges": {"top_p": SamplingRange(.95, 1.)}}, {"top_p": .95},
                                        {"top_k": 20}, {"min_p": .05}])
 def test_vocabulary_sampling_rejects_declared_token_filtering(filtering):
-    from ignition.recipes.deepseek41.recipe import RECIPE
+    from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE
 
     speculation = replace(RECIPE.speculation, vocabulary_parallel_sampling=True)
     gpus = tuple(gpu(i, 140) for i in range(4))
@@ -214,8 +214,8 @@ def test_image_concurrency_defaults_and_explicit_capacity():
 
 
 def test_dense_default_plan_prepares_image_slots_and_language_model_only_drops_them():
-    from ignition.recipes.qwen38_dense import contract
-    from ignition.recipes.qwen38_dense.recipe import RECIPE, VISION_BYTES, VISION_SLOT_BYTES
+    from hyperflare_recipes.recipes.qwen38_dense import contract
+    from hyperflare_recipes.recipes.qwen38_dense.recipe import RECIPE, VISION_BYTES, VISION_SLOT_BYTES
 
     # Default preparation uses the shared vision-recipe rule: min(4, concurrency) image slots.
     image = planning.plan(RECIPE, RECIPE.checkpoints[0], (gpu(0, 48),), selected=None,
@@ -248,7 +248,7 @@ def test_dense_default_plan_prepares_image_slots_and_language_model_only_drops_t
 def test_dense_derive_uses_standard_image_settings_and_language_model_only_overrides_config(tmp_path):
     from ignition.cli import preparation
     from ignition.cli.config import Configuration, Setting
-    from ignition.recipes.qwen38_dense.recipe import RECIPE
+    from hyperflare_recipes.recipes.qwen38_dense.recipe import RECIPE
 
     model = ResolvedModel(RECIPE, RECIPE.checkpoints[0])
     host = preparation.Host((gpu(0, 95),), None)
@@ -272,7 +272,7 @@ def test_dense_derive_uses_standard_image_settings_and_language_model_only_overr
         planned("", language_model_only=True, image_concurrency=2)
 
     # The same config-override rule applies to other recipes declaring language_model_only.
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     glm = resolve("glm-5.3-flash")
     glm_host = preparation.Host(tuple(replace(gpu(index, 140), total_bytes=140 * GIB) for index in range(4)), None)
@@ -288,7 +288,7 @@ def test_dense_derive_uses_standard_image_settings_and_language_model_only_overr
 
 
 def test_flash_recipe_keeps_the_shared_image_default():
-    from ignition.recipes.qwen38.recipe import RECIPE
+    from hyperflare_recipes.recipes.qwen38.recipe import RECIPE
 
     pair = (gpu(0, 95), gpu(1, 95))
     def planned(concurrency):
@@ -488,7 +488,7 @@ def test_kimi_online_mxfp8_recipe_default_reaches_cli_plan_and_metadata(tmp_path
     from ignition.cli import _parser, preparation
     from ignition.cli.config import Configuration
     from ignition.preparation import rebuild_manifest, runtime_core_pb2 as proto
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     monkeypatch.setattr("ignition.preparation.source_identity.source_identity", lambda: "test-source")
     path = tmp_path / "flare.toml"
@@ -531,7 +531,7 @@ def test_kimi_online_mxfp8_recipe_default_reaches_cli_plan_and_metadata(tmp_path
 
 
 def test_online_mxfp8_scope_requires_conversion():
-    from ignition.recipes.kimi31.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
 
     with pytest.raises(UsageError, match="requires --online-mxfp8"):
         planning.plan(RECIPE, RECIPE.checkpoints[0], (), selected=None, concurrency=1,
@@ -539,7 +539,7 @@ def test_online_mxfp8_scope_requires_conversion():
 
 
 def test_online_mxfp8_scope_must_be_declared_by_recipe():
-    from ignition.recipes.kimi31.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
 
     broad_only = replace(RECIPE, online_mxfp8_scope="all", online_mxfp8_scopes=("all",))
     with pytest.raises(UsageError, match="supports all"):
@@ -571,7 +571,7 @@ def test_draft_body_quantization_option(command):
 
 
 def test_draft_body_quantization_requires_dflash2_and_positive_depth():
-    from ignition.recipes.kimi31.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
 
     with pytest.raises(UsageError, match="requires --speculative-method dflash2"):
         devices = tuple(replace(gpu(i, 95), total_bytes=256 * GIB, free_bytes=255 * GIB) for i in range(16))
@@ -587,7 +587,7 @@ def test_draft_body_quantization_requires_dflash2_and_positive_depth():
                                         (True, "all"), (True, "kda-input")])
 def test_kimi_plan_construction_preserves_explicit_conversion_scope(alias, default, online, scope):
     from dataclasses import fields
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     model = resolve(alias)
     devices = tuple(replace(gpu(i, 95), total_bytes=256 * GIB, free_bytes=255 * GIB) for i in range(16))
@@ -874,7 +874,7 @@ def test_compiler_budget_rejects_more_local_ranks_than_workers(model, workers, s
 def test_recipe_b12x_settings_name_b12x_variables():
     from dataclasses import replace
 
-    from ignition.recipes.kimi3.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi3.recipe import RECIPE
 
     with pytest.raises(ValueError, match="B12X_"):
         replace(RECIPE, b12x_environment={"CUDA_VISIBLE_DEVICES": "0"})
@@ -920,7 +920,7 @@ def test_every_recipe_passes_collective_policy_to_preparation(monkeypatch, tmp_p
     from importlib import import_module
 
     bootstrap_name = {"kimi31": "kimi3", "inkling2_mini": "inkling2"}.get(recipe.name, recipe.name)
-    bootstrap = import_module(f"ignition.recipes.{bootstrap_name}.bootstrap")
+    bootstrap = import_module(f"hyperflare_recipes.recipes.{bootstrap_name}.bootstrap")
     assert recipe.collective_tuning == "static"
     assert bootstrap.PreparationConfig.__dataclass_fields__["collective_tuning"].default == "static"
     from ignition.preparation.collective_ladder import load
@@ -1008,7 +1008,7 @@ def test_moe_decode_a16_geometry_and_rebuild_metadata(monkeypatch):
 
 
 def test_glm53_declares_w4a16_a4_prefill_in_b12x_environment():
-    from ignition.recipes.glm53.recipe import RECIPE
+    from hyperflare_recipes.recipes.glm53.recipe import RECIPE
 
     assert RECIPE.b12x_environment.get("B12X_W4A16_A4_PREFILL") == "1"
 
@@ -1018,7 +1018,7 @@ def test_recipe_prepare_forwards_plan_context_headroom_and_options(monkeypatch, 
     import sys
 
     def stub_bootstrap(recipe_name):
-        module_name = f"ignition.recipes.{recipe_name}.bootstrap"
+        module_name = f"hyperflare_recipes.recipes.{recipe_name}.bootstrap"
         captured = {}
 
         class CapturingConfig:
@@ -1031,11 +1031,11 @@ def test_recipe_prepare_forwards_plan_context_headroom_and_options(monkeypatch, 
         return captured
 
     from ignition.planning import HEADROOM_BYTES
-    from ignition.recipes.gemma4.recipe import RECIPE as GEMMA4
-    from ignition.recipes.minimax_m3.recipe import RECIPE as MINIMAX
-    from ignition.recipes.deepseek4.recipe import RECIPE as DS4
-    from ignition.recipes.deepseek41.recipe import RECIPE as DS41
-    from ignition.recipes.mimo_v2.recipe import RECIPE as MIMO
+    from hyperflare_recipes.recipes.gemma4.recipe import RECIPE as GEMMA4
+    from hyperflare_recipes.recipes.minimax_m3.recipe import RECIPE as MINIMAX
+    from hyperflare_recipes.recipes.deepseek4.recipe import RECIPE as DS4
+    from hyperflare_recipes.recipes.deepseek41.recipe import RECIPE as DS41
+    from hyperflare_recipes.recipes.mimo_v2.recipe import RECIPE as MIMO
 
     # Gemma4 forwards autotune_effort, roce_chain, and plan.recipe.context.
     gemma_plan = replace(
@@ -1094,7 +1094,7 @@ def test_every_recipe_inherits_base_config_and_forwards_shared_plan_fields(monke
     from ignition.preparation.bootstrap import BasePreparationConfig
 
     bootstrap_name = {"kimi31": "kimi3", "inkling2_mini": "inkling2"}.get(recipe.name, recipe.name)
-    bootstrap = import_module(f"ignition.recipes.{bootstrap_name}.bootstrap")
+    bootstrap = import_module(f"hyperflare_recipes.recipes.{bootstrap_name}.bootstrap")
     assert issubclass(bootstrap.PreparationConfig, BasePreparationConfig)
 
     world = min(recipe.tensor_parallel)

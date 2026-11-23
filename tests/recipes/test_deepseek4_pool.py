@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from ignition.recipes.deepseek4.config import REVISION, ModelConfig
-from ignition.recipes.deepseek4.pool import (
+from hyperflare_recipes.recipes.deepseek4.config import REVISION, ModelConfig
+from hyperflare_recipes.recipes.deepseek4.pool import (
     PAGE_TOKENS,
     ContinuationPool,
     continuation_layout,
@@ -17,7 +17,7 @@ from ignition.recipes.deepseek4.pool import (
     page_bytes,
     page_specs,
 )
-from ignition.recipes.deepseek4.recipe import RECIPE
+from hyperflare_recipes.recipes.deepseek4.recipe import RECIPE
 
 
 def model():
@@ -56,7 +56,7 @@ def test_pages_hold_two_c128_records_or_sixty_four_c4_records():
 
 
 def test_contract_registers_compressed_planes_from_their_storage_owner():
-    from ignition.recipes.deepseek4.contract import prepare
+    from hyperflare_recipes.recipes.deepseek4.contract import prepare
 
     pool = ContinuationPool.allocate(model(), 2, 3, "cpu", dspark=False)
     buffers = {}

@@ -51,7 +51,7 @@ def _inputs(metadata, tokens, start):
 def _rank(rank, world, rendezvous, snapshot, capacity, generate=False, sockets=(), checkpoint=False):
     from transformers import AutoTokenizer
 
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.components.sampling import (
         AdmissionBuffers,
         DeviceRequestState,
@@ -69,14 +69,14 @@ def _rank(rank, world, rendezvous, snapshot, capacity, generate=False, sockets=(
     from ignition.preparation.graphs import PreparedGraphBundle
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.glm53.batch import BatchInputs, PreparedBatch
-    from ignition.recipes.glm53.generation import PreparedGeneration
-    from ignition.recipes.glm53.maintenance import PreparedMaintenance
-    from ignition.recipes.glm53.pool import ContinuationPool
-    from ignition.recipes.glm53.resume import PreparedResume
-    from ignition.recipes.glm53.stack import DecoderScratch, PreparedDecoder
-    from ignition.recipes.glm53.state import DecoderMetadata
-    from ignition.recipes.glm53.weights import ModelWeights
+    from hyperflare_recipes.recipes.glm53.batch import BatchInputs, PreparedBatch
+    from hyperflare_recipes.recipes.glm53.generation import PreparedGeneration
+    from hyperflare_recipes.recipes.glm53.maintenance import PreparedMaintenance
+    from hyperflare_recipes.recipes.glm53.pool import ContinuationPool
+    from hyperflare_recipes.recipes.glm53.resume import PreparedResume
+    from hyperflare_recipes.recipes.glm53.stack import DecoderScratch, PreparedDecoder
+    from hyperflare_recipes.recipes.glm53.state import DecoderMetadata
+    from hyperflare_recipes.recipes.glm53.weights import ModelWeights
 
     peers = []
     for index, (root, peer) in enumerate(sockets, start=1):

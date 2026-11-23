@@ -42,7 +42,7 @@ def test_checkpoint_role_tracks_storage_lifetime_without_retaining_weights():
 
 def test_sampling_indices_do_not_retain_allocations_from_unaligned_token_ids():
     from ignition.components.sampling import DeviceRequestState
-    from ignition.components.speculation import PreparedSpeculativeDistributions
+    from hyperflare_recipes.components.speculation import PreparedSpeculativeDistributions
 
     with NumericStorage() as numeric:
         sampling = PreparedSpeculativeDistributions(
@@ -72,8 +72,8 @@ def test_repacked_weight_planes_remain_numeric_leaves(codec, kind):
     from b12x._lib.quant.block_codec import block_codec
     from b12x.gemm.blockscaled import pack_weight
     from b12x.moe import fused_moe
-    from ignition.components.linear import QuantizedProjection
-    from ignition.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.components.linear import QuantizedProjection
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
     from ignition.preparation.tensor_metadata import record_numeric_tensor
     from ignition.preparation.tuning import RecordedPreparationSession
 

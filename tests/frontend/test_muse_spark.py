@@ -20,7 +20,7 @@ def test_native_muse_chat_matches_checkpoint(tmp_path):
     from tokenizers import Tokenizer
     from transformers import PreTrainedTokenizerFast
     from transformers.utils.chat_template_utils import _compile_jinja_template
-    from ignition.recipes.muse_spark.frontend import FRONTEND, prepare_frontend, runtime_assets
+    from hyperflare_recipes.recipes.muse_spark.frontend import FRONTEND, prepare_frontend, runtime_assets
     from tests.frontend import literal_reference
 
     if not (SNAPSHOT / 'tokenizer.json').is_file():

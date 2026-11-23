@@ -190,13 +190,13 @@ def inputs(args):
 def flare(args):
     from b12x.preparation import PreparationSession
 
-    from ignition.preparation import inspect_qwen38_checkpoint
-    from ignition.preparation.qwen38 import TEXT_PREFIX
+    from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+    from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TEXT_PREFIX
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38.attention import QSAMetadata, QSAState, RotaryTables
-    from ignition.recipes.qwen38.mtp import MTPScratch, PreparedMTP
-    from ignition.recipes.qwen38.mtp_weights import MTPWeights
-    from ignition.recipes.qwen38.weights import QwenWeightLoader
+    from hyperflare_recipes.recipes.qwen38.attention import QSAMetadata, QSAState, RotaryTables
+    from hyperflare_recipes.recipes.qwen38.mtp import MTPScratch, PreparedMTP
+    from hyperflare_recipes.recipes.qwen38.mtp_weights import MTPWeights
+    from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
 
     dev = device()
     manifest = inspect_qwen38_checkpoint(args.snapshot)

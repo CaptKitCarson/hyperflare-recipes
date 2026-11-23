@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.weights import DirectWeightLoader
 
 
 PREFIXES = ("experts.0", "experts.1")

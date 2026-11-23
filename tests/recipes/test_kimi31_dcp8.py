@@ -12,11 +12,11 @@ import torch
 
 from ignition import planning
 from ignition.errors import UsageError
-from ignition.recipes.kimi3.bootstrap import PreparationConfig, target_tuning_identity
-from ignition.recipes.kimi3.dcp import ContextShards
+from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig, target_tuning_identity
+from hyperflare_recipes.recipes.kimi3.dcp import ContextShards
 from ignition.preparation.collectives import CollectivePreparation
 from ignition.preparation.peer_storage import PeerStorage
-from ignition.recipes.kimi31.recipe import RECIPE
+from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
 
 
 def _gpu(index):

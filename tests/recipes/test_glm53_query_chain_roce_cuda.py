@@ -17,14 +17,14 @@ import torch
 import torch.distributed as dist
 
 from ignition.components.collectives import PreparedAllGather, PreparedAllReduce
-from ignition.components.linear import BatchedQuantizedProjection, QuantizedProjection
-from ignition.components.weights import quantize_bf16_linear_as_mxfp8
+from hyperflare_recipes.components.linear import BatchedQuantizedProjection, QuantizedProjection
+from hyperflare_recipes.components.weights import quantize_bf16_linear_as_mxfp8
 from ignition.preparation.collectives import CollectivePreparation, create_roce_runtime
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.host_ranks import _use_interface
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.glm53.mla import QueryChain
+from hyperflare_recipes.recipes.glm53.mla import QueryChain
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_ROCE_TESTS") != "1",
                                reason="requires two assigned Spark hosts")

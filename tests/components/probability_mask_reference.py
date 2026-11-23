@@ -3,7 +3,7 @@
 
 """Functional probability snapshots used as an exact verification oracle."""
 
-from ignition.components.speculation import (
+from hyperflare_recipes.components.speculation import (
     PreparedStochasticVerification, TARGET_RNG_DOMAIN, _live, _sliced, verify_chain,
 )
 import torch

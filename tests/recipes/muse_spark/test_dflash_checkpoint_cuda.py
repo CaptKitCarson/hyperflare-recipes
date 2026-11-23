@@ -114,15 +114,15 @@ def test_actual_context_and_five_layer_draft(compiled):
     if not all(path.exists() for path in (TARGET, DRAFT, FEATURES)):
         pytest.skip('requires actual target/draft checkpoints and matched 152-token target features')
     from b12x.preparation import PreparationSession
-    from ignition.components.paged_batch import Metadata
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.weights import DirectWeightLoader
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.weights import DirectWeightLoader
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import GraphBufferPool, ScratchArena
-    from ignition.recipes.muse_spark.config import ModelConfig
-    from ignition.recipes.muse_spark.draft_weights import DraftWeights
-    from ignition.recipes.muse_spark.dflash import PreparedContext, PreparedDraft, DraftScratch
+    from hyperflare_recipes.recipes.muse_spark.config import ModelConfig
+    from hyperflare_recipes.recipes.muse_spark.draft_weights import DraftWeights
+    from hyperflare_recipes.recipes.muse_spark.dflash import PreparedContext, PreparedDraft, DraftScratch
 
     fixture = torch.load(FEATURES, map_location='cpu', weights_only=True)
     token_ids = fixture['prompt_tokens'] + fixture['teacher_tokens']

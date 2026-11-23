@@ -72,7 +72,7 @@ def _nodes(graph):
 @torch.no_grad()
 def test_packed_causal_convolution_replay_preserves_raw_history(channels, heads, tokens, weight_dtype):
     from ignition import runtime_patches
-    from ignition.components.causal_convolution import PreparedCausalConvolution
+    from hyperflare_recipes.components.causal_convolution import PreparedCausalConvolution
 
     runtime_patches.apply()
     device = torch.device("cuda:0")
@@ -117,7 +117,7 @@ def test_packed_causal_convolution_replay_preserves_raw_history(channels, heads,
 @torch.no_grad()
 def test_verification_history_snapshot_survives_until_separate_commit(heads):
     from ignition import runtime_patches
-    from ignition.components.causal_convolution import PreparedCausalConvolution
+    from hyperflare_recipes.components.causal_convolution import PreparedCausalConvolution
 
     runtime_patches.apply()
     device = torch.device("cuda:0")

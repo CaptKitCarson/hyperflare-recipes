@@ -7,8 +7,8 @@ import pytest
 import torch
 from types import SimpleNamespace
 
-from ignition.components.paged_batch import Metadata
-from ignition.recipes.deepseek41.decoder_prefill import PreparedDecoderSuffix
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.recipes.deepseek41.decoder_prefill import PreparedDecoderSuffix
 
 
 @pytest.mark.parametrize("capacity", [256, 512, 4096])
@@ -62,7 +62,7 @@ def test_decoder_suffix_rejects_unsupported_packing_geometry(rows, tokens):
 
 
 def test_decoder_feedback_at_replay_boundary_is_rejected_before_component_construction(monkeypatch):
-    from ignition.recipes.deepseek41 import decoder
+    from hyperflare_recipes.recipes.deepseek41 import decoder
 
     monkeypatch.setattr(decoder, "PreparedTableRequests", lambda *args, **kwargs: None)
     monkeypatch.setattr(decoder.Scratch, "allocate", lambda *args, **kwargs: None)

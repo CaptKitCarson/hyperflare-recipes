@@ -11,7 +11,7 @@ import torch
 from ignition.components.sampling import DeviceRequestState
 from ignition.components.state_transfer import PreparedStateTransfer, StateCommands
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.glm53.pool import ContinuationPool
+from hyperflare_recipes.recipes.glm53.pool import ContinuationPool
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
     reason="requires an explicitly assigned CUDA device")

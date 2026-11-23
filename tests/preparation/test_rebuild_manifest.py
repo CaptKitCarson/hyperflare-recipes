@@ -103,7 +103,7 @@ def test_rebuild_manifest_records_collective_selection(mode):
     from dataclasses import replace
     from google.protobuf.json_format import ParseDict
     from ignition.preparation.rebuild_manifest import from_plan
-    from ignition.recipes import ResolvedModel
+    from hyperflare_recipes.recipes import ResolvedModel
     from tests.cli.test_planning import derive
 
     plan = replace(derive(), collective_tuning=mode)
@@ -111,3 +111,61 @@ def test_rebuild_manifest_records_collective_selection(mode):
     manifest = ParseDict(from_plan(model, plan, compiled_forwards=True), proto.RebuildManifest())
     restored = proto.RebuildManifest.FromString(manifest.SerializeToString())
     assert restored.collective_tuning == mode
+
+
+def test_rebuild_manifest_embeds_parseable_reproduction_arguments(tmp_path):
+    from dataclasses import replace
+    from google.protobuf.json_format import ParseDict
+    from ignition.cli import _parser
+    from ignition.preparation.rebuild_manifest import from_plan
+    from hyperflare_recipes.recipes import ResolvedModel
+    from tests.cli.test_planning import derive
+
+    base = derive()
+    plan = replace(
+        base,
+        prompt_logprobs=True,
+        autotune_effort="audit",
+        native_dense_activations=True,
+        lock_gpu_clocks=True,
+        collective_tuning="static",
+    )
+    model = ResolvedModel(plan.recipe, plan.checkpoint)
+    encoded = from_plan(model, plan, compiled_forwards=False)
+    manifest = ParseDict(encoded, proto.RebuildManifest())
+    restored = proto.RebuildManifest.FromString(manifest.SerializeToString())
+    assert restored.prompt_logprobs is True
+    assert restored.autotune_effort == "audit"
+    assert restored.native_dense_activations is True
+    assert restored.lock_gpu_clocks is True
+
+    args = list(restored.reproduction_args)
+    assert args[:3] == ["ignition", "export", f"{plan.checkpoint.repository}@{plan.checkpoint.revision}"]
+    parsed = _parser().parse_args(args[1:])
+    assert parsed.command == "export"
+    assert parsed.model == f"{plan.checkpoint.repository}@{plan.checkpoint.revision}"
+    assert parsed.max_concurrency == plan.concurrency
+    assert parsed.prefill_chunk_size == plan.prefill_chunk
+    assert parsed.prompt_logprobs is True
+    assert parsed.autotune_effort == "audit"
+    assert parsed.native_dense_activations is True
+    assert parsed.lock_gpu_clocks is True
+    assert parsed.no_compile is True
+    assert parsed.config is None
+    assert parsed.publisher_keys == []
+
+    # Local checkpoint directories record only the basename, never the host path.
+    local_dir = tmp_path / "secret-host-path" / "my-checkpoint"
+    local_dir.mkdir(parents=True)
+    local_model = ResolvedModel(plan.recipe, plan.checkpoint, directory=local_dir)
+    local_args = list(from_plan(local_model, plan, compiled_forwards=True)["reproduction_args"])
+    assert local_args[2] == "my-checkpoint"
+    assert all("secret-host-path" not in item for item in local_args)
+
+    # Multi-host export records --ranks and RoCE shape rather than --gpus.
+    ring_plan = replace(plan, roce_ring=True)
+    multi_args = list(from_plan(model, ring_plan, compiled_forwards=True, multi_host=True)["reproduction_args"])
+    assert "--ranks" in multi_args and "--roce-ring" in multi_args and "--gpus" not in multi_args
+    multi_parsed = _parser().parse_args(multi_args[1:])
+    assert multi_parsed.ranks == plan.world_size
+    assert multi_parsed.roce_ring is True

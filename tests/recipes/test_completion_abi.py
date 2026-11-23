@@ -44,10 +44,10 @@ def test_actual_completion_kernels_cuda(fields):
 
 def _kernel_cases(fields, device="cpu"):
     from ignition.components.sampling import AdmissionBuffers, _admission_finish, _complete
-    from ignition.recipes.qwen38 import vision_state
-    from ignition.recipes.qwen38.maintenance import _snapshot_complete
-    from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-    from ignition.recipes.qwen38.vision_state import _vision_finish
+    from hyperflare_recipes.recipes.qwen38 import vision_state
+    from hyperflare_recipes.recipes.qwen38.maintenance import _snapshot_complete
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.vision_state import _vision_finish
     if os.environ.get("TRITON_INTERPRET") == "1":
         # The interpreter cannot add a global tl.constexpr to its tensor wrapper.
         vision_state._JIT_VISION_ERROR_BASE = vision_state.VISION_ERROR_BASE

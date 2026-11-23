@@ -8,8 +8,8 @@ import os
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.window_attention import PreparedWindowAttention
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.window_attention import PreparedWindowAttention
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
@@ -107,7 +107,7 @@ def test_window_attention(batch, width, first, step, gated, kv_dtype, functional
 @pytest.mark.parametrize("capacity,count", [(1, 0), (1, 1), (4, 2), (641, 641)])
 @pytest.mark.parametrize("kv_dtype", [torch.bfloat16, torch.float8_e4m3fn])
 def test_ring_commit_updates_only_accepted_slots(extent, capacity, count, kv_dtype):
-    from ignition.components.gated_compression import commit_gated
+    from hyperflare_recipes.components.gated_compression import commit_gated
 
     device = torch.device("cuda:0")
     values = torch.arange(capacity * 192, device=device).reshape(capacity, 192).remainder(128).bfloat16()

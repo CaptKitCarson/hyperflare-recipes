@@ -8,12 +8,12 @@ import os
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.glm53.batch import BatchInputs, PreparedBatch
-from ignition.recipes.glm53.state import DecoderMetadata
+from hyperflare_recipes.recipes.glm53.batch import BatchInputs, PreparedBatch
+from hyperflare_recipes.recipes.glm53.state import DecoderMetadata
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
     reason="requires an explicitly assigned CUDA device")
@@ -22,7 +22,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @pytest.mark.parametrize("slots", [1, 2])
 @torch.no_grad()
 def test_small_request_capacities_pad_rank_agreement(slots):
-    from ignition.components.resume import PreparedResumeState
+    from hyperflare_recipes.components.resume import PreparedResumeState
 
     inputs = BatchInputs.allocate(128, 1, "cuda", capacity=slots)
     inputs.request_state_rows[:, 0] = torch.arange(1, inputs.row_slot_ids.numel() + 1, device="cuda")

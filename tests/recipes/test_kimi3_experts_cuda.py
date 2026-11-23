@@ -48,7 +48,7 @@ def _load(checkpoint, partition, load, logical_scales):
     """Load four layer-one experts, then read their packed weights and logical scales back."""
     import torch
     from safetensors import safe_open
-    from ignition.components.weights import DirectWeightLoader
+    from hyperflare_recipes.components.weights import DirectWeightLoader
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 
     if not checkpoint.is_dir():
@@ -84,7 +84,7 @@ def _load(checkpoint, partition, load, logical_scales):
 def _assert_matches_arithmetic(checkpoint, experts, scales, packed, expanded):
     import torch
     from b12x.moe._shared.kernels.reference import moe_reference_w4a8_mx
-    from ignition.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
 

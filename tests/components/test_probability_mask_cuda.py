@@ -8,7 +8,7 @@ import pytest
 import torch
 
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
-from ignition.components.speculation import PreparedStochasticVerification, SpeculativeRngState
+from hyperflare_recipes.components.speculation import PreparedStochasticVerification, SpeculativeRngState
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 

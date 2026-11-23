@@ -5,7 +5,7 @@
 
 import pytest
 
-from ignition.components.embedding_partition import EmbeddingHeadPartition
+from hyperflare_recipes.components.embedding_partition import EmbeddingHeadPartition
 
 
 @pytest.mark.parametrize("world", [1, 2, 4, 8])

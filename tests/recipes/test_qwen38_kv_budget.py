@@ -5,7 +5,7 @@
 
 import pytest
 
-from ignition.recipes.qwen38.bootstrap import PreparationConfig
+from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig
 
 
 @pytest.mark.parametrize('concurrency', [1, 3, 4, 32, 64])

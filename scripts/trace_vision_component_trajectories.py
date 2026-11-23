@@ -26,9 +26,9 @@ from transformers.vision_utils import (
     get_vision_interpolation_indices_and_weights, get_vision_position_ids,
 )
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.recipes.qwen38.vision import PreparedVision, VisionMetadata, VisionScratch, VisionWeights
-from ignition.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.vision import PreparedVision, VisionMetadata, VisionScratch, VisionWeights
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
 from trace_vision_encoder import metrics, provenance, qualification_helpers, sha256
 
 

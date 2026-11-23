@@ -260,7 +260,7 @@ def prepare_and_read(snapshot, config, *, rank, group, core_storage, progress=No
                      log_errors=False, check_compiled=False, cache_outputs=False):
     import torch
     import torch.distributed as dist
-    from ignition.recipes.muse_spark.bootstrap import prepare_rank
+    from hyperflare_recipes.recipes.muse_spark.bootstrap import prepare_rank
 
     with log_warmup_errors(rank, log_errors), fence_operations(rank, fence):
         model = prepare_rank(snapshot, config, rank=rank, group=group, core_storage=core_storage,
@@ -416,7 +416,7 @@ def read_prepared(model, *, rank, group, tokens, output, snapshot,
     import torch
     import torch.distributed as dist
     from ignition.components.sampling import DeviceRequestState, RequestAdmission, RUNNING
-    from ignition.recipes.muse_spark.pool import ContinuationPool
+    from hyperflare_recipes.recipes.muse_spark.pool import ContinuationPool
 
     if any(token >= model.server_config['model_contract']['vocabulary'] for token in tokens):
         raise ValueError('recorded token lies outside the model vocabulary')
@@ -619,7 +619,7 @@ def main():
     import torch
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.rank_group import prepare_group
-    from ignition.recipes.muse_spark.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.muse_spark.bootstrap import PreparationConfig
     config = PreparationConfig(collective_tuning=plan.collective_tuning, prompt_logprobs=plan.prompt_logprobs,
         compile_workers=plan.compile_workers, autotune_effort=plan.autotune_effort, tuning_replica=plan.tuning_replica,
         native_dense_activations=plan.native_dense_activations,

@@ -12,7 +12,7 @@ pytestmark = pytest.mark.skipif(not torch.cuda.is_available(), reason="requires 
 @pytest.mark.parametrize("world", [2, 4])
 @pytest.mark.parametrize("end", [1, 5, 37, 1000, 2048])
 def test_windowed_records_match_the_ipc_pull(world, end):
-    from ignition.recipes.glm53.dcp import (ContextShards, pack_records, pull_context, scatter_records,
+    from hyperflare_recipes.recipes.glm53.dcp import (ContextShards, pack_records, pull_context, scatter_records,
                                             window_counts)
 
     torch.manual_seed(end + world)

@@ -26,9 +26,9 @@ from ignition.components.sampling import (
     PreparedSampling,
     philox4x32_reference,
 )
-from ignition.components.token_state import PreparedTokenState
+from hyperflare_recipes.components.token_state import PreparedTokenState
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
 
 
 def test_philox_random123_zero_vector_and_uniform_distribution():

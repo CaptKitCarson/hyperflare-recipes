@@ -55,7 +55,7 @@ def _reference(query, cache, selected, counts):
 
 @pytest.mark.parametrize("rows", [1, 3, 8, 64, 200])
 def test_decode_attention_matches_reference(cache, rows):
-    from ignition.components.sparse_mla_sm103 import TRITON_ROWS, Sm103SparseMLA
+    from hyperflare_recipes.components.sparse_mla_sm103 import TRITON_ROWS, Sm103SparseMLA
 
     query = (torch.randn(rows, HEADS, 512, device="cuda") * 0.6).to(torch.bfloat16)
     selected = torch.stack([torch.randperm(PAGES * 256, device="cuda")[:WIDTH] for _ in range(rows)]).int()
@@ -78,8 +78,8 @@ def test_decode_attention_matches_reference(cache, rows):
 def test_prefill_slab_attention_matches_physical_selection(cache):
     from b12x.attention import sparse_mla
 
-    from ignition.components.sparse_mla_sm103 import Sm103PrefillSparseMLA
-    from ignition.recipes.glm53.dcp import expand_tokens
+    from hyperflare_recipes.components.sparse_mla_sm103 import Sm103PrefillSparseMLA
+    from hyperflare_recipes.recipes.glm53.dcp import expand_tokens
 
     table = torch.randperm(PAGES, device="cuda").int()[:32]
     context, rows = 5000, 2500
@@ -114,7 +114,7 @@ def test_prefill_slab_attention_matches_physical_selection(cache):
 def test_index_selection_matches_exact_top_k(cache):
     from b12x.attention.dsa_indexer.reference import pack_index_k_cache_reference, paged_decode_logits_reference
 
-    from ignition.components.indexer_sm103 import Sm103SparseIndexer
+    from hyperflare_recipes.components.indexer_sm103 import Sm103SparseIndexer
 
     rows, heads, pages_per_row, topk = 6, 32, 64, 512
     total = rows * pages_per_row + 3

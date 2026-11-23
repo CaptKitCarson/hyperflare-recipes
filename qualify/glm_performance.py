@@ -156,7 +156,7 @@ def flare(args):
     import torch
 
     from ignition.preparation.rank_group import prepare_group
-    from ignition.recipes.glm53.bootstrap import PreparationConfig, prepare_rank
+    from hyperflare_recipes.recipes.glm53.bootstrap import PreparationConfig, prepare_rank
     from qualify.performance_trace import loaded_cupti_path
 
     config = PreparationConfig(devices=tuple(range(args.tp)), context=16384,

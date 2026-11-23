@@ -6,7 +6,7 @@
 import pytest
 import torch
 
-from ignition.components.markov_sampling import RowScaledFP8MarkovWeight, fp8_markov_head
+from hyperflare_recipes.components.markov_sampling import RowScaledFP8MarkovWeight, fp8_markov_head
 
 
 def test_markov_fp8_rows_follow_amax_scale_and_preserve_checkpoint_weight():
@@ -39,7 +39,7 @@ def test_markov_fp8_rows_reject_invalid_weights_and_storage():
 
 
 def test_markov_fp8_weight_views_and_numeric_owners_survive_preparation(monkeypatch):
-    from ignition.components import markov_sampling
+    from hyperflare_recipes.components import markov_sampling
     from ignition.preparation.rebuild_manifest import rebuild_weights_metadata
     from ignition.preparation.tensor_metadata import NumericStorage
 

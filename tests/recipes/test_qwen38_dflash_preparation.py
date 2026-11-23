@@ -9,10 +9,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.dflash2_geometry import DraftAttentionGeometry
-from ignition.recipes.qwen38.bootstrap import PreparationConfig
-from ignition.recipes.qwen38.recipe import RECIPE
-from ignition.recipes.qwen38.state import HybridStateLayout, HybridStatePool, checkpoint_copy_layout
+from hyperflare_recipes.components.dflash2_geometry import DraftAttentionGeometry
+from hyperflare_recipes.recipes.qwen38.bootstrap import PreparationConfig
+from hyperflare_recipes.recipes.qwen38.recipe import RECIPE
+from hyperflare_recipes.recipes.qwen38.state import HybridStateLayout, HybridStatePool, checkpoint_copy_layout
 
 
 @pytest.mark.parametrize("world", [1, 2, 4])
@@ -57,7 +57,7 @@ def test_dflash_preparation_options_validate_before_weight_loading():
 
 def test_prefix_identity_separates_draft_context_and_target_arithmetic():
     from dataclasses import replace
-    from ignition.recipes.qwen38.bootstrap import _identity
+    from hyperflare_recipes.recipes.qwen38.bootstrap import _identity
 
     manifest = SimpleNamespace(headers_sha256={"model": "header"},
                                metadata_sha256={"config.json": "config"})

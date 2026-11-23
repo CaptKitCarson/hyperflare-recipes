@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import column_pair_gather
+from hyperflare_recipes.components import column_pair_gather
 
 
 def fields(rows, rank, variation):

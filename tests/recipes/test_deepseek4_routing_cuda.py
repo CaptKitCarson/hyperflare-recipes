@@ -10,11 +10,11 @@ import pytest
 import torch
 import torch.nn.functional as F
 
-from ignition.components.moe import PreparedRouter, RouterScratch
+from hyperflare_recipes.components.moe import PreparedRouter, RouterScratch
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.deepseek4.decoder import PreparedRouting
+from hyperflare_recipes.recipes.deepseek4.decoder import PreparedRouting
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                               reason="requires an assigned CUDA device")

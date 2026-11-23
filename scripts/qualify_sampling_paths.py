@@ -40,7 +40,7 @@ def cpu_case(artifact, rows, block_steps, policy, *, one_sample=False):
     import torch
 
     from ignition.components.sampling import philox4x32_reference
-    from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+    from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
 
     if policy != "checkpoint_defaults":
         raise ValueError("sampling paths require checkpoint_defaults")
@@ -129,8 +129,8 @@ class CapturedCase:
 
         from ignition.components.sampling import PreparedSampling
         from ignition.components.completion import CompletionOutputs
-        from ignition.components.token_state import PreparedTokenState
-        from ignition.recipes.qwen38.sampling import DeviceRequestState
+        from hyperflare_recipes.components.token_state import PreparedTokenState
+        from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState
 
         self.case = case
         self.name = case["name"]

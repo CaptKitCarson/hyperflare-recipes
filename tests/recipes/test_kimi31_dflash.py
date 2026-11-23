@@ -12,11 +12,11 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.kimi3.config import DSparkConfig, ModelConfig
-from ignition.recipes.kimi3.pool import continuation_layout, page_bytes
-from ignition.recipes.kimi31.dflash_config import DFlash2Config
-from ignition.recipes.kimi31.recipe import RECIPE
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.kimi3.config import DSparkConfig, ModelConfig
+from hyperflare_recipes.recipes.kimi3.pool import continuation_layout, page_bytes
+from hyperflare_recipes.recipes.kimi31.dflash_config import DFlash2Config
+from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
 
 
 def configuration():
@@ -67,8 +67,8 @@ def test_sharded_draft_preserves_target_pages(world, draft_tokens):
 
 @pytest.mark.parametrize("embedded", [False, True])
 def test_preparation_selects_dflash_without_loading_inferact(monkeypatch, tmp_path, embedded):
-    from ignition.recipes import resolve
-    from ignition.recipes.kimi31.dflash_config import REPOSITORY, REVISION
+    from hyperflare_recipes.recipes import resolve
+    from hyperflare_recipes.recipes.kimi31.dflash_config import REPOSITORY, REVISION
     from .test_declarations import fitted
 
     model = resolve("kimi-k3.1-pro")
@@ -103,7 +103,7 @@ def test_dflash_body_and_head_precision_reach_config_and_rebuild_metadata(
         monkeypatch, tmp_path, online, scope):
     from google.protobuf import json_format
     from ignition.preparation import rebuild_manifest, runtime_core_pb2 as proto
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
     from .test_declarations import fitted
 
     model = resolve("kimi-k3.1-pro")
@@ -137,7 +137,7 @@ def test_rejects_incompatible_draft(change):
 
 @pytest.mark.parametrize("start,count", [(0,5),(17,5),(1023,5),(1024,5),(1025,3),(500001,5),(1025,0)])
 def test_private_latent_window_excludes_inactive_and_preserves_history(start, count):
-    from ignition.recipes.kimi31.dflash import stage_latent_window
+    from hyperflare_recipes.recipes.kimi31.dflash import stage_latent_window
 
     window, block, hidden = 1024,5,576
     history = torch.arange(window).remainder(61).bfloat16()[None,:,None].expand(2,window,hidden).clone()

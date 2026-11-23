@@ -20,7 +20,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @torch.no_grad()
 def test_selector_returns_local_masked_logits(batch):
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.nemotron_h.lilicorr import PreparedLatticeSelector
+    from hyperflare_recipes.recipes.nemotron_h.lilicorr import PreparedLatticeSelector
 
     selector = object.__new__(PreparedLatticeSelector)
     selector.batch, selector.top_k, selector.slots = batch, 8, 7
@@ -123,11 +123,11 @@ def test_checkpoint_lattice_scores(batch, slots, tmp_path):
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compile_pool import CompilePool
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.nemotron_h.config import ModelConfig
-    from ignition.recipes.nemotron_h.draft_config import DraftConfig
-    from ignition.recipes.nemotron_h.draft_weights import DraftWeightLoader
-    from ignition.recipes.nemotron_h.lilicorr import PreparedLattice
-    from ignition.reference.qwen38_quant import decode_nvfp4
+    from hyperflare_recipes.recipes.nemotron_h.config import ModelConfig
+    from hyperflare_recipes.recipes.nemotron_h.draft_config import DraftConfig
+    from hyperflare_recipes.recipes.nemotron_h.draft_weights import DraftWeightLoader
+    from hyperflare_recipes.recipes.nemotron_h.lilicorr import PreparedLattice
+    from hyperflare_recipes.reference.qwen38_quant import decode_nvfp4
 
     target = Path(os.environ.get("FLARE_NEMOTRON_CHECKPOINT", "/data/models/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB"))
     path = Path(os.environ.get("FLARE_LILICORR_CHECKPOINT", str(target) + "-LiLiCorr"))

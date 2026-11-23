@@ -16,8 +16,8 @@ from tokenizers import Tokenizer
 from transformers import AutoTokenizer
 from transformers.models.qwen2_vl.image_processing_pil_qwen2_vl import Qwen2VLImageProcessorPil
 
-from ignition.recipes.mimo_v2.frontend import chat_template_asset
-from ignition.recipes.mimo_v2.recipe import RECIPE
+from hyperflare_recipes.recipes.mimo_v2.frontend import chat_template_asset
+from hyperflare_recipes.recipes.mimo_v2.recipe import RECIPE
 
 ROOT = Path(__file__).resolve().parents[2]
 HUB = Path.home() / '.cache/huggingface/hub'

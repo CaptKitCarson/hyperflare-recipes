@@ -10,7 +10,7 @@ from types import SimpleNamespace
 import pytest
 
 from ignition.preparation.selection import BenchmarkSelection
-from ignition.recipes.kimi3.bootstrap import PreparationConfig, _benchmark_state
+from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig, _benchmark_state
 
 
 def test_selected_kimi_round_preserves_serving_configuration():
@@ -65,7 +65,7 @@ def test_kimi_selection_rejects_unavailable_geometry(changes, match):
 @pytest.mark.parametrize("alias,default", [("kimi-k3", "all"), ("kimi-k3.1-pro", "kda-input")])
 @pytest.mark.parametrize("scope", [None, "all", "kda-input"])
 def test_kimi_adapter_passes_benchmark_selection_and_precision(monkeypatch, tmp_path, alias, default, scope):
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
     from .test_declarations import fitted
 
     model = resolve(alias)
@@ -92,9 +92,9 @@ def test_kimi_adapter_passes_benchmark_selection_and_precision(monkeypatch, tmp_
 def test_kimi_benchmark_state_covers_backed_histories_requests_and_rng():
     import torch
 
-    from ignition.components.paged_state import PagedStateStorage
+    from hyperflare_recipes.components.paged_state import PagedStateStorage
     from ignition.components.sampling import DeviceRequestState
-    from ignition.components.speculation import SpeculativeRngState
+    from hyperflare_recipes.components.speculation import SpeculativeRngState
     from ignition.components.state import StateLayout
 
     layout = StateLayout.from_specs((("recurrent", (2, 2), torch.float32),

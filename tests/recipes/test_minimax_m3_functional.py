@@ -34,7 +34,7 @@ class FeedForward(nn.Module):
 
 def test_minimax_explicit_metadata_preserves_canonical_unfused_forward():
     from transformers.models.minimax_m3_vl.modeling_minimax_m3_vl import MiniMaxM3VLDecoderLayer
-    from ignition.recipes.minimax_m3.decoder import CanonicalPreparedLayer, _Attention, _FeedForward, _Norm
+    from hyperflare_recipes.recipes.minimax_m3.decoder import CanonicalPreparedLayer, _Attention, _FeedForward, _Norm
 
     torch.manual_seed(19)
     source = torch.randn(3, 8).bfloat16()
@@ -54,7 +54,7 @@ def test_minimax_explicit_metadata_preserves_canonical_unfused_forward():
 
 def test_minimax_grouped_routes_pass_runtime_weights_and_ids_to_fused_reduction():
     from ignition.components.collectives import WeightedGroupSource
-    from ignition.recipes.minimax_m3.decoder import PreparedDecoderLayer
+    from hyperflare_recipes.recipes.minimax_m3.decoder import PreparedDecoderLayer
 
     source = torch.arange(8.).view(2, 4).bfloat16()
     grouped = WeightedGroupSource(torch.arange(24.).view(2, 3, 4).bfloat16(),
@@ -80,7 +80,7 @@ def test_minimax_grouped_routes_pass_runtime_weights_and_ids_to_fused_reduction(
     assert torch.equal(output, grouped.values.float().sum(1).bfloat16() + shared)
 
 def test_minimax_verification_commit_uses_returned_rows_and_accepted_counts():
-    from ignition.recipes.minimax_m3.decoder import PreparedDecoder as MiniMaxDecoder
+    from hyperflare_recipes.recipes.minimax_m3.decoder import PreparedDecoder as MiniMaxDecoder
 
     decoder = MiniMaxDecoder.__new__(MiniMaxDecoder)
     decoder.taps = {1: 0, 2: 1}
@@ -99,7 +99,7 @@ def test_minimax_verification_commit_uses_returned_rows_and_accepted_counts():
 
 
 def test_minimax_vision_attention_materializes_contiguous_runtime_qkv():
-    from ignition.recipes.minimax_m3 import vision as module
+    from hyperflare_recipes.recipes.minimax_m3 import vision as module
 
     operation = module.VisionAttention.__new__(module.VisionAttention)
     nn.Module.__init__(operation)

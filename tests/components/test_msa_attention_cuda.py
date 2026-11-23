@@ -9,10 +9,10 @@ import weakref
 import pytest
 import torch
 
-from ignition.components.msa_attention import PreparedPackedAttention
-from ignition.components.msa_attention import PreparedMSAIndexer
-from ignition.components.paged_attention import PreparedPagedAttention
-from ignition.components.paged_batch import Metadata
+from hyperflare_recipes.components.msa_attention import PreparedPackedAttention
+from hyperflare_recipes.components.msa_attention import PreparedMSAIndexer
+from hyperflare_recipes.components.paged_attention import PreparedPagedAttention
+from hyperflare_recipes.components.paged_batch import Metadata
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.tuning import RecordedPreparationSession
 from ignition.preparation.scratch import ScratchArena
@@ -24,7 +24,7 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.fixture
 def private_fixtures(monkeypatch):
-    import ignition.components.msa_attention as module
+    import hyperflare_recipes.components.msa_attention as module
 
     references = []
     original = module.benchmark_resource

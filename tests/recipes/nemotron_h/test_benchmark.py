@@ -10,7 +10,7 @@ from types import SimpleNamespace
 import pytest
 
 from ignition.preparation.selection import BenchmarkSelection
-from ignition.recipes.nemotron_h.bootstrap import PreparationConfig, _benchmark_state
+from hyperflare_recipes.recipes.nemotron_h.bootstrap import PreparationConfig, _benchmark_state
 
 
 @pytest.mark.parametrize("mtp_only", [False, True])
@@ -66,9 +66,9 @@ def test_nemotron_selection_rejects_unavailable_geometry(changes, match):
 def test_nemotron_benchmark_state_covers_backed_histories_requests_and_rng():
     import torch
 
-    from ignition.components.paged_state import PagedStateStorage
+    from hyperflare_recipes.components.paged_state import PagedStateStorage
     from ignition.components.sampling import DeviceRequestState
-    from ignition.components.speculation import SpeculativeRngState
+    from hyperflare_recipes.components.speculation import SpeculativeRngState
     from ignition.components.state import StateLayout
 
     layout = StateLayout.from_specs((("recurrent", (2, 2), torch.bfloat16),

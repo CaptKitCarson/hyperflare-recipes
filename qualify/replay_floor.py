@@ -55,9 +55,9 @@ class ReplayCase:
         import torch
 
         from ignition.components.sampling import AdmissionBuffers
-        from ignition.recipes.qwen38.decoder import DecoderScratch, PreparedDecoder
-        from ignition.recipes.qwen38.sampling import DeviceRequestState
-        from ignition.recipes.qwen38.state import HybridStatePool
+        from hyperflare_recipes.recipes.qwen38.decoder import DecoderScratch, PreparedDecoder
+        from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState
+        from hyperflare_recipes.recipes.qwen38.state import HybridStatePool
 
         self.model = model
         self.state = next(value for value in model.resources if isinstance(value, HybridStatePool))
@@ -114,7 +114,7 @@ class ReplayCase:
     def prepare(self, cases):
         import torch
 
-        from ignition.recipes.qwen38.sampling import RequestAdmission
+        from hyperflare_recipes.recipes.qwen38.sampling import RequestAdmission
 
         self.batch = len(cases)
         self.state.reset_for_preparation()

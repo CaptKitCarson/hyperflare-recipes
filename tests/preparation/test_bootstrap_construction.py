@@ -19,8 +19,8 @@ from torch._subclasses.fake_tensor import FakeTensor, FakeTensorMode
 from torch.utils._python_dispatch import TorchDispatchMode, _disable_current_modes
 from torch.utils._pytree import tree_leaves, tree_map
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.recipes.qwen38 import bootstrap
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38 import bootstrap
 
 
 @pytest.fixture(autouse=True)
@@ -139,7 +139,7 @@ def checkpoint():
     if not snapshot.exists():
         pytest.skip("exact Qwen checkpoint metadata is not available")
     manifest = inspect_qwen38_checkpoint(snapshot)
-    from ignition.recipes.qwen38.ple import table_layout
+    from hyperflare_recipes.recipes.qwen38.ple import table_layout
 
     config, layout = table_layout(manifest, "cuda:0")
     return manifest, config, layout
@@ -153,9 +153,9 @@ def _install_boundaries(monkeypatch, checkpoint):
     from b12x.preparation.types import DeviceIdentity
     from triton.runtime.jit import JITFunction
 
-    from ignition.components import gated_delta, varlen_attention
+    from hyperflare_recipes.components import gated_delta, varlen_attention
     from ignition.preparation import tuning
-    from ignition.recipes.qwen38 import (
+    from hyperflare_recipes.recipes.qwen38 import (
         attention,
         hyperconnection,
         moe,
@@ -541,8 +541,8 @@ def _install_boundaries(monkeypatch, checkpoint):
         "vision",
         "vision_state",
     )
-    for name in ("ignition.components.linear", "ignition.components.speculation", "ignition.components.gated_delta",
-                 *("ignition.recipes.qwen38." + name for name in modules)):
+    for name in ("hyperflare_recipes.components.linear", "hyperflare_recipes.components.speculation", "hyperflare_recipes.components.gated_delta",
+                 *("hyperflare_recipes.recipes.qwen38." + name for name in modules)):
         module = importlib.import_module(name)
         for cls in vars(module).values():
             if not inspect.isclass(cls) or cls.__module__ != module.__name__:
@@ -719,7 +719,7 @@ def test_recording_metadata_preserves_values_and_rejects_unknown_scalars():
 def test_real_moe_constructor_rejects_incompatible_loaded_geometry(
     monkeypatch, checkpoint
 ):
-    from ignition.recipes.qwen38.weights import QwenWeightLoader
+    from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
 
     session, _signatures, constructors = _install_boundaries(monkeypatch, checkpoint)
     load = QwenWeightLoader.load_tensor

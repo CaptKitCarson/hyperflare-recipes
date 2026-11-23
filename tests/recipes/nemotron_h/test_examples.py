@@ -7,8 +7,8 @@ from types import SimpleNamespace
 
 import torch
 
-from ignition.recipes.nemotron_h.decoder import Scratch
-from ignition.recipes.nemotron_h.vision import VisionScratch
+from hyperflare_recipes.recipes.nemotron_h.decoder import Scratch
+from hyperflare_recipes.recipes.nemotron_h.vision import VisionScratch
 
 
 def test_target_and_draft_declarations_have_separate_roles():

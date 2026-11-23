@@ -13,7 +13,7 @@ from b12x.attention._shared.mla.compressed_reference import (
     compressed_sparse_mla_reference, pack_deepseek_v41_cache_reference,
 )
 
-from ignition.components.compressed_mla import PreparedCompressedCacheWriter, PreparedCompressedMLA
+from hyperflare_recipes.components.compressed_mla import PreparedCompressedCacheWriter, PreparedCompressedMLA
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                               reason="requires an explicitly assigned CUDA device")

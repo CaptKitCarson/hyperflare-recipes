@@ -59,7 +59,7 @@ def test_physical_budget_can_exceed_shallow_proposal_capacity():
 def test_constructor_cuda_depth_bounds_accept_fake_cuda():
     import torch
     from torch._subclasses.fake_tensor import FakeTensorMode
-    from ignition.components.causal_prefix import PreparedCausalPrefixAllocation
+    from hyperflare_recipes.components.causal_prefix import PreparedCausalPrefixAllocation
 
     def build(device, depth):
         confidence = torch.empty((2, depth), dtype=torch.float32, device=device)

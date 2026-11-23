@@ -17,13 +17,13 @@ from dataclasses import replace
 import torch
 
 from ignition.components.completion import CompletionOutputs
-from ignition.components.paged_batch import ROTARY_OFFSET, BatchInputs
+from hyperflare_recipes.components.paged_batch import ROTARY_OFFSET, BatchInputs
 from ignition.components.sampling import AdmissionBuffers
 from ignition.components.state_transfer import StateCommands
 from ignition.preparation.execution import GraphSignature
-from ignition.recipes.qwen38_dense import bootstrap, contract
-from ignition.recipes.qwen38_dense.config import ModelConfig
-from ignition.recipes.qwen38_dense.pool import ContinuationPool, continuation_layout
+from hyperflare_recipes.recipes.qwen38_dense import bootstrap, contract
+from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig
+from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool, continuation_layout
 
 # Baseline text-only continuation and contract declarations for this synthetic configuration.
 RECORDED_ROW_BYTES = {False: 3_211_776, True: 3_356_160}
@@ -66,7 +66,7 @@ def small_config(mtp=False):
     model = ModelConfig(text, {})
     if not mtp:
         return model
-    from ignition.components.dflash2_geometry import DFlash2Config
+    from hyperflare_recipes.components.dflash2_geometry import DFlash2Config
 
     raw = dict(model_type="qwen3", architectures=["DFlash2DraftModel"], hidden_act="silu",
         dtype="bfloat16", attention_bias=False, attention_dropout=0., tie_word_embeddings=False,
@@ -82,7 +82,7 @@ def small_config(mtp=False):
 
 def declaration(config):
     """The text-only contract and signatures the bootstrap declares for ``config``."""
-    from ignition.components.prompt_logprobs import PromptOutputs
+    from hyperflare_recipes.components.prompt_logprobs import PromptOutputs
 
     pool = ContinuationPool.for_model(config, CAPACITY + 1, 2, "cpu")
     inputs = BatchInputs.allocate(PREFILL, 2, "cpu", capacity=CAPACITY)

@@ -10,20 +10,20 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.compressed_mla import PreparedCompressedCacheWriter
-from ignition.components.compressor_overlap import ConcurrentGatedCompression
-from ignition.components.fp8_indexer import _write_keys
-from ignition.components.gated_compression import PreparedGatedCompressor, pool_gated
-from ignition.components.linear import QuantizedProjection, UnquantizedProjection
-from ignition.components.projection_overlap import ConcurrentProjectionChain
-from ignition.components.paged_batch import Metadata
-from ignition.components.rotary import PreparedRotaryAngles, _rotate
+from hyperflare_recipes.components.compressed_mla import PreparedCompressedCacheWriter
+from hyperflare_recipes.components.compressor_overlap import ConcurrentGatedCompression
+from hyperflare_recipes.components.fp8_indexer import _write_keys
+from hyperflare_recipes.components.gated_compression import PreparedGatedCompressor, pool_gated
+from hyperflare_recipes.components.linear import QuantizedProjection, UnquantizedProjection
+from hyperflare_recipes.components.projection_overlap import ConcurrentProjectionChain
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.rotary import PreparedRotaryAngles, _rotate
 from ignition.preparation.compile_pool import CompilePool
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.deepseek4.config import Compressor
-from ignition.recipes.deepseek4.pool import ContinuationPool
+from hyperflare_recipes.recipes.deepseek4.config import Compressor
+from hyperflare_recipes.recipes.deepseek4.pool import ContinuationPool
 from .test_deepseek4_pool import model
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",

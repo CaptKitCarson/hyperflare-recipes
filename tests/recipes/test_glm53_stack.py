@@ -10,12 +10,12 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.glm53.model import create_model_tree
-from ignition.recipes.glm53.stack import DecoderScratch
-from ignition.recipes.glm53.state import DecoderMetadata, DecoderState
-from ignition.recipes.glm53.mla import MLAState, PreparedGlmMLA
-from ignition.recipes.glm53.indexer import PreparedGlmIndexer
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.glm53.model import create_model_tree
+from hyperflare_recipes.recipes.glm53.stack import DecoderScratch
+from hyperflare_recipes.recipes.glm53.state import DecoderMetadata, DecoderState
+from hyperflare_recipes.recipes.glm53.mla import MLAState, PreparedGlmMLA
+from hyperflare_recipes.recipes.glm53.indexer import PreparedGlmIndexer
 
 
 def scratch_tensors(scratch, prefix=""):

@@ -8,12 +8,12 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.recurrent_proposal import corrected_logits, recurrent_gate
-from ignition.recipes.inkling2.dspark_state import context_slots, mix_features, rotary, stage_paged_tail, stage_window
-from ignition.recipes.inkling2.dspark_weights import fold_recurrent_head, mtp_quantization
-from ignition.recipes.inkling2.dspark import PreparedContext, PreparedDraft, SpeculativePreparation
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.recurrent_proposal import corrected_logits, recurrent_gate
+from hyperflare_recipes.recipes.inkling2.dspark_state import context_slots, mix_features, rotary, stage_paged_tail, stage_window
+from hyperflare_recipes.recipes.inkling2.dspark_weights import fold_recurrent_head, mtp_quantization
+from hyperflare_recipes.recipes.inkling2.dspark import PreparedContext, PreparedDraft, SpeculativePreparation
 
 
 @pytest.mark.parametrize("draft_tokens", [0, 1, 7])

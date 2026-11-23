@@ -18,12 +18,12 @@ def test_checkpoint_tp4_experts_share_a4_a16_storage_and_replay():
     from b12x.preparation import PreparationSession
     from b12x.moe._shared.kernels.w4a16.host import unswizzle_block_scale
     from ignition import runtime_patches
-    from ignition.components.moe import PreparedRoutedExperts
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.weights import DirectWeightLoader
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.weights import DirectWeightLoader
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.recipes.inkling2.experts import load_experts
-    from ignition.reference.qwen38_quant import CheckpointTensors, decode_nvfp4, quantize_nvfp4_activation
+    from hyperflare_recipes.recipes.inkling2.experts import load_experts
+    from hyperflare_recipes.reference.qwen38_quant import CheckpointTensors, decode_nvfp4, quantize_nvfp4_activation
 
     snapshot = os.getenv("FLARE_INKLING2_SNAPSHOT")
     if snapshot is None:

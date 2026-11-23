@@ -11,7 +11,7 @@ from b12x.gemm import wo_projection
 from b12x.gemm._shared.wo_mxfp8 import dequantize_mxfp8_rows_torch
 from b12x.preparation import PreparationSession
 
-from ignition.components.attention_output import PreparedGroupedOutputProjection
+from hyperflare_recipes.components.attention_output import PreparedGroupedOutputProjection
 from ignition.preparation.compilation import compile_forward
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",

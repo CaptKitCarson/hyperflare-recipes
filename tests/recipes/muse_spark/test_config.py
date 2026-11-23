@@ -8,10 +8,10 @@ from pathlib import Path
 
 import pytest
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes import resolve
-from ignition.recipes.muse_spark.config import ModelConfig
-from ignition.recipes.muse_spark.pool import continuation_layout, page_bytes
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes import resolve
+from hyperflare_recipes.recipes.muse_spark.config import ModelConfig
+from hyperflare_recipes.recipes.muse_spark.pool import continuation_layout, page_bytes
 
 CHECKPOINT = Path('/data/cache/huggingface/hub/models--meta-models--Muse-Spark-Open-816B-A42B-NVFP4/snapshots/4239e4db19376904f2e82c167e78f70abb5455fe')
 

@@ -33,7 +33,7 @@ class RankForward:
 
 def _rank(rank, world, rendezvous, sockets, fields, compilation):
     from ignition.components.collectives import PreparedAllReduce
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.components.sampling import (
         AdmissionBuffers,
         DeviceRequestState,
@@ -49,8 +49,8 @@ def _rank(rank, world, rendezvous, sockets, fields, compilation):
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.execution import GraphSignature, PreparedExecution
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.glm53.batch import BatchInputs, PreparedBatch
-    from ignition.recipes.glm53.state import DecoderMetadata
+    from hyperflare_recipes.recipes.glm53.batch import BatchInputs, PreparedBatch
+    from hyperflare_recipes.recipes.glm53.state import DecoderMetadata
 
     peers = []
     for index, (root, peer) in enumerate(sockets, start=1):

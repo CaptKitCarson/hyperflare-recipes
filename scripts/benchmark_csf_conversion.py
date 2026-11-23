@@ -19,8 +19,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import torch
 
 from b12x._lib.quant._csf_prepare import prepare_csf_payload, validate_source
-from ignition.components.weights import DirectWeightLoader
-from ignition.preparation.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.components.weights import DirectWeightLoader
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
 
 
 def main():

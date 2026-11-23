@@ -8,11 +8,11 @@ import os
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.qk_norm_rope import PreparedQKNormRoPE
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.qk_norm_rope import PreparedQKNormRoPE
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.step5.model import RMSNorm, rotary, rotary_inverse
+from hyperflare_recipes.recipes.step5.model import RMSNorm, rotary, rotary_inverse
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires an assigned GPU")
 

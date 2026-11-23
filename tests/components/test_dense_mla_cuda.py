@@ -10,7 +10,7 @@ import pytest
 import torch
 from b12x.attention import dense_mla
 
-from ignition.components.dense_mla import PreparedDenseMLA
+from hyperflare_recipes.components.dense_mla import PreparedDenseMLA
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
@@ -23,7 +23,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @pytest.mark.parametrize("functional", [False, True])
 @pytest.mark.parametrize("tokens,batch", [(5, 2), (9, 4)])
 def test_ragged_tuning_partition_covers_physical_queries(monkeypatch, tmp_path, tokens, batch, functional):
-    import ignition.components.dense_mla as module
+    import hyperflare_recipes.components.dense_mla as module
 
     device = torch.device("cuda", 0)
     heads, page = 8, 128
@@ -109,7 +109,7 @@ def test_ragged_tuning_partition_covers_physical_queries(monkeypatch, tmp_path, 
 
 def test_functional_broadcast_page_table_compilation_and_replay(monkeypatch):
     from ignition import runtime_patches
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
 
     runtime_patches.apply()
     device = torch.device("cuda", 0)

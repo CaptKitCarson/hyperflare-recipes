@@ -10,8 +10,8 @@ import pytest
 import torch
 from b12x._lib.scratch import ScratchBufferSpec, scratch_tensor
 
-from ignition.components import moe
-from ignition.preparation.fixtures import fused_moe as moe_fixtures
+from hyperflare_recipes.components import moe
+from hyperflare_recipes.fixtures import fused_moe as moe_fixtures
 from ignition.preparation.scratch import ScratchArena
 
 

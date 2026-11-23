@@ -14,12 +14,12 @@ import pytest
 import torch
 from safetensors import safe_open
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import GraphBufferPool, ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.step5.weights import Step5WeightLoader
+from hyperflare_recipes.recipes.step5.weights import Step5WeightLoader
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires an assigned GPU")
 
@@ -59,7 +59,7 @@ def relative_error(actual, expected):
 
 
 def load_mxfp8_reference_mlp(module, weight):
-    from ignition.reference.qwen38_quant import decode_mxfp8
+    from hyperflare_recipes.reference.qwen38_quant import decode_mxfp8
 
     packed = weight.weight
     gate, up = decode_mxfp8(packed.values, packed.scale_rows[0].view(torch.uint8)).bfloat16().chunk(2)
@@ -89,12 +89,12 @@ def serial_fp8_window_attention(query, key, value, window):
 @torch.no_grad()
 @pytest.mark.parametrize("index", [0, 91])
 def test_dense_decoder_layer(checkpoint, index, monkeypatch, record_property):
-    from ignition.components.paged_batch import Metadata
-    from ignition.recipes.step5.attention import PreparedAttention
-    from ignition.recipes.step5.decoder import PreparedFeedForward, Scratch
-    from ignition.recipes.step5.model import DecoderLayer
-    from ignition.recipes.step5.pool import ContinuationPool
-    from ignition.reference.qwen38_quant import quantize_mxfp8_activation
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.recipes.step5.attention import PreparedAttention
+    from hyperflare_recipes.recipes.step5.decoder import PreparedFeedForward, Scratch
+    from hyperflare_recipes.recipes.step5.model import DecoderLayer
+    from hyperflare_recipes.recipes.step5.pool import ContinuationPool
+    from hyperflare_recipes.reference.qwen38_quant import quantize_mxfp8_activation
 
     manifest, reference = checkpoint
     # Eight regions fit the SM120 shared-memory limit with 192-dimensional heads.
@@ -168,15 +168,15 @@ def test_dense_decoder_layer(checkpoint, index, monkeypatch, record_property):
 @torch.no_grad()
 def test_mtp_feedback_and_proposals(checkpoint, monkeypatch, record_property):
 
-    from ignition.components.paged_batch import Metadata
-    from ignition.recipes.step5.decoder import Scratch
-    from ignition.recipes.step5.model import RMSNorm
-    from ignition.recipes.step5.mtp import (
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.recipes.step5.decoder import Scratch
+    from hyperflare_recipes.recipes.step5.model import RMSNorm
+    from hyperflare_recipes.recipes.step5.mtp import (
         PreparedAcceptedContext,
         PreparedFeedback,
         PreparedProposals,
     )
-    from ignition.recipes.step5.pool import ContinuationPool
+    from hyperflare_recipes.recipes.step5.pool import ContinuationPool
 
     manifest, reference = checkpoint
     device, shard = torch.device("cuda:0"), TensorParallelShard(0, 1)
@@ -380,12 +380,12 @@ def test_mtp_feedback_and_proposals(checkpoint, monkeypatch, record_property):
 
 @torch.no_grad()
 def test_vision_encoder(checkpoint):
-    from ignition.recipes.step5.vision import (
+    from hyperflare_recipes.recipes.step5.vision import (
         PreparedVision,
         VisionInputs,
         VisionScratch,
     )
-    from ignition.recipes.step5.vision_weights import VisionWeights
+    from hyperflare_recipes.recipes.step5.vision_weights import VisionWeights
 
     manifest, reference = checkpoint
     device, shard = torch.device("cuda:0"), TensorParallelShard(0, 1)

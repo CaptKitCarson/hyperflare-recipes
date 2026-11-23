@@ -9,7 +9,7 @@ import os
 import pytest
 import torch
 
-from ignition.components.draft_sampling import PreparedDraftProposal
+from hyperflare_recipes.components.draft_sampling import PreparedDraftProposal
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 

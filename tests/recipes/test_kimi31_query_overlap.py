@@ -11,8 +11,8 @@ import torch
 
 from ignition.components import collectives
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.kimi31 import attention, indexer
-from ignition.recipes.kimi31.dcp import ContextShards, TOPK, RECORD_BYTES
+from hyperflare_recipes.recipes.kimi31 import attention, indexer
+from hyperflare_recipes.recipes.kimi31.dcp import ContextShards, TOPK, RECORD_BYTES
 
 
 class Plan:
@@ -174,7 +174,7 @@ def test_split_selection_keeps_sequential_composition():
 
 
 def test_candidate_alternatives_share_query_join_dependency(monkeypatch):
-    from ignition.components import candidate_selection
+    from hyperflare_recipes.components import candidate_selection
 
     monkeypatch.setattr(candidate_selection, 'PreparedAllGather', lambda *args, **kwargs:
                         SimpleNamespace(dependencies=[]))

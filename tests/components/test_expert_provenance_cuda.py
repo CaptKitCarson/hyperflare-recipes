@@ -12,7 +12,7 @@ import torch
 from safetensors.torch import save_file
 from b12x._lib.quant.csf_encode import encode_csf_source
 
-from ignition.components.weights import DirectWeightLoader, record_final_fp4_expert_provenance
+from hyperflare_recipes.components.weights import DirectWeightLoader, record_final_fp4_expert_provenance
 from ignition.preparation import provenance
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 
@@ -362,7 +362,7 @@ def test_qmma_unaligned_w13_has_no_piece_metadata(tmp_path):
 def test_iq2_descriptor_and_metadata_planes_match_tp1(tmp_path, hidden):
     from b12x.moe._shared.kernels.w4a16.iq2_xs import prepare_iq2_xs_moe_weights
     from b12x._lib.quant.block_codec import block_codec
-    from ignition.components.weights import _record_iq2_expert_provenance
+    from hyperflare_recipes.components.weights import _record_iq2_expert_provenance
 
     def blocks(n, kb, spec, generator):
         value = torch.randint(0, 256, (2, n, kb, spec.block_bytes),

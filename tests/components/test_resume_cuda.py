@@ -8,7 +8,7 @@ import os
 import pytest
 import torch
 
-from ignition.components.resume import PreparedResumeState
+from hyperflare_recipes.components.resume import PreparedResumeState
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
 from ignition.components.state import StateLayout, StateStorage
 from ignition.preparation.compilation import compile_forward

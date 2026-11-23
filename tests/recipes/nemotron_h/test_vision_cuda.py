@@ -18,7 +18,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 def models():
     from transformers.dynamic_module_utils import get_class_from_dynamic_module
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.recipes.nemotron_h.vision import PREFIX, VisionWeights
+    from hyperflare_recipes.recipes.nemotron_h.vision import PREFIX, VisionWeights
 
     path = Path(os.environ.get("FLARE_NEMOTRON_CHECKPOINT", "/data/models/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB"))
     if not path.is_dir():
@@ -60,7 +60,7 @@ def models():
 
 class VisionForward:
     def __init__(self, encoder, capacity, device):
-        from ignition.recipes.nemotron_h.vision import PIXEL_WIDTH
+        from hyperflare_recipes.recipes.nemotron_h.vision import PIXEL_WIDTH
 
         self.encoder = encoder
         self.patches = torch.zeros((capacity, PIXEL_WIDTH),
@@ -75,7 +75,7 @@ class VisionForward:
 
 
 def set_inputs(forward, pixels):
-    from ignition.recipes.nemotron_h.vision import REGISTER_TOKENS
+    from hyperflare_recipes.recipes.nemotron_h.vision import REGISTER_TOKENS
 
     _, _, height, width = pixels.shape
     h, w = height // 16, width // 16
@@ -123,7 +123,7 @@ def test_checkpoint_image_encoder_compiled_replay(models, capacity, grids, tmp_p
     from b12x.preparation import PreparationSession
     from ignition.preparation.compile_pool import CompilePool
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.nemotron_h.vision import PreparedVision, VisionInputs, VisionScratch
+    from hyperflare_recipes.recipes.nemotron_h.vision import PreparedVision, VisionInputs, VisionScratch
 
     weights, reference = models
     torch.manual_seed(872)

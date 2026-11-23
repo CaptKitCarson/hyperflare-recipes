@@ -9,9 +9,9 @@ import pytest
 import torch
 
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.qwen38.decoder_state import DecoderInputs, PreparedDecoderState
-from ignition.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
-from ignition.recipes.qwen38.state import HybridStatePool
+from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs, PreparedDecoderState
+from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState, RequestAdmission
+from hyperflare_recipes.recipes.qwen38.state import HybridStatePool
 
 
 def test_input_contract():

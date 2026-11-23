@@ -8,7 +8,7 @@ import os
 import pytest
 import torch
 
-from ignition.components.probability_normalization import PreparedProbabilityNormalization
+from hyperflare_recipes.components.probability_normalization import PreparedProbabilityNormalization
 from ignition.preparation.compile_pool import CompilePool
 from ignition.preparation.graphs import PreparedGraphBundle
 
@@ -88,7 +88,7 @@ def test_probability_normalization_metadata_and_native_replay(vocabulary, tmp_pa
 @torch.no_grad()
 def test_nucleus_distributions_match_sorted_probability_reference(temperature):
     from ignition.components.sampling import DeviceRequestState, RequestAdmission
-    from ignition.components.speculation import PreparedSpeculativeDistributions
+    from hyperflare_recipes.components.speculation import PreparedSpeculativeDistributions
     from ignition.preparation.compilation import compile_forward
 
     vocabulary = 129280

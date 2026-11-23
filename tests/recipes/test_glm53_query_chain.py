@@ -10,7 +10,7 @@ import torch
 import torch.distributed as dist
 
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.glm53.mla import QueryChain, _output_width
+from hyperflare_recipes.recipes.glm53.mla import QueryChain, _output_width
 
 
 def test_query_workspace_normalizes_zero_and_nonzero_rank_requirements(monkeypatch):

@@ -17,8 +17,8 @@ pytestmark = pytest.mark.skipif(not (os.environ.get("FLARE_RUN_CUDA_TESTS") and 
 @pytest.mark.parametrize("requests", [4, 3])
 @pytest.mark.parametrize("compiled", [False, True])
 def test_fused_draft_metadata_matches_reference(world, capacity, requests, compiled):
-    from ignition.recipes.glm53.dcp import ContextShards
-    from ignition.recipes.glm53.mtp import DraftMetadata
+    from hyperflare_recipes.recipes.glm53.dcp import ContextShards
+    from hyperflare_recipes.recipes.glm53.mtp import DraftMetadata
 
     device = torch.device("cuda")
     generator = torch.Generator().manual_seed(world * 10 + capacity)

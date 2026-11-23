@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.recipes.inkling2.config import ModelConfig
+from hyperflare_recipes.recipes.inkling2.config import ModelConfig
 
 
 class ExpertForward:
@@ -41,7 +41,7 @@ def snapshot():
 
 
 def test_mini_visits_and_cache_storage(mini_config_dir):
-    from ignition.recipes.inkling2.pool import continuation_layout, RankGeometry, page_specs
+    from hyperflare_recipes.recipes.inkling2.pool import continuation_layout, RankGeometry, page_specs
     config = ModelConfig.load(mini_config_dir)
     t = config.text
     assert len(t.visits) == 48
@@ -98,11 +98,11 @@ def test_invalid_loop_geometry(mini_config_dir, field, value):
 def test_expert_checkpoint_replay(snapshot, layer):
     from ignition import runtime_patches
     runtime_patches.apply()
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.situ_experts import PreparedSiTUExperts
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.situ_experts import PreparedSiTUExperts
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.recipes.inkling2.mini_weights import MiniWeightLoader
-    from ignition.recipes.inkling2.mini_experts import load_experts
+    from hyperflare_recipes.recipes.inkling2.mini_weights import MiniWeightLoader
+    from hyperflare_recipes.recipes.inkling2.mini_experts import load_experts
     with MiniWeightLoader(inspect_indexed_checkpoint(snapshot), "cuda:0", shard=TensorParallelShard(0, 1), vision=False) as loader:
         experts = load_experts(loader, layer, shard=loader.shard)
     operation = PreparedSiTUExperts(experts, tokens=4, top_k=8)
@@ -134,11 +134,11 @@ def test_expert_vllm_agreement(snapshot, layer):
     from safetensors.torch import load_file
     from ignition import runtime_patches
     runtime_patches.apply()
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.situ_experts import PreparedSiTUExperts
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.situ_experts import PreparedSiTUExperts
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.recipes.inkling2.mini_weights import MiniWeightLoader
-    from ignition.recipes.inkling2.mini_experts import load_experts
+    from hyperflare_recipes.recipes.inkling2.mini_weights import MiniWeightLoader
+    from hyperflare_recipes.recipes.inkling2.mini_experts import load_experts
     tensors = load_file(reference, device="cuda")
     with MiniWeightLoader(inspect_indexed_checkpoint(snapshot), "cuda:0", shard=TensorParallelShard(0, 1), vision=False) as loader:
         experts = load_experts(loader, layer, shard=loader.shard)
@@ -159,13 +159,13 @@ def test_expert_vllm_agreement(snapshot, layer):
 def test_expert_compiled_catalog_restore(snapshot, tmp_path, layer):
     from ignition import runtime_patches
     runtime_patches.apply()
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.situ_experts import PreparedSiTUExperts
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.situ_experts import PreparedSiTUExperts
     from ignition.preparation.aot import ForwardCache
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.execution import GraphSignature
-    from ignition.recipes.inkling2.mini_weights import MiniWeightLoader
-    from ignition.recipes.inkling2.mini_experts import load_experts
+    from hyperflare_recipes.recipes.inkling2.mini_weights import MiniWeightLoader
+    from hyperflare_recipes.recipes.inkling2.mini_experts import load_experts
     with MiniWeightLoader(inspect_indexed_checkpoint(snapshot), "cuda:0", shard=TensorParallelShard(0, 1), vision=False) as loader:
         weights = load_experts(loader, layer, shard=loader.shard)
     operation = PreparedSiTUExperts(weights, tokens=4, top_k=8)
@@ -199,7 +199,7 @@ def test_loop_histories_snapshot_branch_restore(snapshot, endpoint, drafting):
     runtime_patches.apply()
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.state_transfer import PreparedStateTransfer, StateCommands
-    from ignition.recipes.inkling2.pool import ContinuationPool, RankGeometry
+    from hyperflare_recipes.recipes.inkling2.pool import ContinuationPool, RankGeometry
 
     config = ModelConfig.load(snapshot)
     text = config.text.cache_config

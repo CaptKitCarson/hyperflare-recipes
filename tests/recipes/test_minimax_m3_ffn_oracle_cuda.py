@@ -18,16 +18,16 @@ import torch
 import torch.distributed as dist
 from b12x.preparation import PreparationSession
 
-from ignition.components.linear import UnquantizedProjection
-from ignition.components.mlp import MLPScratch, PreparedMLP
-from ignition.components.moe import PreparedRouter, PreparedRoutedExperts, RouterScratch
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.linear import UnquantizedProjection
+from hyperflare_recipes.components.mlp import MLPScratch, PreparedMLP
+from hyperflare_recipes.components.moe import PreparedRouter, PreparedRoutedExperts, RouterScratch
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.minimax_m3.config import TEXT_PREFIX
-from ignition.recipes.minimax_m3.decoder import AttentionScratch, PreparedAttention
-from ignition.recipes.minimax_m3.weights import MiniMaxWeightLoader
+from hyperflare_recipes.recipes.minimax_m3.config import TEXT_PREFIX
+from hyperflare_recipes.recipes.minimax_m3.decoder import AttentionScratch, PreparedAttention
+from hyperflare_recipes.recipes.minimax_m3.weights import MiniMaxWeightLoader
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("FLARE_RUN_CUDA_TESTS") != "1" or "FLARE_MINIMAX_CHECKPOINT" not in os.environ,
@@ -389,10 +389,10 @@ def test_real_checkpoint_first_routed_ffn_tp4(attention_mode, scale_compression,
 @pytest.mark.parametrize("scale_compression", [None, "csf"], ids=("native_scales", "csf_scales"))
 @torch.no_grad()
 def test_functional_routed_ffn_matches_checkpoint_oracle(tokens, scale_compression, tensor_parallel_group):
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.minimax_m3.decoder import PreparedFeedForward, Scratch
+    from hyperflare_recipes.recipes.minimax_m3.decoder import PreparedFeedForward, Scratch
 
     rank, device = tensor_parallel_group
     shard = TensorParallelShard(rank, 4)

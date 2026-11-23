@@ -10,8 +10,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.paged_batch import BatchInputs, Metadata, PreparedBatch
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.paged_batch import BatchInputs, Metadata, PreparedBatch
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.components.sampling import DeviceRequestState, RequestAdmission, RUNNING, ERROR
 from ignition.preparation.compilation import compile_forward
 

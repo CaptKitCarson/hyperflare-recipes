@@ -10,8 +10,8 @@ from .test_kimi31 import config, raw_config
 
 def test_rank_costs_include_latent_and_index_pages(config):
     import torch
-    from ignition.recipes import resolve
-    from ignition.recipes.kimi3.pool import ContinuationPool, continuation_layout, page_bytes, page_specs
+    from hyperflare_recipes.recipes import resolve
+    from hyperflare_recipes.recipes.kimi3.pool import ContinuationPool, continuation_layout, page_bytes, page_specs
 
     recipe = resolve("kimi-k3.1-pro").recipe
     costs = recipe.costs(16, None)
@@ -41,7 +41,7 @@ def test_rank_costs_include_latent_and_index_pages(config):
 
 @pytest.mark.parametrize("chunk,pages", [(128, 9), (2048, 9), (2176, 10), (4096, 10)])
 def test_preparation_pages_follow_global_context_geometry(chunk, pages):
-    from ignition.recipes.kimi3.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig
 
     config = PreparationConfig(prefill_chunk_size=chunk)
     assert config.page_tokens == 2048 and config.preparation_pages == pages

@@ -12,9 +12,9 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import PLE_PREFIX
-from ignition.recipes.qwen38.ple import (
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import PLE_PREFIX
+from hyperflare_recipes.recipes.qwen38.ple import (
     PLE_LAYER_PREFIX,
     TABLE_BYTES,
     PLETable,
@@ -25,8 +25,8 @@ from ignition.recipes.qwen38.ple import (
     allocate_convolution_state,
     table_layout,
 )
-from ignition.recipes.qwen38.weights import QwenWeightLoader
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors,
     read_ple_rows,
 )

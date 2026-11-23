@@ -9,14 +9,14 @@ import pytest
 import torch
 
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.qwen38.attention import QSAMetadata
-from ignition.recipes.qwen38.decoder_state import DecoderInputs, PreparedDecoderState
-from ignition.recipes.qwen38.mixed_state import MixedPacking, MixedScratch, PreparedMixedState, role_inputs
-from ignition.recipes.qwen38.mixed_model import MixedEmbeddingInjection
-from ignition.recipes.qwen38.sampling import DeviceRequestState
-from ignition.recipes.qwen38.speculative_state import PreparedVerificationState
-from ignition.recipes.qwen38.state import HybridStatePool
-from ignition.recipes.qwen38.vision_state import VisionFeatureState
+from hyperflare_recipes.recipes.qwen38.attention import QSAMetadata
+from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs, PreparedDecoderState
+from hyperflare_recipes.recipes.qwen38.mixed_state import MixedPacking, MixedScratch, PreparedMixedState, role_inputs
+from hyperflare_recipes.recipes.qwen38.mixed_model import MixedEmbeddingInjection
+from hyperflare_recipes.recipes.qwen38.sampling import DeviceRequestState
+from hyperflare_recipes.recipes.qwen38.speculative_state import PreparedVerificationState
+from hyperflare_recipes.recipes.qwen38.state import HybridStatePool
+from hyperflare_recipes.recipes.qwen38.vision_state import VisionFeatureState
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                               reason="explicit CUDA assignment required")

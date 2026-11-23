@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @pytest.mark.parametrize("tokens,valid", [(1, 1), (17, 13), (4096, 4079)])
 def test_route_finalizer_canonical_rounding(tokens, valid):
     from transformers.models.muse_spark.modeling_muse_spark import MuseSparkTextInputScaledRMSNorm
-    from ignition.components.route_finalizer import PreparedRouteFinalizer
+    from hyperflare_recipes.components.route_finalizer import PreparedRouteFinalizer
 
     torch.manual_seed(1801)
     routes = torch.randn((tokens, 8, 4096), device="cuda", dtype=torch.bfloat16)
@@ -57,7 +57,7 @@ def test_route_finalizer_canonical_rounding(tokens, valid):
 
 
 def test_bf16_experts_raw_silu():
-    from ignition.components.bf16_experts import PreparedBF16Experts
+    from hyperflare_recipes.components.bf16_experts import PreparedBF16Experts
     from ignition.preparation.scratch import GraphBufferPool
 
     torch.manual_seed(171)

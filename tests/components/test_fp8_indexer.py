@@ -5,7 +5,7 @@
 
 import pytest
 
-from ignition.components.fp8_indexer import PreparedFP8Indexer
+from hyperflare_recipes.components.fp8_indexer import PreparedFP8Indexer
 
 
 @pytest.mark.parametrize("scale", [0, -1, float("inf"), -float("inf"), float("nan"), True, "1", [1]])

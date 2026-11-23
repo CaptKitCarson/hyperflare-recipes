@@ -8,7 +8,7 @@ import torch
 
 def test_conditional_score_scratch_can_be_supplied_per_call():
     from ignition.components.sampling import DeviceRequestState, RUNNING
-    from ignition.components.speculation import PreparedSpeculativeDistributions
+    from hyperflare_recipes.components.speculation import PreparedSpeculativeDistributions
 
     state = DeviceRequestState.allocate("cpu", vocab_size=64, capacity=4)
     state.status.fill_(RUNNING)

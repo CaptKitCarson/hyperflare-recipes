@@ -9,7 +9,7 @@ import pytest
 import torch
 
 from ignition.components.completion import CompletionOutputs
-from ignition.components.vocabulary_logprobs import PreparedVocabularyParallelLogprobs
+from hyperflare_recipes.components.vocabulary_logprobs import PreparedVocabularyParallelLogprobs
 from tests.components.test_generation_logprobs_cuda import _assert_entry
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="CUDA opt-in")

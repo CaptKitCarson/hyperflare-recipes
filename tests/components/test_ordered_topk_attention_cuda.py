@@ -18,10 +18,10 @@ class OrderedAttentionSelection:
     """Compare ordinary and ordered top-k after identical candidate preprocessing."""
 
     def __init__(self, rows, width, topk, device, session):
-        from ignition.components.candidate_rows import PreparedCandidateRows
-        from ignition.components.ordered_row_topk import PreparedOrderedRowTopK
-        from ignition.components.row_topk import PreparedRowTopK
-        from ignition.recipes.kimi31.indexer import SharedBuffers
+        from hyperflare_recipes.components.candidate_rows import PreparedCandidateRows
+        from hyperflare_recipes.components.ordered_row_topk import PreparedOrderedRowTopK
+        from hyperflare_recipes.components.row_topk import PreparedRowTopK
+        from hyperflare_recipes.recipes.kimi31.indexer import SharedBuffers
 
         self.packed = torch.empty((rows, width, 2), dtype=torch.float32, device=device)
         self.active = torch.empty(rows, dtype=torch.bool, device=device)

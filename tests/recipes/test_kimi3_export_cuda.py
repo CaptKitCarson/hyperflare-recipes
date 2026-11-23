@@ -16,8 +16,8 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 
 class _ColumnForward:
     def __init__(self, rank):
-        from ignition.components.parallel import TensorParallelShard
-        from ignition.recipes.kimi3.decoder import DecoderStorage
+        from hyperflare_recipes.components.parallel import TensorParallelShard
+        from hyperflare_recipes.recipes.kimi3.decoder import DecoderStorage
 
         config = SimpleNamespace(hidden=7168, text={"routed_expert_hidden_size": 3584})
         self.storage = DecoderStorage.allocate(config, TensorParallelShard(rank, 16), "cuda:0")

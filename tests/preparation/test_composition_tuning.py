@@ -14,8 +14,8 @@ def test_opaque_triton_identity_ignores_table_indices_but_preserves_launch_const
     import torch
     from torch._higher_order_ops.triton_kernel_wrap import KernelSideTable
     from torch.utils._pytree import tree_flatten
-    from ignition.components.owner_topk import _owner_candidates
-    from ignition.components.row_ownership import _decode_owned_rows
+    from hyperflare_recipes.components.owner_topk import _owner_candidates
+    from hyperflare_recipes.components.row_ownership import _decode_owned_rows
     from ignition.preparation import aot
     from ignition.preparation.compilation import _Invocation
 

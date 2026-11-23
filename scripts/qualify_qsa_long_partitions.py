@@ -122,7 +122,7 @@ def execute(args, records, capture_receipt, receipt):
         'callable': 'sparse_paged_gqa_reference', 'device': 'cpu', 'rtol': 0, 'atol': .02,
         'arithmetic': 'FP32 QK, FP32 softmax, FP32 PV, BF16 output; exact installed callable.'}
     receipt['sampling_sources'] = {str(path): sha(path) for path in (
-        ROOT / 'ignition/recipes/qwen38/sampling.py',
+        ROOT / 'hyperflare_recipes/recipes/qwen38/sampling.py',
         Path(importlib.util.find_spec('flashinfer.sampling').origin),
     )}
     if receipt['b12x_sources'] != capture_receipt['b12x_sources']:

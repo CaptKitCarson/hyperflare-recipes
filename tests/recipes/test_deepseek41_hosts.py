@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 from ignition import planning
-from ignition.recipes.deepseek41 import bootstrap, recipe
+from hyperflare_recipes.recipes.deepseek41 import bootstrap, recipe
 
 
 def test_four_hosts_may_each_use_their_own_gpu_zero():
@@ -26,7 +26,7 @@ def test_four_hosts_may_each_use_their_own_gpu_zero():
 @pytest.mark.parametrize("remote", [False, True])
 def test_recipe_dispatches_the_complete_plan_to_the_rank_group(monkeypatch, remote, draft_tokens, world):
     from ignition.preparation import rank_group
-    from ignition.recipes.declaration import Speculation
+    from ignition.declaration import Speculation
 
     gpus = tuple(planning.Gpu(i, "GB10", f"GPU-{i}", 128 << 30, 120 << 30, (12, 1)) for i in range(world))
     plan = planning.fit(recipe.RECIPE, recipe.RECIPE.checkpoints[0], gpus, concurrency=16,
@@ -72,8 +72,8 @@ def test_remote_channels_cover_vocab_and_sampling_results_without_pcie(monkeypat
     assert calls[0]["gather_bytes"] >= sample_rows * (129280 // 4) * 4
     if draft_tokens:
         from ignition.components.collectives import packed_broadcast_layout
-        from ignition.components.draft_sampling import PreparedDraftDistribution
-        from ignition.components.speculation import SpeculativeAcceptance
+        from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
+        from hyperflare_recipes.components.speculation import SpeculativeAcceptance
 
         layouts = (PreparedDraftDistribution.broadcast_layout(16),
                    SpeculativeAcceptance.broadcast_layout(16, draft_tokens + 1))

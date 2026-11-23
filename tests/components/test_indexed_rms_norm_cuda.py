@@ -9,7 +9,7 @@ import pytest
 import torch
 from b12x.preparation import PreparationSession
 
-from ignition.components.rms_norm import PreparedIndexedRMSNorm, PreparedRMSNorm
+from hyperflare_recipes.components.rms_norm import PreparedIndexedRMSNorm, PreparedRMSNorm
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                               reason="requires an explicitly assigned CUDA device")

@@ -9,16 +9,16 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.preparation.qwen38 import TEXT_PREFIX
-from ignition.recipes.qwen38.weights import (
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38.weights import (
     QwenWeightLoader,
     _expert_ids,
     _expert_scale_vectors,
     allocate_expert_scale_scratch,
     expert_memory_plan,
 )
-from ignition.reference.qwen38_quant import CheckpointTensors
+from hyperflare_recipes.reference.qwen38_quant import CheckpointTensors
 
 
 @pytest.fixture(scope="module")

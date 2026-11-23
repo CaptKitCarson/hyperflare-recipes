@@ -18,16 +18,16 @@ def test_checkpoint_grouped_mlp_matches_separate_projections(rows, down_mode, ch
     from transformers import Qwen3_5TextConfig
     from transformers.models.qwen3_5.modeling_qwen3_5 import Qwen3_5MLP
 
-    from ignition.components.linear import prepare_projection
-    from ignition.components.weights import DirectWeightLoader
+    from hyperflare_recipes.components.linear import prepare_projection
+    from hyperflare_recipes.components.weights import DirectWeightLoader
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
     from tests.tensor_examples import TensorExamples
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes import resolve
-    from ignition.recipes.qwen38_dense.config import ModelConfig, TEXT_PREFIX
-    from ignition.recipes.qwen38_dense.decoder import GroupedMLP, Projection
+    from hyperflare_recipes.recipes import resolve
+    from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig, TEXT_PREFIX
+    from hyperflare_recipes.recipes.qwen38_dense.decoder import GroupedMLP, Projection
 
     hub = Path(os.environ.get("HF_HUB_CACHE", Path.home() / ".cache/huggingface/hub"))
     snapshot = (Path(os.environ.get("FLARE_QWEN38_DENSE_CHECKPOINT",
@@ -138,7 +138,7 @@ def test_bf16_down_projection_uses_intermediate_through_pooled_replay(rows):
     from ignition.preparation.scratch import ScratchArena
     from tests.tensor_examples import TensorExamples
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.qwen38_dense.decoder import GroupedMLP
+    from hyperflare_recipes.recipes.qwen38_dense.decoder import GroupedMLP
 
     device, width, intermediate = torch.device("cuda:0"), 256, 512
     canonical = Qwen3_5MLP(Qwen3_5TextConfig(hidden_size=width, hidden_act="silu"), intermediate).to(

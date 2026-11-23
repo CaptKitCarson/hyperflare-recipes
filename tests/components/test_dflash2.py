@@ -10,9 +10,9 @@ import copy
 import pytest
 import torch
 
-from ignition.components.dflash2 import DraftScratch, _draft_templates
-from ignition.components.dflash2_geometry import DraftAttentionGeometry
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.dflash2 import DraftScratch, _draft_templates
+from hyperflare_recipes.components.dflash2_geometry import DraftAttentionGeometry
+from hyperflare_recipes.components.parallel import TensorParallelShard
 
 
 @pytest.mark.parametrize('world', [1, 2, 4, 8])
@@ -68,9 +68,9 @@ def test_effective_block_preserves_checkpoint_and_scratch_fields(width):
 @pytest.mark.parametrize("model", ["dense", "flash"])
 @pytest.mark.parametrize("world", [1, 2, 4])
 def test_checkpoint_geometry_drives_shared_context_storage(model, world):
-    from ignition.components.dflash2_geometry import DFlash2Config, draft_context_specs
-    from ignition.recipes.qwen38.draft_config import EXPECTED
-    from ignition.recipes.qwen38_dense.draft_config import PROFILE
+    from hyperflare_recipes.components.dflash2_geometry import DFlash2Config, draft_context_specs
+    from hyperflare_recipes.recipes.qwen38.draft_config import EXPECTED
+    from hyperflare_recipes.recipes.qwen38_dense.draft_config import PROFILE
 
     profile = EXPECTED if model == "flash" else PROFILE
     text = dict(model_type="qwen3", architectures=["DFlash2DraftModel"], hidden_act="silu",
@@ -102,7 +102,7 @@ KEY, VALUE, WINDOW = 8, 4, 2048
 
 def _context(compact):
     """A draft context whose projections are identities and whose writer records its inputs."""
-    from ignition.components.dflash2 import PreparedContext
+    from hyperflare_recipes.components.dflash2 import PreparedContext
 
     written = []
     context = object.__new__(PreparedContext)
@@ -116,7 +116,7 @@ def _context(compact):
 
 
 def _chunk_metadata(chunk, three_axis):
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
 
     metadata = Metadata.allocate(chunk, 1, 1, "cpu")
     metadata.set(torch.zeros(1, dtype=torch.int64), torch.full((1,), chunk, dtype=torch.int32),
@@ -138,7 +138,7 @@ def test_context_rotates_and_places_retained_tokens(chunk, metadata_type):
     paged metadata (even when a recipe-specific ``rope_positions`` attribute is
     present) and the temporal column when ``rotary_positions`` is supplied.
     """
-    from ignition.components.dflash2 import _rotary
+    from hyperflare_recipes.components.dflash2 import _rotary
 
     compact = chunk > WINDOW
     rows = WINDOW if compact else chunk

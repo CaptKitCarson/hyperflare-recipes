@@ -9,15 +9,15 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.kimi3.decoder import PreparedMLP
-from ignition.recipes.kimi3.model import situ
-from ignition.recipes.kimi3.projections import prepare_projection
-from ignition.recipes.kimi3.weights import KimiWeightLoader
+from hyperflare_recipes.recipes.kimi3.decoder import PreparedMLP
+from hyperflare_recipes.recipes.kimi3.model import situ
+from hyperflare_recipes.recipes.kimi3.projections import prepare_projection
+from hyperflare_recipes.recipes.kimi3.weights import KimiWeightLoader
 
 CHECKPOINT = Path("/data/models/Kimi-K3-MXFP4-CSF")
 pytestmark = pytest.mark.skipif(os.getenv("FLARE_RUN_CUDA_TESTS") != "1",
@@ -156,7 +156,7 @@ def test_latent_projections(weights, online, rows):
                                                   (65, False, False), (4096, False, False)])
 @torch.no_grad()
 def test_shared_expert(weights, online, rows, compiled, overlap):
-    from ignition.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
 
     w = weights[int(online)]
     torch.manual_seed(41)

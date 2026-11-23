@@ -9,9 +9,9 @@ import os
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.recipes.deepseek4.attention import rotate_index, transfer_window
-from ignition.recipes.deepseek4.pool import PAGE_TOKENS, latent_page_bytes
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.recipes.deepseek4.attention import rotate_index, transfer_window
+from hyperflare_recipes.recipes.deepseek4.pool import PAGE_TOKENS, latent_page_bytes
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires an assigned CUDA device"
@@ -20,7 +20,7 @@ pytestmark = pytest.mark.skipif(
 
 @torch.no_grad()
 def test_compressed_indices_expand_both_c128_records_across_page_boundaries():
-    from ignition.recipes.deepseek4.attention import AttentionIndices
+    from hyperflare_recipes.recipes.deepseek4.attention import AttentionIndices
 
     device = torch.device("cuda", 0)
     metadata = Metadata.allocate(6, 1, 2, device)
@@ -47,9 +47,9 @@ def test_draft_attention_modes_preserve_noncausal_visibility_and_request_isolati
     from b12x.attention._shared.mla.compressed_reference import compressed_sparse_mla_reference
     from b12x.preparation import PreparationSession
 
-    from ignition.components.compressed_mla import PreparedCompressedCacheWriter, PreparedCompressedMLA
+    from hyperflare_recipes.components.compressed_mla import PreparedCompressedCacheWriter, PreparedCompressedMLA
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.deepseek4.attention import AttentionIndices
+    from hyperflare_recipes.recipes.deepseek4.attention import AttentionIndices
 
     device = torch.device("cuda", torch.cuda.current_device())
     torch.manual_seed(4150 + block + heads)
@@ -166,7 +166,7 @@ def test_footer_cache_attention_with_shuffled_pages_and_inactive_rows(ratio):
     )
     from b12x.preparation import PreparationSession
 
-    from ignition.components.compressed_mla import (
+    from hyperflare_recipes.components.compressed_mla import (
         PreparedCompressedCacheWriter,
         PreparedCompressedMLA,
     )
@@ -273,15 +273,15 @@ def test_checkpoint_attention_alternates_prefill_decode_and_rejected_verificatio
 
     from b12x.preparation import PreparationSession
 
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.rotary import CompressedRotary as Rotary
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.rotary import CompressedRotary as Rotary
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.deepseek4.attention import AttentionScratch, PreparedAttention
-    from ignition.recipes.deepseek4.config import REVISION
-    from ignition.recipes.deepseek4.pool import ContinuationPool
-    from ignition.recipes.deepseek4.weights import DeepSeekWeightLoader
+    from hyperflare_recipes.recipes.deepseek4.attention import AttentionScratch, PreparedAttention
+    from hyperflare_recipes.recipes.deepseek4.config import REVISION
+    from hyperflare_recipes.recipes.deepseek4.pool import ContinuationPool
+    from hyperflare_recipes.recipes.deepseek4.weights import DeepSeekWeightLoader
 
     snapshot = Path.home() / (
         ".cache/huggingface/hub/models--deepseek-ai--DeepSeek-V4-Flash-Vision-Exp/snapshots/" + REVISION

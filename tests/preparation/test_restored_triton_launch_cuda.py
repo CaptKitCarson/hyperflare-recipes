@@ -10,7 +10,7 @@ import torch
 import triton
 from triton.runtime.jit import JITFunction
 
-from ignition.components.gdn_prefill_sm103 import (
+from hyperflare_recipes.components.gdn_prefill_sm103 import (
     _ZERO_BLOCK,
     _ZERO_CONFIG,
     _zero_fresh_rows,

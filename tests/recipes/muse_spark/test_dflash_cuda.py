@@ -48,8 +48,8 @@ class Pool:
 
 
 def fixture():
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.weights import MLPWeights
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.weights import MLPWeights
     torch.manual_seed(821)
     def rand(*shape):
         return (torch.randn(shape, device='cuda') * .04).bfloat16()
@@ -71,7 +71,7 @@ def fixture():
 
 
 def metadata(batch, width=8):
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
     m = Metadata.allocate(batch * width, batch, 1, 'cuda', samples=batch * width)
     def set_values(starts, lengths):
         m.set(torch.tensor(starts, device='cuda', dtype=torch.int64),
@@ -89,7 +89,7 @@ def test_context_accepted_fp8_capture(width):
     from b12x.preparation import PreparationSession
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import GraphBufferPool, ScratchArena
-    from ignition.recipes.muse_spark.dflash import PreparedContext
+    from hyperflare_recipes.recipes.muse_spark.dflash import PreparedContext
     weights, pool = fixture(), Pool()
     m, set_values = metadata(4, width)
     tokens = 4 * width
@@ -137,7 +137,7 @@ def test_context_accepted_fp8_capture(width):
 def test_private_attention_alternating_capacities():
     from b12x.preparation import PreparationSession
     from ignition.preparation.scratch import GraphBufferPool, ScratchArena
-    from ignition.recipes.muse_spark.dflash import DraftScratch, DraftAttention
+    from hyperflare_recipes.recipes.muse_spark.dflash import DraftScratch, DraftAttention
     weights, pool = fixture(), Pool()
     for value in pool.values.values():
         value.copy_(fp8(torch.randn(value.shape, device='cuda') * .2))
@@ -208,7 +208,7 @@ def test_five_layer_draft_compiled_replay(tmp_path):
     from b12x.preparation import PreparationSession
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import GraphBufferPool, ScratchArena
-    from ignition.recipes.muse_spark.dflash import DraftScratch, PreparedDraft
+    from hyperflare_recipes.recipes.muse_spark.dflash import DraftScratch, PreparedDraft
     weights, pool = fixture(), Pool()
     buffers = GraphBufferPool('cuda')
     scratch = DraftScratch.allocate(weights.config.draft, weights.shard, 32, 'cuda', buffers=buffers.cursor())

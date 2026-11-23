@@ -19,8 +19,8 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 @torch.no_grad()
 def test_replay_width_transitions_and_snapshot_branch(autotune, prime, heads, groups):
     from b12x.preparation import PreparationSession
-    from ignition.components.mamba import PreparedMambaUpdate
-    from ignition.components.mamba_speculation import PreparedMambaReplay, PreparedMambaVerification
+    from hyperflare_recipes.components.mamba import PreparedMambaUpdate
+    from hyperflare_recipes.components.mamba_speculation import PreparedMambaReplay, PreparedMambaVerification
     from ignition.components.state import StateLayout, StateStorage
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena

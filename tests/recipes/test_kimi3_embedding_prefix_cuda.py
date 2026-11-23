@@ -5,7 +5,7 @@
 import os
 import pytest
 import torch
-from ignition.recipes.kimi3.residual import ADD, REPLACE, ResidualStream
+from hyperflare_recipes.recipes.kimi3.residual import ADD, REPLACE, ResidualStream
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                                reason="requires an assigned CUDA device")

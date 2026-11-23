@@ -15,7 +15,7 @@ import pytest
 from ignition.preparation.frontend import annotated_template_asset
 
 ROOT = Path(__file__).resolve().parents[2]
-PATCHES = sorted((ROOT / "ignition/recipes").glob("*/assets/*.patch.json"))
+PATCHES = sorted((ROOT / "hyperflare_recipes/recipes").glob("*/assets/*.patch.json"))
 
 
 def fixture(recipe, filename):
@@ -52,7 +52,7 @@ def test_recipe_patches_preserve_previously_exported_bytes(patch_path, tmp_path)
     filename = patch_path.name.replace(".patch.json", ".jinja")
     source = fixture(recipe, filename.replace(".jinja", ".source.jinja")).read_bytes()
     if recipe == "step5":
-        from ignition.recipes.step5.frontend import template_asset
+        from hyperflare_recipes.recipes.step5.frontend import template_asset
 
         (tmp_path / "chat_template.jinja").write_bytes(source)
         asset = template_asset(tmp_path)
@@ -72,7 +72,7 @@ def test_recipe_patches_preserve_previously_exported_bytes(patch_path, tmp_path)
      "4d7ae4984b7db7de8f8457170b3f1a419ee76d52") for hidden in (2816, 3840, 5376)
 ])
 def test_gemma_fetches_pinned_canonical_template(hidden, filename, repository, revision, monkeypatch, tmp_path):
-    from ignition.recipes.gemma4.frontend import chat_template_asset
+    from hyperflare_recipes.recipes.gemma4.frontend import chat_template_asset
 
     calls = []
     def download(repo, name, **kwargs):
@@ -115,7 +115,7 @@ def stub_download(monkeypatch, result):
 
 
 def test_glm_nvidia_template_is_annotated_in_place(monkeypatch, tmp_path):
-    from ignition.recipes.glm53 import frontend
+    from hyperflare_recipes.recipes.glm53 import frontend
 
     calls = stub_download(monkeypatch, fixture("glm53", "chat_template.zai.source.jinja"))
     (tmp_path / "chat_template.jinja").write_bytes(fixture("glm53", "chat_template.source.jinja").read_bytes())
@@ -131,7 +131,7 @@ def test_glm_nvidia_template_is_annotated_in_place(monkeypatch, tmp_path):
 
 def test_glm_calibrated_template_is_replaced_by_the_canonical_source(monkeypatch, calibrated_template):
     """The real bytes of the calibrated checkpoint's template select the pinned canonical download."""
-    from ignition.recipes.glm53 import frontend
+    from hyperflare_recipes.recipes.glm53 import frontend
 
     bundled = (calibrated_template / "chat_template.jinja").read_bytes()
     assert hashlib.sha256(bundled).hexdigest() == frontend.CALIBRATED_TEMPLATE_SHA256
@@ -152,7 +152,7 @@ def test_glm_calibrated_template_is_replaced_by_the_canonical_source(monkeypatch
 
 def test_glm_download_failure_says_how_to_seed_the_hub_cache(monkeypatch, calibrated_template):
     from ignition.errors import FetchError
-    from ignition.recipes.glm53 import frontend
+    from hyperflare_recipes.recipes.glm53 import frontend
 
     stub_download(monkeypatch, OSError("offline"))
     with pytest.raises(FetchError, match=r"offline.*hf download zai-org/GLM-5.3-Flash chat_template.jinja"
@@ -176,7 +176,7 @@ def test_calibrated_and_canonical_templates_differ_only_on_null_content(calibrat
     bundled = (calibrated_template / "chat_template.jinja").read_text()
     canonical = fixture("glm53", "chat_template.zai.source.jinja").read_text()
     assert hashlib.sha256(canonical.encode()).hexdigest() == json.loads(
-        (ROOT / "ignition/recipes/glm53/assets/chat_template.zai.patch.json").read_text())["source_sha256"]
+        (ROOT / "hyperflare_recipes/recipes/glm53/assets/chat_template.zai.patch.json").read_text())["source_sha256"]
     tool = {"type": "function", "function": {"name": "lookup", "parameters": {
         "type": "object", "properties": {"city": {"type": "string"}}}}}
 
@@ -215,7 +215,7 @@ def test_calibrated_and_canonical_templates_differ_only_on_null_content(calibrat
 
 
 def test_step_assets_preserve_checkpoint_and_validate_generation_span(tmp_path):
-    from ignition.recipes.step5.frontend import runtime_assets, inference_template
+    from hyperflare_recipes.recipes.step5.frontend import runtime_assets, inference_template
 
     source = fixture("step5", "chat_template.source.jinja").read_bytes()
     checkpoint = tmp_path / "chat_template.jinja"

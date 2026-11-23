@@ -10,7 +10,7 @@ import pytest
 import torch
 
 from ignition.preparation.compilation import compile_forward
-from ignition.recipes.minimax_m3 import decoder as module
+from hyperflare_recipes.recipes.minimax_m3 import decoder as module
 
 
 @pytest.mark.parametrize("device", ["cpu", "cuda:0"])
@@ -74,7 +74,7 @@ def test_decoder_layers_share_invocation_cache_lengths(device, fused):
 
 
 def test_attention_binds_declared_query_width_for_ragged_rows(monkeypatch):
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
 
     metadata = Metadata.allocate(5, 2, 1, "cpu", max_query_tokens=4)
     source = torch.zeros((5, 8), dtype=torch.bfloat16)

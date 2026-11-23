@@ -77,8 +77,8 @@ class LayerForward:
             self.gate = torch.zeros((4, HEADS * 128), dtype=inputs.source.dtype, device=device)
 
     def __call__(self):
-        from ignition.components.paged_batch import Metadata
-        from ignition.recipes.kimi31.indexer import SharedIndexMetadata
+        from hyperflare_recipes.components.paged_batch import Metadata
+        from hyperflare_recipes.recipes.kimi31.indexer import SharedIndexMetadata
 
         data = self.inputs
         metadata = Metadata.pack(data.starts, data.lengths, data.states, data.tables, data.tokens,
@@ -119,7 +119,7 @@ class FrozenSlotAttention:
                        torch.empty_like(source.output))
 
     def __call__(self):
-        from ignition.recipes.kimi31.dcp import selection_slots
+        from hyperflare_recipes.recipes.kimi31.dcp import selection_slots
         data = self.raw
         if self.local is None:
             packed = self.merge.pack(indices=data.ids, scores=data.scores)
@@ -144,17 +144,18 @@ def exercise(rank, rendezvous, output, diagnose=False):
     runtime_patches.apply()
     import torch.distributed as dist
     from b12x.comm.pcie.pcie_dcp_topk import PCIeDCPTopKOwnerExchange
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation.capture import capture_forwards
-    from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime, create_head_exchange
+    from ignition.preparation.collectives import CollectivePreparation, create_all_reduce_runtime
+    from hyperflare_recipes.components.head_exchange import create_head_exchange
     from ignition.preparation.core_storage import CoreStorage
     from ignition.preparation.execution import GraphSignature
     from ignition.preparation.tuning import RecordedPreparationSession
-    from ignition.recipes.kimi3.dcp import ContextShards
-    from ignition.recipes.kimi31.attention import PreparedDSA
-    from ignition.recipes.kimi31.dcp import AttentionConstants, ContextParallel
-    from ignition.recipes.kimi31.recipe import RECIPE
-    from ignition.recipes.kimi31.selection_tuning import CandidateSelectionTuning
+    from hyperflare_recipes.recipes.kimi3.dcp import ContextShards
+    from hyperflare_recipes.recipes.kimi31.attention import PreparedDSA
+    from hyperflare_recipes.recipes.kimi31.dcp import AttentionConstants, ContextParallel
+    from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi31.selection_tuning import CandidateSelectionTuning
     from ignition.preparation.scratch import ScratchArena
 
     for key, value in RECIPE.b12x_environment.items():

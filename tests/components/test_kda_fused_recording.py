@@ -9,7 +9,7 @@ import torch
 from torch.fx.experimental.proxy_tensor import make_fx
 from torch.utils._pytree import tree_leaves
 
-from ignition.recipes.kimi3.kda import PreparedKDA
+from hyperflare_recipes.recipes.kimi3.kda import PreparedKDA
 
 
 def _owner():

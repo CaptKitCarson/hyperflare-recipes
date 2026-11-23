@@ -9,9 +9,9 @@ import pytest
 import torch
 from b12x.preparation import PreparationSession
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.region_selection import PreparedRegionSelection
-from ignition.components.selected_attention import PreparedSelectedAttention
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.region_selection import PreparedRegionSelection
+from hyperflare_recipes.components.selected_attention import PreparedSelectedAttention
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 

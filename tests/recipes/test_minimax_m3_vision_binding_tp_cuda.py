@@ -33,7 +33,7 @@ class _SelectionForward:
 
 
 def _selection_fixture(rank, device):
-    from ignition.recipes.minimax_m3.vision import PreparedVision
+    from hyperflare_recipes.recipes.minimax_m3.vision import PreparedVision
 
     encoder = PreparedVision.__new__(PreparedVision)
     source = (

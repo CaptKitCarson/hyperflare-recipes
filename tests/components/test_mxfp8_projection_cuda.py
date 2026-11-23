@@ -12,16 +12,16 @@ from b12x.gemm import blockscaled
 from b12x.preparation import PreparedCall
 from b12x.quantization import mxfp8
 
-from ignition.components.linear import QuantizedProjection
-from ignition.components.projection_overlap import ConcurrentProjectionChain
-from ignition.components.rms_norm import PreparedRMSNorm
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.linear import QuantizedProjection
+from hyperflare_recipes.components.projection_overlap import ConcurrentProjectionChain
+from hyperflare_recipes.components.rms_norm import PreparedRMSNorm
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession, declare
-from ignition.recipes.deepseek41.weights import DeepSeekWeightLoader
+from hyperflare_recipes.recipes.deepseek41.weights import DeepSeekWeightLoader
 
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",

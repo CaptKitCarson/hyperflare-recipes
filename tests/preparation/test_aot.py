@@ -491,7 +491,7 @@ class BranchForward:
 
 @torch.no_grad()
 def test_forward_cache_rebuilds_forwards_whose_branch_composition_changed(tmp_path):
-    from ignition.components.projection_overlap import ConcurrentProjectionChain
+    from hyperflare_recipes.components.projection_overlap import ConcurrentProjectionChain
     from ignition.preparation.execution import GraphSignature
 
     cache = ForwardCache(namespace={"model": "branches"}, device="cuda:0", root=tmp_path)

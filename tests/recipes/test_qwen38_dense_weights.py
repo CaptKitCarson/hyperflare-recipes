@@ -9,10 +9,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.model import canonical_tree
-from ignition.components.weights import DirectWeightLoader
-from ignition.recipes.qwen38_dense.config import ModelConfig, TEXT_PREFIX
-from ignition.recipes.qwen38_dense import weights
+from hyperflare_recipes.components.model import canonical_tree
+from hyperflare_recipes.components.weights import DirectWeightLoader
+from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig, TEXT_PREFIX
+from hyperflare_recipes.recipes.qwen38_dense import weights
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def checkpoint(tmp_path, monkeypatch):
 
 def test_text_only_load_ignores_an_unsupported_vision_configuration(tmp_path):
     from transformers import Qwen3_5TextConfig
-    from ignition.recipes.qwen38_dense.config import ModelConfig
+    from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig
 
     text = Qwen3_5TextConfig(hidden_size=128, intermediate_size=256, num_hidden_layers=1,
         layer_types=["linear_attention"], num_attention_heads=1, num_key_value_heads=1,

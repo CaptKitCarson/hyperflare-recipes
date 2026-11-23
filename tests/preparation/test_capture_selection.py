@@ -152,7 +152,7 @@ def test_invalid_selection_rejected_before_cuda(selection):
 
 
 def test_width_one_speculation_can_be_selected_without_verification():
-    from ignition.recipes.minimax_m3.bootstrap import _verification_variants
+    from hyperflare_recipes.recipes.minimax_m3.bootstrap import _verification_variants
 
     shapes = ((8, 1), (8, 6), (1, 1))
     assert list(_verification_variants(shapes, {"speculative8x1"})) == [

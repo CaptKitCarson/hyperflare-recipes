@@ -12,7 +12,7 @@ import pytest
 import torch
 import torch.nn.functional as F
 
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 
 CUDA = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires assigned CUDA GPU")
 HUB = Path(os.environ.get("HF_HUB_CACHE", Path.home() / ".cache/huggingface/hub"))
@@ -39,10 +39,10 @@ def rotary(x, positions):
 
 @pytest.fixture(scope="module")
 def weights():
-    from ignition.components.dflash2_weights import DraftWeights
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.qwen38_dense.config import ModelConfig
-    from ignition.recipes.qwen38_dense import draft_config
+    from hyperflare_recipes.components.dflash2_weights import DraftWeights
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig
+    from hyperflare_recipes.recipes.qwen38_dense import draft_config
     if not all((path / "config.json").is_file() for path in (TARGET, DRAFT)):
         pytest.skip("requires pinned Qwen3.8-27B target and DFlash2 checkpoints")
     target = ModelConfig.load(TARGET)
@@ -56,8 +56,8 @@ def weights():
 @torch.no_grad()
 def test_checkpoint_context_accepted_counts_ring_wrap_inactive_and_reordered_rows(weights):
     from b12x.preparation import PreparationSession
-    from ignition.components.dflash2 import PreparedContext
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.dflash2 import PreparedContext
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
 
@@ -136,7 +136,7 @@ def test_checkpoint_context_accepted_counts_ring_wrap_inactive_and_reordered_row
 def test_complete_draft_rings_snapshot_branch_and_restore(weights, endpoint):
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.state_transfer import PreparedStateTransfer, StateCommands
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
 
     pool = ContinuationPool.for_model(weights.config, 4, 36, "cuda", mtp=True)
     commands = StateCommands.allocate("cuda", capacity=2)
@@ -181,10 +181,10 @@ def test_complete_draft_rings_snapshot_branch_and_restore(weights, endpoint):
 @torch.no_grad()
 def test_rotary_offset_follows_snapshot_branch_and_restore(weights):
     """The continuation row of an image preparation carries its rotary offset through state transfers."""
-    from ignition.components.paged_batch import ROTARY_OFFSET
+    from hyperflare_recipes.components.paged_batch import ROTARY_OFFSET
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.state_transfer import PreparedStateTransfer, StateCommands
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
 
     endpoint = 129
     pool = ContinuationPool.for_model(weights.config, 4, 36, "cuda", mtp=True, rotary_offset=True)
@@ -286,13 +286,13 @@ def head_reference(hidden):
 @torch.no_grad()
 def test_checkpoint_five_layer_operator_arithmetic_and_raw_head(weights):
     from b12x.preparation import PreparationSession
-    from ignition.components.dflash2 import DraftScratch, PreparedDraft
-    from ignition.components.paged_batch import Metadata
-    from ignition.components.weights import DirectWeightLoader
+    from hyperflare_recipes.components.dflash2 import DraftScratch, PreparedDraft
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.components.weights import DirectWeightLoader
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38_dense.config import TEXT_PREFIX
+    from hyperflare_recipes.recipes.qwen38_dense.config import TEXT_PREFIX
 
     with DirectWeightLoader(inspect_indexed_checkpoint(TARGET), "cuda:0",
             prefixes=(TEXT_PREFIX + ".embed_tokens", "lm_head")) as loader:

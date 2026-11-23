@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires assigned CUDA GPU")
 
@@ -23,15 +23,15 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", r
 def test_checkpoint_compiled_packed_round_preserves_taps_and_inactive_state(checkpoint, online_mxfp8, width):
     from b12x.preparation import PreparationSession
     from ignition.components.completion import CompletionOutputs
-    from ignition.components.paged_batch import BatchInputs, Metadata
+    from hyperflare_recipes.components.paged_batch import BatchInputs, Metadata
     from ignition.components.sampling import DeviceRequestState, RequestAdmission
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.qwen38_dense.decoder import Scratch
-    from ignition.recipes.qwen38_dense.dflash import SpeculativePreparation
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
-    from ignition.recipes.qwen38_dense.weights import ModelWeights
+    from hyperflare_recipes.recipes.qwen38_dense.decoder import Scratch
+    from hyperflare_recipes.recipes.qwen38_dense.dflash import SpeculativePreparation
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.weights import ModelWeights
 
     hub = Path(os.environ.get("HF_HUB_CACHE", Path.home() / ".cache/huggingface/hub"))
     target = (Path(os.environ.get("FLARE_QWEN38_DENSE_CHECKPOINT",
@@ -44,7 +44,7 @@ def test_checkpoint_compiled_packed_round_preserves_taps_and_inactive_state(chec
         assert sum(name.endswith(".mlp.gate_up") for name in weights.projections) == 64
         assert not any(name.endswith((".mlp.gate_proj", ".mlp.up_proj")) for name in weights.projections)
         if online_mxfp8:
-            from ignition.components.weights import DirectWeightLoader, quantize_bf16_linear_as_mxfp8
+            from hyperflare_recipes.components.weights import DirectWeightLoader, quantize_bf16_linear_as_mxfp8
 
             packed_names = [name for name in weights.projections if name.endswith(".self_attn.qgkv_proj")]
             assert len(packed_names) == 16
@@ -63,8 +63,8 @@ def test_checkpoint_compiled_packed_round_preserves_taps_and_inactive_state(chec
                 actual = getattr(packed_weight.weight, field).view(torch.uint8).reshape(14336, -1)
                 assert torch.equal(rows.index_select(0, order), actual)
             del original, original_q, original_kv, rows, actual
-        from ignition.recipes.qwen38_dense.config import TEXT_PREFIX
-        from ignition.reference.qwen38_quant import CheckpointTensors
+        from hyperflare_recipes.recipes.qwen38_dense.config import TEXT_PREFIX
+        from hyperflare_recipes.reference.qwen38_quant import CheckpointTensors
 
         with CheckpointTensors(inspect_indexed_checkpoint(target), byte_budget=2 << 20) as reader:
             for name in ("layers.0.input_layernorm.weight", "layers.0.post_attention_layernorm.weight", "norm.weight"):

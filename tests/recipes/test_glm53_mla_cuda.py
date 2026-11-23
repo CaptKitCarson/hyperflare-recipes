@@ -16,18 +16,18 @@ import torch
 from b12x.attention import dsa_indexer, sparse_mla
 from cuda.bindings import driver as cuda
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.linear import BatchedQuantizedProjection, BatchedUnquantizedProjection
-from ignition.components.sparse_mla import PreparedSparseMLA
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.linear import BatchedQuantizedProjection, BatchedUnquantizedProjection
+from hyperflare_recipes.components.sparse_mla import PreparedSparseMLA
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.execution import GraphSignature, PreparedExecution
 from ignition.preparation.scratch import ScratchArena, planned_scratch
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.glm53.indexer import IndexMetadata
-from ignition.recipes.glm53.mla import MLAScratch, MLAState, PreparedGlmMLA
-from ignition.recipes.glm53.model import create_model_tree
-from ignition.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
+from hyperflare_recipes.recipes.glm53.indexer import IndexMetadata
+from hyperflare_recipes.recipes.glm53.mla import MLAScratch, MLAState, PreparedGlmMLA
+from hyperflare_recipes.recipes.glm53.model import create_model_tree
+from hyperflare_recipes.recipes.glm53.weights import TEXT_PREFIX, GlmWeightLoader
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
     reason="requires an explicitly assigned CUDA device")
@@ -252,7 +252,7 @@ def test_glm_mla_checkpoint_native_replay(model_weights, mode, rows, overlap):
                 assert_selection(actual_pools, expected_pools, attention.indexer, scratch.index)
                 scratch.index.pools.copy_(actual_pools)
                 if attention.indexer.logical:
-                    from ignition.recipes.glm53.dcp import expand_tokens
+                    from hyperflare_recipes.recipes.glm53.dcp import expand_tokens
 
                     expand_tokens(scratch.index.pools, metadata.positions,
                                   scratch.index.physical, scratch.index.selected_lengths)
@@ -286,7 +286,7 @@ def test_glm_mla_checkpoint_native_replay(model_weights, mode, rows, overlap):
 @torch.no_grad()
 def test_cp_prefill_query_reuse_matches_separate_values_across_slices(model_weights):
     from b12x.attention._shared.mla.reference import pack_mla_kv_cache_reference
-    from ignition.recipes.glm53.dcp import ContextShards, PREFILL_SLICE_ROWS
+    from hyperflare_recipes.recipes.glm53.dcp import ContextShards, PREFILL_SLICE_ROWS
 
     module, weights, world = model_weights
     device, capacity, blocks, heads = torch.device("cuda:0"), 8192, 32, 64 // world
@@ -323,7 +323,7 @@ def test_cp_prefill_query_reuse_matches_separate_values_across_slices(model_weig
                 # Isolate the production CP slice loop with real projections, attention and peer-cache reads.
                 op = PreparedGlmMLA.__new__(PreparedGlmMLA)
                 op.scratch, op.metadata, op.state = s, metadata, SimpleNamespace(peers=peers)
-                from ignition.recipes.glm53.dcp import PreparedContextGather
+                from hyperflare_recipes.recipes.glm53.dcp import PreparedContextGather
 
                 op.context = SimpleNamespace(shards=ContextShards.on(0, world, device),
                     remote=False, records=None, selection_tuning=None)

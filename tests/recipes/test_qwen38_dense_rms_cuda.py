@@ -18,10 +18,10 @@ def test_target_hidden_norm_checkpoint_compiled_replay(tokens):
 
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from tests.tensor_examples import TensorExamples
-    from ignition.recipes import resolve
-    from ignition.recipes.qwen38_dense.config import TEXT_PREFIX
-    from ignition.recipes.qwen38_dense.decoder import RMSNorm
-    from ignition.reference.qwen38_quant import CheckpointTensors
+    from hyperflare_recipes.recipes import resolve
+    from hyperflare_recipes.recipes.qwen38_dense.config import TEXT_PREFIX
+    from hyperflare_recipes.recipes.qwen38_dense.decoder import RMSNorm
+    from hyperflare_recipes.reference.qwen38_quant import CheckpointTensors
 
     hub = Path(os.environ.get("HF_HUB_CACHE", Path.home() / ".cache/huggingface/hub"))
     snapshot = resolve("qwen3.8-27b-qad").snapshot(hub)

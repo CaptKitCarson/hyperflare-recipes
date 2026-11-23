@@ -5,7 +5,7 @@
 
 import pytest
 
-from ignition.recipes.kimi3.bootstrap import PreparationConfig
+from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig
 
 
 @pytest.mark.parametrize("context_parallel,page_tokens,pages", [(True, 2048, 10), (False, 128, 40)])

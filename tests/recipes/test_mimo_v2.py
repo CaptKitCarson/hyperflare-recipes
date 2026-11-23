@@ -8,10 +8,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.recipes.mimo_v2.attention import AttentionScratch
-from ignition.recipes.mimo_v2.config import ModelConfig
-from ignition.recipes.mimo_v2.weights import MiMoWeightLoader
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.mimo_v2.attention import AttentionScratch
+from hyperflare_recipes.recipes.mimo_v2.config import ModelConfig
+from hyperflare_recipes.recipes.mimo_v2.weights import MiMoWeightLoader
 
 
 def config(*, checkpoint_ranks=8, heads=128, kv_heads=(8, 8)):

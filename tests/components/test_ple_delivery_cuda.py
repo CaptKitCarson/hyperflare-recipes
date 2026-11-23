@@ -19,7 +19,7 @@ from cuda.bindings import driver
 
 from ignition.components.ngram_delivery import PreparedPLELookup
 from ignition.components.readiness import ReadinessTimings
-from ignition.recipes.qwen38.ple import PLEMetadata
+from hyperflare_recipes.recipes.qwen38.ple import PLEMetadata
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                                reason="requires an assigned CUDA device")

@@ -10,7 +10,7 @@ import pytest
 import torch
 from b12x.preparation import PreparationSession
 
-from ignition.components.rms_norm import PreparedRMSNorm
+from hyperflare_recipes.components.rms_norm import PreparedRMSNorm
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                               reason="requires an explicitly assigned CUDA device")
@@ -170,7 +170,7 @@ def test_fp32_zero_centered_residual_normalization(tokens, update_dtype):
 
 @torch.no_grad()
 def test_paired_normalization_preserves_independent_rounding():
-    from ignition.components.rms_norm import PreparedPairedRMSNorm
+    from hyperflare_recipes.components.rms_norm import PreparedPairedRMSNorm
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.tuning import RecordedPreparationSession
 

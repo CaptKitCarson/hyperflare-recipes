@@ -9,7 +9,7 @@ import pytest
 import torch
 
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
-from ignition.components.token_state import PreparedTokenState
+from hyperflare_recipes.components.token_state import PreparedTokenState
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 

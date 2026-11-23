@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from ignition.recipes.inkling2.config import ModelConfig, TextConfig
+from hyperflare_recipes.recipes.inkling2.config import ModelConfig, TextConfig
 
 
 @pytest.fixture

@@ -10,7 +10,7 @@ import time
 
 import torch
 
-from ignition.reference.muse_spark import text_logits
+from hyperflare_recipes.reference.muse_spark import text_logits
 
 
 def main():

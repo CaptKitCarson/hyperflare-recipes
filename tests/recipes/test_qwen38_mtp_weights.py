@@ -7,9 +7,9 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.preparation import inspect_qwen38_checkpoint
-from ignition.recipes.qwen38.mtp_weights import MTPWeightLoader, _global_scales, create_mtp_modules
-from ignition.recipes.qwen38.weights import QwenWeightLoader
+from hyperflare_recipes.recipes.qwen38.checkpoint import inspect_qwen38_checkpoint
+from hyperflare_recipes.recipes.qwen38.mtp_weights import MTPWeightLoader, _global_scales, create_mtp_modules
+from hyperflare_recipes.recipes.qwen38.weights import QwenWeightLoader
 
 
 @pytest.fixture(autouse=True)
@@ -80,7 +80,7 @@ def test_unequal_gate_up_and_nonscalar_rejected():
 
 @pytest.mark.parametrize("rank,world", [(0, 1), (1, 2), (3, 4)])
 def test_actual_packed_experts_use_a16_and_native_scales_in_up_gate_order(manifest, monkeypatch, rank, world):
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from b12x.moe._shared.kernels.w4a16.host import unswizzle_expert_scales
 
     shard = TensorParallelShard(rank, world)

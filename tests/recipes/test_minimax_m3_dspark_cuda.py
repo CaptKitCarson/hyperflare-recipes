@@ -10,9 +10,9 @@ import pytest
 import torch
 from b12x.preparation import PreparationSession
 
-from ignition.components.paged_attention import PreparedPagedAttention
+from hyperflare_recipes.components.paged_attention import PreparedPagedAttention
 from ignition.preparation.scratch import ScratchArena
-from ignition.recipes.minimax_m3.draft import DraftConfig, norm_rope, stage_window
+from hyperflare_recipes.recipes.minimax_m3.draft import DraftConfig, norm_rope, stage_window
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                               reason="requires an explicitly assigned CUDA device")
@@ -113,7 +113,7 @@ def test_context_norm_rounding_and_fp8_query_values():
 @torch.no_grad()
 def test_context_commits_only_accepted_prefixes_across_ring_boundary():
     from ignition.components.state import StateLayout, StateStorage
-    from ignition.recipes.minimax_m3.draft import PreparedContext
+    from hyperflare_recipes.recipes.minimax_m3.draft import PreparedContext
 
     torch.manual_seed(171)
     device, rows, hidden, layers, window = torch.device("cuda:0"), 14, 128, 5, 4096

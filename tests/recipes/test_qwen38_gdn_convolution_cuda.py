@@ -15,9 +15,9 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 def test_fused_convolution_records_follow_mutable_captured_metadata(width, world_size):
     from b12x.preparation import PreparationSession, PreparedCall
     from b12x.sequence import short_conv
-    from ignition.components.gated_norm import PreparedGatedRMSNorm
-    from ignition.components.gdn_recovery import GDNLayerRecords, PreparedGDNCommit, PreparedRecoveredRecurrence
-    from ignition.components.recurrent import DeltaMetadata, _commit_convolution
+    from hyperflare_recipes.components.gated_norm import PreparedGatedRMSNorm
+    from hyperflare_recipes.components.gdn_recovery import GDNLayerRecords, PreparedGDNCommit, PreparedRecoveredRecurrence
+    from hyperflare_recipes.components.recurrent import DeltaMetadata, _commit_convolution
     from ignition.components.state import StateLayout, StateStorage
     from ignition.preparation.triton import prepare_triton
     from tests.tensor_examples import TensorExamples
@@ -99,7 +99,7 @@ def test_fused_convolution_records_follow_mutable_captured_metadata(width, world
         session.freeze()
         from torch._higher_order_ops.triton_kernel_wrap import get_mutated_tensors, kernel_side_table
 
-        from ignition.components.gdn_recovery import _prepare_convolved_inputs
+        from hyperflare_recipes.components.gdn_recovery import _prepare_convolved_inputs
 
         producer = paths[1]["verify"]
         arguments = dict(zip(_prepare_convolved_inputs.fn.arg_names, producer.prepare_args))

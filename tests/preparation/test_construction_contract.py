@@ -18,7 +18,7 @@ def test_extracted_attention_fixture_lives_through_trials_and_releases_before_ca
     backend, monkeypatch, fail_finalizer
 ):
     from b12x.preparation import PreparationSession
-    from ignition.preparation.fixtures.varlen_attention import benchmark_call, input_factory
+    from hyperflare_recipes.fixtures.varlen_attention import benchmark_call, input_factory
     from ignition.preparation.tuning import RecordedPreparationSession
 
     session = RecordedPreparationSession(device=0, checkpoint="fixture-lifetime",

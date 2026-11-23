@@ -15,7 +15,7 @@ from .test_kimi31 import config, raw_config
 
 @pytest.fixture(scope="module")
 def draft_snapshot():
-    from ignition.recipes.kimi31.dspark_config import DSPARK_REVISION
+    from hyperflare_recipes.recipes.kimi31.dspark_config import DSPARK_REVISION
 
     snapshot = Path.home() / ".cache/huggingface/hub/models--Inferact--Kimi-K3.1-Pro-DSpark-preview/snapshots" / DSPARK_REVISION
     if not (snapshot / "model.safetensors").is_file():
@@ -25,15 +25,15 @@ def draft_snapshot():
 
 @pytest.fixture(scope="module")
 def draft_config(config, draft_snapshot):
-    from ignition.recipes.kimi31.dspark_config import DSparkConfig
+    from hyperflare_recipes.recipes.kimi31.dspark_config import DSparkConfig
 
     return DSparkConfig.load(draft_snapshot, config)
 
 
 def test_actual_checkpoint_geometry_and_headers(config, draft_config, draft_snapshot):
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.recipes.kimi31.dspark_weights import _validate_checkpoint
+    from hyperflare_recipes.recipes.kimi31.dspark_weights import _validate_checkpoint
 
     _validate_checkpoint(inspect_indexed_checkpoint(draft_snapshot), draft_config)
     assert draft_config.auxiliary_layers == (76, 80, 84, 88, 92)
@@ -51,7 +51,7 @@ def test_actual_checkpoint_geometry_and_headers(config, draft_config, draft_snap
     ("dflash_config", {"causal": False}),
 ])
 def test_incompatible_draft_semantics_rejected(config, draft_config, field, value):
-    from ignition.recipes.kimi31.dspark_config import DSparkConfig
+    from hyperflare_recipes.recipes.kimi31.dspark_config import DSparkConfig
 
     raw = deepcopy(draft_config.raw)
     raw[field] = value
@@ -60,7 +60,7 @@ def test_incompatible_draft_semantics_rejected(config, draft_config, field, valu
 
 
 def test_rotary_attention_factor_cannot_be_dropped(config, draft_config):
-    from ignition.recipes.kimi31.dspark_config import DSparkConfig
+    from hyperflare_recipes.recipes.kimi31.dspark_config import DSparkConfig
 
     raw = deepcopy(draft_config.raw)
     del raw["rope_parameters"]["attn_factor"]
@@ -69,7 +69,7 @@ def test_rotary_attention_factor_cannot_be_dropped(config, draft_config):
 
 
 def test_redhat_draft_cannot_attach_to_k31(config, tmp_path):
-    from ignition.recipes.kimi31.dspark_config import DSparkConfig
+    from hyperflare_recipes.recipes.kimi31.dspark_config import DSparkConfig
 
     (tmp_path / "config.json").write_text(json.dumps({"architectures": ["DSparkDraftModel"]}))
     with pytest.raises(ValueError, match="architectures"):
@@ -78,8 +78,8 @@ def test_redhat_draft_cannot_attach_to_k31(config, tmp_path):
 
 def test_draft_pages_and_partial_snapshots_are_budgeted(config, draft_config):
     import torch
-    from ignition.recipes.kimi3.pool import ContinuationPool, continuation_layout, page_bytes
-    from ignition.recipes.kimi31.recipe import RECIPE
+    from hyperflare_recipes.recipes.kimi3.pool import ContinuationPool, continuation_layout, page_bytes
+    from hyperflare_recipes.recipes.kimi31.recipe import RECIPE
 
     config = replace(config, draft=draft_config)
     costs = RECIPE.costs(16, RECIPE.speculation)
@@ -97,9 +97,9 @@ def test_draft_pages_and_partial_snapshots_are_budgeted(config, draft_config):
 def test_draft_weight_declaration_preserves_target_embedding_alias():
     import torch
     from dataclasses import dataclass
-    from ignition.components.weights import MLPWeights
+    from hyperflare_recipes.components.weights import MLPWeights
     from ignition.preparation.rebuild_manifest import declare_weights, weight_payload_declaration
-    from ignition.recipes.kimi31.dspark_weights import DraftLayerWeights, DraftWeights
+    from hyperflare_recipes.recipes.kimi31.dspark_weights import DraftLayerWeights, DraftWeights
 
     def tensor():
         return torch.zeros((2, 2), dtype=torch.bfloat16)

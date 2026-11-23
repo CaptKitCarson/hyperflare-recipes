@@ -11,7 +11,7 @@ import torch
 
 from ignition.components.sampling import DeviceRequestState
 from ignition.components.state_transfer import PreparedStateTransfer, StateCommands
-from ignition.recipes.deepseek4.pool import PAGE_TOKENS, ContinuationPool
+from hyperflare_recipes.recipes.deepseek4.pool import PAGE_TOKENS, ContinuationPool
 from .test_deepseek4_pool import model
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",

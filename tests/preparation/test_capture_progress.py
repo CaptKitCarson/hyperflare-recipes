@@ -100,9 +100,9 @@ def test_tuning_capture_does_not_consume_serving_catalog_report(capture_options)
 
 @pytest.fixture
 def deepseek_catalog(monkeypatch):
-    from ignition.components.prompt_logprobs import prefill_modes
-    from ignition.recipes.deepseek41.bootstrap import PreparationConfig
-    from ignition.recipes.deepseek41.contract import PATCH_CAPACITIES
+    from hyperflare_recipes.components.prompt_logprobs import prefill_modes
+    from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.deepseek41.contract import PATCH_CAPACITIES
     from tests.recipes.test_deepseek41_catalog import register_catalog
 
     config = PreparationConfig()

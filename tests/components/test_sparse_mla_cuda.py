@@ -9,7 +9,7 @@ import pytest
 import torch
 from b12x.attention import sparse_mla
 
-from ignition.components.sparse_mla import PreparedLatentCacheWriter, PreparedSparseMLA
+from hyperflare_recipes.components.sparse_mla import PreparedLatentCacheWriter, PreparedSparseMLA
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.scratch import ScratchArena

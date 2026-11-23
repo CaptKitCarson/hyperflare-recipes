@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from ignition.components.planar_index_history import global_index_pages, validate_planar_history
+from hyperflare_recipes.components.planar_index_history import global_index_pages, validate_planar_history
 
 
 def operands():

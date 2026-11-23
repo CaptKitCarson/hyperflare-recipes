@@ -11,10 +11,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.recipes.qwen38 import hyperconnection
-from ignition.recipes.qwen38.hyperconnection import HyperconnectionScratch
-from ignition.preparation.fixtures.hyperconnection import HyperconnectionBenchmarkInputs, benchmark_call
-from ignition.preparation.fixtures.hyperconnection_gate import HyperconnectionGateInputs
+from hyperflare_recipes.recipes.qwen38 import hyperconnection
+from hyperflare_recipes.recipes.qwen38.hyperconnection import HyperconnectionScratch
+from hyperflare_recipes.fixtures.hyperconnection import HyperconnectionBenchmarkInputs, benchmark_call
+from hyperflare_recipes.fixtures.hyperconnection_gate import HyperconnectionGateInputs
 
 
 def test_packed_projection_preserves_canonical_weights_without_duplicate_storage():
@@ -275,7 +275,7 @@ def test_projection_gate_trials_produce_private_inputs_and_retain_weights():
 
 @pytest.mark.parametrize("world", [2, 4])
 def test_sharded_weights_reconstruct_lowrank_axis_and_scratch_preserves_injection(world):
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
 
     down = torch.arange(320 * 16).reshape(320, 16)
     up = torch.arange(16 * 320).reshape(16, 320)

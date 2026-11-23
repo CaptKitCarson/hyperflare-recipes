@@ -6,7 +6,7 @@
 import pytest
 
 from ignition.components.sampling import DeviceRequestState
-from ignition.recipes.glm53.pool import ContinuationPool, continuation_layout
+from hyperflare_recipes.recipes.glm53.pool import ContinuationPool, continuation_layout
 
 
 @pytest.mark.parametrize("world", [2, 4])

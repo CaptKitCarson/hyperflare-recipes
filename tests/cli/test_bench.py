@@ -7,9 +7,14 @@ import json
 
 import pytest
 
-from ignition.cli import _parser, main
+from ignition.cli import _parser, main as _cli_main
 from ignition.cli.bench import Settings, table, write_result
 from ignition.errors import UsageError
+from hyperflare_recipes.recipes import recipes
+
+
+def main(argv=None):
+    return _cli_main(argv, recipes=recipes())
 
 
 def settings(*flags):
@@ -21,8 +26,8 @@ def test_bench_plans_qwen_dense_text_only_and_rejects_image_concurrency(monkeypa
     from ignition import planning
     from ignition.cli import bench
     from ignition.cli.preparation import Host
-    from ignition.recipes import ResolvedModel
-    from ignition.recipes.qwen38_dense.recipe import RECIPE
+    from hyperflare_recipes.recipes import ResolvedModel
+    from hyperflare_recipes.recipes.qwen38_dense.recipe import RECIPE
 
     monkeypatch.setenv("HOME", str(tmp_path))
     gpus = (planning.Gpu(0, "NVIDIA RTX PRO 6000 Blackwell", "GPU-0000", 96 << 30, 90 << 30, (12, 0)),)
@@ -56,7 +61,7 @@ def test_bench_leaves_non_qwen_dense_image_options_untouched(monkeypatch, tmp_pa
     from ignition import planning
     from ignition.cli import bench
     from ignition.cli.preparation import Host
-    from ignition.recipes import resolve
+    from hyperflare_recipes.recipes import resolve
 
     monkeypatch.setenv("HOME", str(tmp_path))
     model = resolve("kimi-k3.1-pro")
@@ -150,7 +155,7 @@ def test_kimi_rejects_private_dflash_studies_before_preparation(tmp_path, capsys
     config = tmp_path / "config.toml"
     config.write_text("")
     assert main(["bench", "kimi-k3.1-pro", "--speculation-study", "--config", str(config)]) == 2
-    assert "--speculation-study requires Qwen3.8-27B DFlash2" in capsys.readouterr().err
+    assert "--speculation-study is not supported by recipe 'kimi31'" in capsys.readouterr().err
 
 
 def test_prefill_defaults_and_target_only_selection():
@@ -230,7 +235,7 @@ def test_unsupported_recipe_fails_before_preparation(tmp_path, capsys):
     config = tmp_path / "config.toml"
     config.write_text("")
     assert main(["bench", "qwen3.8-flash", "--config", str(config)]) == 2
-    assert "supports Qwen3.8-27B DFlash2, Kimi K3.1 Pro DSpark, and Nemotron Bolt LiLiCorr" in capsys.readouterr().err
+    assert "ignition bench is not supported by recipe 'qwen38'" in capsys.readouterr().err
 
 
 def test_report_keeps_case_latency_and_equal_weight_score_separate(tmp_path, capsys):

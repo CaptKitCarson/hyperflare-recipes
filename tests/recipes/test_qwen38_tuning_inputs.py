@@ -9,13 +9,13 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.preparation.fixtures import recurrent as gdn_fixtures
-from ignition.preparation.fixtures.fused_moe import ExpertBenchmarkInputs
-from ignition.preparation.fixtures.recurrent import (
+from hyperflare_recipes.fixtures import recurrent as gdn_fixtures
+from hyperflare_recipes.fixtures.fused_moe import ExpertBenchmarkInputs
+from hyperflare_recipes.fixtures.recurrent import (
     BenchmarkStateArena,
     RecurrentBenchmarkInputs,
 )
-from ignition.components.moe import RouterScratch
+from hyperflare_recipes.components.moe import RouterScratch
 
 
 def _recurrent_args(mode, tokens, sequences):
@@ -181,7 +181,7 @@ def test_borrowed_arena_rejects_storage_contract_mismatch(kind):
 
 
 def test_gdn_candidate_cohort_shares_fixture_and_reserved_scratch_with_per_trial_reset(monkeypatch):
-    from ignition.components import recurrent
+    from hyperflare_recipes.components import recurrent
 
     args = _recurrent_args('prefill', 65, 1)
     resource_cache = {}

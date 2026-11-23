@@ -7,8 +7,8 @@ import pytest
 import torch
 
 from b12x.preparation import PreparationSession
-from ignition.components.prefill_record_stage import PreparedPrefillRecordStage
-from ignition.recipes.kimi31.dcp import ContextShards, RECORD_BYTES, TOPK, selection_slots
+from hyperflare_recipes.components.prefill_record_stage import PreparedPrefillRecordStage
+from hyperflare_recipes.recipes.kimi31.dcp import ContextShards, RECORD_BYTES, TOPK, selection_slots
 
 
 @pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires an assigned CUDA device")

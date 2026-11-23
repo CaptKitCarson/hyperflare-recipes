@@ -11,17 +11,17 @@ from types import SimpleNamespace
 import pytest
 from huggingface_hub.constants import HF_HUB_CACHE
 
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 from safetensors import safe_open
 import torch
 from transformers.models.minimax_m3_vl.modeling_minimax_m3_vl import MiniMaxM3VLRMSNorm
 
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.rms_norm import PreparedIndexedRMSNorm
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.rms_norm import PreparedIndexedRMSNorm
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.minimax_m3.config import ModelConfig, TEXT_PREFIX
-from ignition.recipes.minimax_m3.decoder import PreparedDecoder, Scratch
+from hyperflare_recipes.recipes.minimax_m3.config import ModelConfig, TEXT_PREFIX
+from hyperflare_recipes.recipes.minimax_m3.decoder import PreparedDecoder, Scratch
 
 CHECKPOINT = Path(os.environ.get("FLARE_MINIMAX_CHECKPOINT", str(resolve("minimax-m3-1-flash").snapshot(Path(HF_HUB_CACHE)))))
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1" or not CHECKPOINT.is_dir(),

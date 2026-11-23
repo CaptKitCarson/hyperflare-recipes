@@ -6,7 +6,7 @@
 import pytest
 import torch
 
-from ignition.components.draft_sampling import PreparedDraftDistribution
+from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution
 from ignition.components.sampling import DeviceRequestState
 from ignition.preparation.tensor_metadata import NumericStorage
 

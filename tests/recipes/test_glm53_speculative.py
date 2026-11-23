@@ -12,15 +12,15 @@ import torch
 from tests.components.completion_support import RecordOnlyLogprobs, completion_outputs
 
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
-from ignition.components.speculation import PreparedSpeculativeCommit, SpeculativeAcceptance
-from ignition.recipes.glm53.batch import BatchInputs
-from ignition.recipes.glm53.dcp import ContextShards
-from ignition.recipes.glm53.speculative import PreparedRound
-from ignition.recipes.glm53.mtp import DraftMetadata
+from hyperflare_recipes.components.speculation import PreparedSpeculativeCommit, SpeculativeAcceptance
+from hyperflare_recipes.recipes.glm53.batch import BatchInputs
+from hyperflare_recipes.recipes.glm53.dcp import ContextShards
+from hyperflare_recipes.recipes.glm53.speculative import PreparedRound
+from hyperflare_recipes.recipes.glm53.mtp import DraftMetadata
 
 
-from ignition.recipes.glm53.stack import DecoderScratch
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.recipes.glm53.stack import DecoderScratch
+from hyperflare_recipes.components.parallel import TensorParallelShard
 
 
 def test_shared_commit_without_previous_token_embeddings():
@@ -146,4 +146,4 @@ def test_draft_hidden_storage_rejects_incompatible_views(hidden):
 def records_only_cpu_commit(monkeypatch):
     # These state-machine tests run without CUDA; reduction and graph ordering
     # have independent CUDA coverage.
-    monkeypatch.setattr("ignition.components.speculation.PreparedLogprobs", RecordOnlyLogprobs)
+    monkeypatch.setattr("hyperflare_recipes.components.speculation.PreparedLogprobs", RecordOnlyLogprobs)

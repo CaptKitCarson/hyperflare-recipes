@@ -9,18 +9,18 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.paged_batch import Metadata
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.rotary import CompressedRotary
+from hyperflare_recipes.components.paged_batch import Metadata
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.rotary import CompressedRotary
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.deepseek4.attention import AttentionIndices, AttentionScratch, PreparedAttention
-from ignition.recipes.deepseek4.config import REVISION
-from ignition.recipes.deepseek4.pool import PAGE_TOKENS, ContinuationPool
-from ignition.recipes.deepseek4.weights import DeepSeekWeightLoader
+from hyperflare_recipes.recipes.deepseek4.attention import AttentionIndices, AttentionScratch, PreparedAttention
+from hyperflare_recipes.recipes.deepseek4.config import REVISION
+from hyperflare_recipes.recipes.deepseek4.pool import PAGE_TOKENS, ContinuationPool
+from hyperflare_recipes.recipes.deepseek4.weights import DeepSeekWeightLoader
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                               reason="requires an assigned CUDA device")

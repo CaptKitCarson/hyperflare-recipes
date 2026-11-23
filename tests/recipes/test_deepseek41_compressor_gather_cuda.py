@@ -12,11 +12,11 @@ from b12x.attention import mla_compress
 from b12x.preparation import PreparationSession, PreparedCall
 
 from ignition.components.state import gather_rows, gather_rows_three
-from ignition.components.paged_batch import Metadata
+from hyperflare_recipes.components.paged_batch import Metadata
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes.deepseek41.attention import PreparedCompressor
-from ignition.recipes.deepseek41.pool import ContinuationPool
+from hyperflare_recipes.recipes.deepseek41.attention import PreparedCompressor
+from hyperflare_recipes.recipes.deepseek41.pool import ContinuationPool
 
 from .test_deepseek41_pool import config
 

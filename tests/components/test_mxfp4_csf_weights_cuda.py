@@ -14,9 +14,9 @@ import torch
 from safetensors import safe_open
 from safetensors.torch import save_file
 
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                                reason="requires an explicitly assigned CUDA device")
@@ -114,7 +114,7 @@ def experts(request, tmp_path_factory):
 def test_csf_experts_match_expanded_scales_with_poisoned_shared_scratch(experts, tokens, compiled):
     from b12x.preparation import PreparationSession
     from b12x.moe import fused_moe as moe
-    from ignition.components.moe import PreparedRoutedExperts
+    from hyperflare_recipes.components.moe import PreparedRoutedExperts
 
     owners, buffers, hidden = experts
     torch.manual_seed(754 + tokens)

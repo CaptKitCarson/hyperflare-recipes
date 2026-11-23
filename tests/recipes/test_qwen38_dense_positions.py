@@ -16,10 +16,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components.paged_batch import (BatchInputs, Metadata, RotaryBatch, RotaryBatchInputs,
+from hyperflare_recipes.components.paged_batch import (BatchInputs, Metadata, RotaryBatch, RotaryBatchInputs,
     gather_rotary_offset, prepare_batch, rotary_positions)
-from ignition.recipes.qwen38_dense.config import ModelConfig, rotary_axes
-from ignition.recipes.qwen38_dense.decoder import rotary_embeddings
+from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig, rotary_axes
+from hyperflare_recipes.recipes.qwen38_dense.decoder import rotary_embeddings
 
 HEAD_DIM = 256
 PAIRS = 32
@@ -146,7 +146,7 @@ def small_config(mtp=False):
     model = ModelConfig(text, {})
     if not mtp:
         return model
-    from ignition.components.dflash2_geometry import DFlash2Config
+    from hyperflare_recipes.components.dflash2_geometry import DFlash2Config
 
     raw = dict(model_type="qwen3", architectures=["DFlash2DraftModel"], hidden_act="silu",
         dtype="bfloat16", attention_bias=False, attention_dropout=0., tie_word_embeddings=False,
@@ -161,7 +161,7 @@ def small_config(mtp=False):
 
 
 def synthetic_pool():
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
 
     return ContinuationPool.for_model(small_config(), 6, 3, "cpu", rotary_offset=True)
 
@@ -210,7 +210,7 @@ def test_second_prefill_chunk_keeps_the_prompt_offset(monkeypatch):
 
 def test_pool_declares_one_int64_rotary_offset_per_continuation_row():
     from ignition.components.state import StateLayout
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
 
     pool = synthetic_pool()
     region = pool.layout.region("rotary_offset")
@@ -267,7 +267,7 @@ def test_pack_applies_per_row_rotary_offsets():
 
 
 def test_draft_rotary_uses_the_temporal_axis():
-    from ignition.components.dflash2 import _rotary
+    from hyperflare_recipes.components.dflash2 import _rotary
 
     generator = torch.Generator().manual_seed(3)
     positions = prompt_positions([("text", 2), ("image", 2, 3)])
@@ -318,7 +318,7 @@ class FixedTokenState:
 def request_batch(monkeypatch, mode, tokens, state_rows):
     from ignition.components.sampling import RUNNING, DeviceRequestState
 
-    import ignition.components.paged_batch as batch_module
+    import hyperflare_recipes.components.paged_batch as batch_module
 
     capacity = 4
     rows = 1 if mode == "prefill" else capacity
@@ -414,7 +414,7 @@ def test_draft_round_rotates_draft_and_target_rows_at_the_stored_offsets(monkeyp
     The draft rows of a proposal and the target rows of its verification rotate at
     the token position plus the offset stored in the request's continuation row.
     """
-    from ignition.components.parallel_draft import PreparedParallelDraftRound
+    from hyperflare_recipes.components.parallel_draft import PreparedParallelDraftRound
 
     batch, inputs, pool, _, _ = request_batch(monkeypatch, "decode", 4, [1, 2, 3, 4])
     requests = batch.requests
@@ -471,7 +471,7 @@ def test_draft_round_rotates_draft_and_target_rows_at_the_stored_offsets(monkeyp
 
 def test_rotary_offset_uses_reserved_region_when_state_rows_grow(monkeypatch):
     """Dynamic STATE_ROWS growth places continuation rows past the initial backing extent."""
-    from ignition.components.paged_batch import rotary_offset_region
+    from hyperflare_recipes.components.paged_batch import rotary_offset_region
 
     class GrownPool:
         def __init__(self, base, reserved_rows):

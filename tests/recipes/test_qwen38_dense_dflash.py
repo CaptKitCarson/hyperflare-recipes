@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.recipes import resolve
+from hyperflare_recipes.recipes import resolve
 
 DRAFT_REPOSITORY = "incoai/Qwen3.8-27B-DFlash2"
 DRAFT_REVISION = "015e795645c74b1a0eeef3b570031fb62e769bc5"
@@ -58,7 +58,7 @@ DRAFT_CONFIG = {'architectures': ['DFlash2DraftModel'],
 
 @pytest.fixture
 def target():
-    from ignition.recipes.qwen38_dense.config import ModelConfig
+    from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig
     text = dict(hidden_size=5120, vocab_size=248320, num_hidden_layers=64,
         num_key_value_heads=4, head_dim=256,
         layer_types=["full_attention" if i % 4 == 3 else "linear_attention" for i in range(64)])
@@ -67,13 +67,13 @@ def target():
 
 @pytest.fixture
 def config(target):
-    from ignition.recipes.qwen38_dense import draft_config
+    from hyperflare_recipes.recipes.qwen38_dense import draft_config
     return replace(target, draft=draft_config.from_dict(copy.deepcopy(DRAFT_CONFIG), target))
 
 
 def test_pinned_draft_geometry_and_raw_logits(config):
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.qwen38_dense.draft_config import REPOSITORY, REVISION
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.qwen38_dense.draft_config import REPOSITORY, REVISION
     assert (REPOSITORY, REVISION) == (DRAFT_REPOSITORY, DRAFT_REVISION)
     draft = config.draft
     assert (draft.layers, draft.block_size, draft.noise_token) == (5, 8, 248070)
@@ -91,7 +91,7 @@ def test_pinned_draft_geometry_and_raw_logits(config):
     ("num_target_layers", 63), ("rope_parameters", {"rope_type": "default", "rope_theta": 500000}),
 ])
 def test_incompatible_draft_decoder_rejected(target, key, value):
-    from ignition.recipes.qwen38_dense import draft_config
+    from hyperflare_recipes.recipes.qwen38_dense import draft_config
     raw = copy.deepcopy(DRAFT_CONFIG)
     raw[key] = value
     with pytest.raises(ValueError):
@@ -104,7 +104,7 @@ def test_incompatible_draft_decoder_rejected(target, key, value):
     ("conv_kernel_size", 3), ("block_size", 16),
 ])
 def test_incompatible_draft_projector_rejected(target, key, value):
-    from ignition.recipes.qwen38_dense import draft_config
+    from hyperflare_recipes.recipes.qwen38_dense import draft_config
     raw = copy.deepcopy(DRAFT_CONFIG)
     raw["dflash_config"][key] = value
     with pytest.raises(ValueError):
@@ -112,7 +112,7 @@ def test_incompatible_draft_projector_rejected(target, key, value):
 
 
 def test_complete_ring_and_target_page_geometry(config):
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool, continuation_layout, page_bytes
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool, continuation_layout, page_bytes
     recipe = resolve("qwen3.8-27b").recipe
     for drafting, expected_bytes in ((False, 158148864), (True, 186001664)):
         pool = ContinuationPool.for_model(config, 3, 2, "meta", mtp=drafting)
@@ -135,7 +135,7 @@ def test_complete_ring_and_target_page_geometry(config):
 
 
 def test_parallel_speculative_catalog_and_explicit_ordinary_mode():
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
     recipe = resolve("qwen3.8-27b").recipe
     assert recipe.speculation.draft_tokens == 7
     assert recipe.max_draft_tokens == 15
@@ -159,7 +159,7 @@ def test_parallel_speculative_catalog_and_explicit_ordinary_mode():
 @pytest.mark.parametrize("location", ["decoder", "projector"])
 @pytest.mark.parametrize("key,value", [("output_multiplier", .5), ("final_logit_softcapping", 20.)])
 def test_nonraw_draft_logits_rejected(target, location, key, value):
-    from ignition.recipes.qwen38_dense import draft_config
+    from hyperflare_recipes.recipes.qwen38_dense import draft_config
     raw = copy.deepcopy(DRAFT_CONFIG)
     (raw if location == "decoder" else raw["dflash_config"])[key] = value
     with pytest.raises(ValueError):
@@ -167,7 +167,7 @@ def test_nonraw_draft_logits_rejected(target, location, key, value):
 
 
 def test_pinned_checkpoint_metadata_rejects_precision_and_non_square_shape_errors(config):
-    from ignition.components.dflash2_weights import validate_metadata
+    from hyperflare_recipes.components.dflash2_weights import validate_metadata
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
     from .test_qwen38_dense_dflash_cuda import DRAFT
     if not (DRAFT / "model.safetensors").is_file():
@@ -194,7 +194,7 @@ def test_qad_precision_options_reach_preparation_plan(online, head):
     from ignition import planning
     from ignition.cli import _parser
     from ignition.cli.preparation import speculation
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     flags = (["--online-mxfp8"] if online else []) + (["--draft-head-quantization", head] if head else [])
     args = _parser().parse_args(["bench", "qwen3.8-27b-qad", *flags])
@@ -219,10 +219,10 @@ def test_qad_precision_options_reach_preparation_plan(online, head):
 @pytest.mark.parametrize("width", [1, 8, 16])
 def test_native_depth_sizes_proposal_and_recovery_storage(config, width):
     from types import SimpleNamespace
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.components.sampling import DeviceRequestState
-    from ignition.recipes.qwen38_dense.dflash import SpeculativePreparation
-    from ignition.recipes.qwen38_dense.pool import ContinuationPool
+    from hyperflare_recipes.recipes.qwen38_dense.dflash import SpeculativePreparation
+    from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool
 
     pool = ContinuationPool.for_model(config, 3, 2, "meta", mtp=True, verification_width=width)
     requests = DeviceRequestState.allocate("meta", vocab_size=config.vocabulary, capacity=2)
@@ -248,7 +248,7 @@ def test_native_depth_sizes_proposal_and_recovery_storage(config, width):
 @pytest.mark.parametrize("width", [1, 8, 16])
 @pytest.mark.parametrize("capacity", [16, 64])
 def test_native_depth_catalog_preserves_logical_and_packed_capacities(width, capacity):
-    from ignition.recipes.qwen38_dense.bootstrap import PreparationConfig
+    from hyperflare_recipes.recipes.qwen38_dense.bootstrap import PreparationConfig
 
     config = PreparationConfig(draft_snapshot=Path("draft"), max_active=8,
         speculative_widths=tuple(range(1, width + 1)), speculative_token_capacity=capacity,
@@ -266,7 +266,7 @@ def test_native_depth_catalog_preserves_logical_and_packed_capacities(width, cap
 
 @pytest.mark.parametrize("width", [0, 17, True])
 def test_continuation_rejects_unsupported_verification_capacity(config, width):
-    from ignition.recipes.qwen38_dense.pool import continuation_layout
+    from hyperflare_recipes.recipes.qwen38_dense.pool import continuation_layout
 
     with pytest.raises(ValueError, match="verification capacity"):
         continuation_layout(config, mtp=True, verification_width=width)

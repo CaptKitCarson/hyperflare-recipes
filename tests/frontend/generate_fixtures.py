@@ -13,7 +13,7 @@ from pathlib import Path
 
 from transformers import AutoTokenizer
 
-from ignition.preparation.qwen38 import FRONTEND_SHA256, MODEL_ID, REVISION, TRANSFORMERS_VERSION, require_transformers_version
+from hyperflare_recipes.recipes.qwen38.checkpoint_schema import FRONTEND_SHA256, MODEL_ID, REVISION, TRANSFORMERS_VERSION, require_transformers_version
 
 
 def chat_cases():

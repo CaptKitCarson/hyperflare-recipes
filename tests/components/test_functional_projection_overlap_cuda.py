@@ -8,8 +8,8 @@ import os
 import pytest
 import torch
 
-from ignition.components.linear import UnquantizedProjection
-from ignition.components.projection_overlap import ConcurrentProjectionChain
+from hyperflare_recipes.components.linear import UnquantizedProjection
+from hyperflare_recipes.components.projection_overlap import ConcurrentProjectionChain
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession

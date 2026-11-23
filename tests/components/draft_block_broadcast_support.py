@@ -70,10 +70,10 @@ class Pipeline:
 
 
 def rank_main(rank, rendezvous, output):
-    from ignition.components.draft_sampling import PreparedDraftDistribution, PreparedDraftBlockBroadcast
-    from ignition.components.parallel_draft import prepare_sampling_broadcasts
+    from hyperflare_recipes.components.draft_sampling import PreparedDraftDistribution, PreparedDraftBlockBroadcast
+    from hyperflare_recipes.components.parallel_draft import prepare_sampling_broadcasts
     from ignition.components.sampling import DeviceRequestState, RUNNING
-    from ignition.components.speculation import DRAFT_RNG_DOMAIN
+    from hyperflare_recipes.components.speculation import DRAFT_RNG_DOMAIN
     from ignition.preparation.collectives import CollectivePreparation, create_result_broadcast_runtime
     from ignition.preparation.compilation import compile_forward
     from ignition.preparation.graphs import PreparedGraphBundle

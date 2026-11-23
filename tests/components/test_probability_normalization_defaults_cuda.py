@@ -9,7 +9,7 @@ import os
 import pytest
 import torch
 
-from ignition.components.probability_normalization import PreparedProbabilityNormalization
+from hyperflare_recipes.components.probability_normalization import PreparedProbabilityNormalization
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from .probability_normalization_reference import UnconditionalProbabilityNormalization

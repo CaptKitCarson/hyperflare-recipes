@@ -10,7 +10,7 @@ import torch
 
 from ignition.components.sampling import AdmissionBuffers
 from ignition.preparation.execution import GraphSignature
-from ignition.recipes.qwen38.decoder_state import DecoderInputs
+from hyperflare_recipes.recipes.qwen38.decoder_state import DecoderInputs
 from qualify.graph_execution import Scenario
 
 

@@ -10,11 +10,11 @@ import torch
 import triton
 import triton.language as tl
 
-from ignition.components.markov_sampling import (
+from hyperflare_recipes.components.markov_sampling import (
     PreparedMarkovProposals, _proposal_random_bits, fp8_markov_head,
 )
 from ignition.components.sampling import DeviceRequestState, RUNNING
-from ignition.components.speculation import DRAFT_RNG_DOMAIN
+from hyperflare_recipes.components.speculation import DRAFT_RNG_DOMAIN
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("FLARE_RUN_CUDA_TESTS") != "1", reason="requires an explicitly assigned CUDA device"

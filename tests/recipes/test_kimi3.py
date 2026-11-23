@@ -18,7 +18,7 @@ CHECKPOINT = next((path for path in (Path("/data/models/Kimi-K3-MXFP4-CSF"), Pat
 
 @pytest.fixture
 def config():
-    from ignition.recipes.kimi3.config import ModelConfig
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig
 
     if not CHECKPOINT.is_dir():
         pytest.skip("Kimi K3 checkpoint is not installed")
@@ -26,8 +26,8 @@ def config():
 
 
 def test_checkpoint_geometry(config):
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.kimi3.pool import continuation_layout, page_bytes
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.kimi3.pool import continuation_layout, page_bytes
 
     config.validate_shard(TensorParallelShard(0, 16))
     assert config.layers.count("kda") == 69
@@ -49,7 +49,7 @@ def test_mla_norm_epsilon_uses_the_k3_attention_default(config):
 
 
 def test_quantization_and_layer_partition_rejected(config):
-    from ignition.recipes.kimi3.config import ModelConfig
+    from hyperflare_recipes.recipes.kimi3.config import ModelConfig
 
     raw = dict(model_type="kimi_k3", architectures=["KimiK3ForConditionalGeneration"],
                text_config=deepcopy(config.text), vision_config=config.vision,
@@ -65,7 +65,7 @@ def test_quantization_and_layer_partition_rejected(config):
 
 def test_situ():
     import torch
-    from ignition.recipes.kimi3.model import situ
+    from hyperflare_recipes.recipes.kimi3.model import situ
 
     x = torch.tensor([[100., -100., 0., 100., 100., 100.]], dtype=torch.bfloat16)
     y = situ(x)
@@ -93,10 +93,10 @@ def _reference_attention(weights):
 def test_checkpoint_kda(config, mode, tokens, online_mxfp8):
     import torch
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.kimi3.weights import KimiWeightLoader
-    from ignition.recipes.kimi3.kda import PreparedKDA
-    from ignition.components.recurrent import DeltaState, DeltaMetadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.kimi3.weights import KimiWeightLoader
+    from hyperflare_recipes.recipes.kimi3.kda import PreparedKDA
+    from hyperflare_recipes.components.recurrent import DeltaState, DeltaMetadata
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
 
@@ -170,10 +170,10 @@ def test_checkpoint_mla(config, mode, tokens, online_mxfp8):
     import torch
     from torch.nn import functional as F
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.components.paged_batch import Metadata
-    from ignition.recipes.kimi3.weights import KimiWeightLoader
-    from ignition.recipes.kimi3.attention import PreparedMLA
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.recipes.kimi3.weights import KimiWeightLoader
+    from hyperflare_recipes.recipes.kimi3.attention import PreparedMLA
     from ignition.preparation.scratch import ScratchArena
     from ignition.preparation.tuning import RecordedPreparationSession
 
@@ -248,9 +248,9 @@ def test_dspark_draft_geometry(config):
     import json
 
     import torch
-    from ignition.components.parallel import TensorParallelShard
-    from ignition.recipes.kimi3.config import DSparkConfig, ModelConfig
-    from ignition.recipes.kimi3.pool import continuation_layout
+    from hyperflare_recipes.components.parallel import TensorParallelShard
+    from hyperflare_recipes.recipes.kimi3.config import DSparkConfig, ModelConfig
+    from hyperflare_recipes.recipes.kimi3.pool import continuation_layout
 
     if not DRAFT.is_dir():
         pytest.skip("Kimi K3 DSpark draft is not installed")
@@ -275,8 +275,8 @@ def test_dspark_draft_geometry(config):
 def test_context_shards_place_interleaved_positions_on_their_owners():
     import torch
 
-    from ignition.recipes.kimi3.config import PAGE_TOKENS
-    from ignition.recipes.kimi3.dcp import ContextShards
+    from hyperflare_recipes.recipes.kimi3.config import PAGE_TOKENS
+    from hyperflare_recipes.recipes.kimi3.dcp import ContextShards
 
     world, pages = 16, torch.tensor([[7, 3, -1]], dtype=torch.int32)
     positions = torch.tensor([-1, 0, 1, 15, 16, 17, PAGE_TOKENS * world + 5, PAGE_TOKENS * world * 2 + 1])
@@ -299,13 +299,13 @@ def test_context_shards_place_interleaved_positions_on_their_owners():
 
 def test_runtime_assets_preserve_converted_tokenizer_and_bundled_template_bytes(tmp_path):
     from tokenizers import Tokenizer, models
-    from ignition.recipes.kimi3.tokenizer import runtime_assets
+    from hyperflare_recipes.recipes.kimi3.tokenizer import runtime_assets
 
     tokenizer = Tokenizer(models.WordLevel({"<unk>": 0, "hello": 1, "世界": 2}, unk_token="<unk>"))
     expected = tmp_path / "tokenizer.json"
     tokenizer.save(str(expected))
     assets = runtime_assets(tokenizer)
     assert assets["tokenizer"]["text"].encode() == expected.read_bytes()
-    template = Path(__file__).resolve().parents[2] / "ignition/recipes/kimi3/assets/chat_template.jinja"
+    template = Path(__file__).resolve().parents[2] / "hyperflare_recipes/recipes/kimi3/assets/chat_template.jinja"
     assert Path(assets["chat_template"]["path"]) == template
     assert len(list(tmp_path.iterdir())) == 1

@@ -9,7 +9,7 @@ from functools import partial
 import pytest
 import torch
 
-from ignition.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.parallel import TensorParallelShard
 from ignition.components.sampling import DeviceRequestState
 from ignition.components.state_transfer import PreparedStateTransfer, StateCommands
 from ignition.preparation.virtual_storage import VirtualStorage
@@ -22,10 +22,10 @@ pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
 def pool_factory(recipe):
     if recipe == "kimi3":
         from dataclasses import replace
-        from ignition.recipes.kimi3.bootstrap import PreparationConfig
-        from ignition.recipes.kimi3.config import ModelConfig
-        from ignition.recipes.kimi3.config import DSparkConfig
-        from ignition.recipes.kimi3.pool import ContinuationPool
+        from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig
+        from hyperflare_recipes.recipes.kimi3.config import ModelConfig
+        from hyperflare_recipes.recipes.kimi3.config import DSparkConfig
+        from hyperflare_recipes.recipes.kimi3.pool import ContinuationPool
         from .test_kimi3 import CHECKPOINT as TARGET, DRAFT
 
         if not TARGET.is_dir() or not DRAFT.is_dir():
@@ -34,29 +34,29 @@ def pool_factory(recipe):
         config = replace(config, draft=DSparkConfig.load(DRAFT, config))
         return partial(ContinuationPool.for_model, config, 16, speculative_tokens=7), PreparationConfig().page_tokens
     if recipe == "deepseek41":
-        from ignition.recipes.deepseek41.pool import ContinuationPool, PAGE_TOKENS
+        from hyperflare_recipes.recipes.deepseek41.pool import ContinuationPool, PAGE_TOKENS
         from .test_deepseek41_pool import config
 
         return partial(ContinuationPool.allocate, config()), PAGE_TOKENS
     if recipe == "deepseek4":
-        from ignition.recipes.deepseek4.pool import ContinuationPool, PAGE_TOKENS
+        from hyperflare_recipes.recipes.deepseek4.pool import ContinuationPool, PAGE_TOKENS
         from .test_deepseek4_pool import model
 
         return partial(ContinuationPool.allocate, model()), PAGE_TOKENS
     if recipe == "mimo_v2":
-        from ignition.recipes.mimo_v2.pool import ContinuationPool, PAGE_TOKENS
+        from hyperflare_recipes.recipes.mimo_v2.pool import ContinuationPool, PAGE_TOKENS
         from .test_mimo_v2 import config
 
         return partial(ContinuationPool.allocate, config(), TensorParallelShard(0, 8)), PAGE_TOKENS
     if recipe == "qwen38_dense":
-        from ignition.recipes.qwen38_dense.config import ModelConfig
-        from ignition.recipes.qwen38_dense.pool import ContinuationPool, PAGE_TOKENS
+        from hyperflare_recipes.recipes.qwen38_dense.config import ModelConfig
+        from hyperflare_recipes.recipes.qwen38_dense.pool import ContinuationPool, PAGE_TOKENS
 
         config = ModelConfig(dict(layer_types=["linear_attention", "full_attention"],
                                   hidden_size=128, num_key_value_heads=1, head_dim=256), {})
         return partial(ContinuationPool.for_model, config), PAGE_TOKENS
-    from ignition.recipes.step5.config import ModelConfig, PAGE_TOKENS
-    from ignition.recipes.step5.pool import ContinuationPool
+    from hyperflare_recipes.recipes.step5.config import ModelConfig, PAGE_TOKENS
+    from hyperflare_recipes.recipes.step5.pool import ContinuationPool
 
     config = ModelConfig(dict(num_hidden_layers=2, num_nextn_predict_layers=3, hidden_size=128,
         layer_types=["full_attention"] + ["sliding_attention"] * 4, sliding_window=512,
@@ -77,7 +77,7 @@ def test_snapshot_restore_and_growth_with_unbacked_prefix_slots(recipe):
     backed, declared = 2 * capacity + 1, 145
     pages = 2 * capacity
     if recipe == "kimi3":
-        from ignition.recipes.kimi3.bootstrap import PreparationConfig
+        from hyperflare_recipes.recipes.kimi3.bootstrap import PreparationConfig
 
         pages = PreparationConfig(max_active=capacity).preparation_pages
     storage = VirtualStorage("cuda:0")

@@ -11,11 +11,11 @@ import pytest
 import torch
 from safetensors import safe_open
 
-from ignition.components.block_fp8 import BlockFP8Weight
-from ignition.components.parallel import TensorParallelShard
-from ignition.components.weights import GroupedLinearWeights
+from hyperflare_recipes.components.block_fp8 import BlockFP8Weight
+from hyperflare_recipes.components.parallel import TensorParallelShard
+from hyperflare_recipes.components.weights import GroupedLinearWeights
 from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-from ignition.recipes.glm53.weights import GlmWeightLoader, TEXT_PREFIX
+from hyperflare_recipes.recipes.glm53.weights import GlmWeightLoader, TEXT_PREFIX
 
 
 @pytest.fixture(scope="module")

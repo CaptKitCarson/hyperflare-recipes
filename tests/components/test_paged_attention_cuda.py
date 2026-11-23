@@ -10,7 +10,7 @@ import weakref
 import pytest
 import torch
 
-from ignition.components.paged_attention import PreparedPagedAttention
+from hyperflare_recipes.components.paged_attention import PreparedPagedAttention
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.scratch import ScratchArena
 from ignition.preparation.tuning import RecordedPreparationSession
@@ -83,7 +83,7 @@ def test_gqa_compact_requests_preserve_inactive_holes():
 
 
 def test_selected_attention_releases_private_tuning_inputs(monkeypatch):
-    import ignition.components.paged_attention as module
+    import hyperflare_recipes.components.paged_attention as module
 
     references = []
     original = module.benchmark_resource
@@ -150,7 +150,7 @@ def test_primary_paged_verification_declares_query_width(monkeypatch, metadata_l
     if selected:
         blocks = torch.full((1, query.shape[0], 16), -1, device=device, dtype=torch.int32)
         blocks[:, :, :2] = torch.tensor([0, 1], device=device, dtype=torch.int32)
-    import ignition.components.paged_attention as module
+    import hyperflare_recipes.components.paged_attention as module
     original = module.benchmark_resource
 
     def checked_resource(session, key, factory):
@@ -393,7 +393,7 @@ def test_attention_candidate_producer_restores_shared_schedule(monkeypatch, tmp_
 @pytest.mark.parametrize("dim", [128, 256])
 @pytest.mark.parametrize("physical_pages", [3, 64])
 def test_attention_tuning_uses_available_distinct_pages(monkeypatch, tmp_path, dim, physical_pages):
-    import ignition.components.paged_attention as module
+    import hyperflare_recipes.components.paged_attention as module
     from b12x.preparation import autotune_effort
 
     device = torch.device("cuda", 0)
@@ -440,7 +440,7 @@ def test_attention_tuning_uses_available_distinct_pages(monkeypatch, tmp_path, d
 
 
 def test_attention_tuning_respects_virtual_cache_backing(monkeypatch, tmp_path):
-    import ignition.components.paged_attention as module
+    import hyperflare_recipes.components.paged_attention as module
     from ignition.preparation.virtual_storage import VirtualStorage
 
     device = torch.device("cuda", 0)
@@ -505,13 +505,13 @@ def test_attention_rejects_invalid_tuning_page_capacity(count):
 def test_window_attention_tuning_uses_backed_continuation_rows(recipe, mode, tmp_path):
     import importlib
     from types import SimpleNamespace
-    from ignition.components.block_fp8 import BlockFP8Weight
-    from ignition.components.paged_batch import Metadata
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.block_fp8 import BlockFP8Weight
+    from hyperflare_recipes.components.paged_batch import Metadata
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.virtual_storage import VirtualStorage
 
-    attention_module = importlib.import_module(f"ignition.recipes.{recipe}.attention")
-    pool_module = importlib.import_module(f"ignition.recipes.{recipe}.pool")
+    attention_module = importlib.import_module(f"hyperflare_recipes.recipes.{recipe}.attention")
+    pool_module = importlib.import_module(f"hyperflare_recipes.recipes.{recipe}.pool")
     device, shard = torch.device("cuda", 0), TensorParallelShard(0, 1)
     geometry = SimpleNamespace(heads=8, kv_heads=2, key_dim=128, value_dim=128,
         rotary_dim=64, theta=10000, window=128, local=lambda shard: (8, 2))

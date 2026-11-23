@@ -15,13 +15,13 @@ from pathlib import Path
 import pytest
 import torch
 
-from ignition.components.weights import DirectWeightLoader
+from hyperflare_recipes.components.weights import DirectWeightLoader
 from ignition.preparation.checkpoint import IndexedCheckpoint, _read_header
 from ignition.preparation.graphs import PreparedGraphBundle
-from ignition.recipes import resolve
-from ignition.recipes.glm53 import vision as vision_module
-from ignition.recipes.glm53.vision import PreparedVision, VisionMetadata, VisionScratch, VisionWeights
-from ignition.reference.qwen38_quant import (
+from hyperflare_recipes.recipes import resolve
+from hyperflare_recipes.recipes.glm53 import vision as vision_module
+from hyperflare_recipes.recipes.glm53.vision import PreparedVision, VisionMetadata, VisionScratch, VisionWeights
+from hyperflare_recipes.reference.qwen38_quant import (
     CheckpointTensors, decode_mxfp8, decode_nvfp4, quantize_mxfp8_activation,
     read_nvfp4_projection,
 )
@@ -291,8 +291,8 @@ def test_generation_publishes_features_and_rejects_stale_uploads(manifest):
     from ignition.components.sampling import DeviceRequestState
     from ignition.components.vision_state import PrefillVisionInputs, VisionState
     from ignition.preparation.compilation import compile_forward
-    from ignition.recipes.glm53.batch import BatchInputs
-    from ignition.recipes.glm53.vision_state import PreparedVisionGeneration, VisionInputs
+    from hyperflare_recipes.recipes.glm53.batch import BatchInputs
+    from hyperflare_recipes.recipes.glm53.vision_state import PreparedVisionGeneration, VisionInputs
 
     assert os.environ.get("CUDA_VISIBLE_DEVICES")
     device = torch.device("cuda:0")

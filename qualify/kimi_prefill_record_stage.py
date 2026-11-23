@@ -12,7 +12,7 @@ import torch.distributed as dist
 
 from b12x.comm import peer_record_gather
 from b12x.preparation import PreparationSession, PreparedCall
-from ignition.components.shared_pages import SharedPages
+from hyperflare_recipes.components.shared_pages import SharedPages
 from ignition.preparation.core_storage import CoreStorage
 
 

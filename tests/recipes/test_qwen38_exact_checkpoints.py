@@ -16,7 +16,7 @@ import torch
 import triton
 from triton.runtime.interpreter import InterpretedFunction
 
-from ignition.recipes.qwen38 import state as module
+from hyperflare_recipes.recipes.qwen38 import state as module
 
 CUDA = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",
                          reason="requires an explicitly assigned CUDA device")
@@ -237,7 +237,7 @@ if __name__ == "__main__":
 
 
 def test_admission_failure_does_not_reset_other_speculative_state():
-    from ignition.recipes.qwen38.maintenance import PreparedMaintenance
+    from hyperflare_recipes.recipes.qwen38.maintenance import PreparedMaintenance
 
     previous = torch.tensor([8, 7, 6, 5], dtype=torch.int32)
     generations = torch.tensor([11, 12, 13, 14], dtype=torch.int64)

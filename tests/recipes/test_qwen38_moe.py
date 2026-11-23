@@ -9,9 +9,9 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import moe
-from ignition.components.moe import PreparedRouter, RouterScratch
-from ignition.recipes.qwen38.moe import PreparedQwenMoe, QwenMoeScratch, QwenMoeWeights
+from hyperflare_recipes.components import moe
+from hyperflare_recipes.components.moe import PreparedRouter, RouterScratch
+from hyperflare_recipes.recipes.qwen38.moe import PreparedQwenMoe, QwenMoeScratch, QwenMoeWeights
 
 
 @pytest.mark.parametrize("tokens", [1, 4, 17, 4096])

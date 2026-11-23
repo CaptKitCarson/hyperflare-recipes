@@ -9,13 +9,13 @@ import os
 import pytest
 import torch
 
-from ignition.components.mxfp4_indexer import PreparedMXFP4Indexer
+from hyperflare_recipes.components.mxfp4_indexer import PreparedMXFP4Indexer
 from ignition.preparation.compilation import compile_forward
 from ignition.preparation.graphs import PreparedGraphBundle
 from ignition.preparation.scratch import ScratchArena
 from tests.tensor_examples import TensorExamples
 from ignition.preparation.tuning import RecordedPreparationSession
-from ignition.recipes.deepseek41.attention import INDEXER_QUERY_ROWS
+from hyperflare_recipes.recipes.deepseek41.attention import INDEXER_QUERY_ROWS
 
 
 pytestmark = pytest.mark.skipif(os.environ.get("FLARE_RUN_CUDA_TESTS") != "1",

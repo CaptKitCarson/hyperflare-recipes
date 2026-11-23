@@ -44,13 +44,13 @@ def convolve(x, coefficients, base, side):
 @torch.no_grad()
 def checkpoint_weights():
     from safetensors import safe_open
-    from ignition.components.parallel import TensorParallelShard
+    from hyperflare_recipes.components.parallel import TensorParallelShard
     from ignition.preparation.checkpoint import inspect_indexed_checkpoint
-    from ignition.recipes.nemotron_h.config import ModelConfig
-    from ignition.recipes.nemotron_h.draft_config import DraftConfig
-    from ignition.recipes.nemotron_h.draft_weights import DraftWeights
-    from ignition.recipes.nemotron_h.weights import NemotronWeightLoader
-    from ignition.reference.qwen38_quant import decode_nvfp4
+    from hyperflare_recipes.recipes.nemotron_h.config import ModelConfig
+    from hyperflare_recipes.recipes.nemotron_h.draft_config import DraftConfig
+    from hyperflare_recipes.recipes.nemotron_h.draft_weights import DraftWeights
+    from hyperflare_recipes.recipes.nemotron_h.weights import NemotronWeightLoader
+    from hyperflare_recipes.reference.qwen38_quant import decode_nvfp4
 
     target = Path(os.environ.get("FLARE_NEMOTRON_CHECKPOINT", "/data/models/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB"))
     draft = Path(os.environ.get("FLARE_LILICORR_CHECKPOINT", str(target) + "-LiLiCorr"))
@@ -114,12 +114,12 @@ class DraftReadback:
 @torch.no_grad()
 def test_checkpoint_context_and_backbone(checkpoint_weights, batch, tmp_path):
     from b12x.preparation import PreparationSession
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.components.paged_batch import Metadata
     from ignition.preparation.compile_pool import CompilePool
     from ignition.preparation.scratch import ScratchArena
-    from ignition.recipes.nemotron_h.decoder import Scratch
-    from ignition.recipes.nemotron_h.dflash import PreparedContext, PreparedDraft
-    from ignition.recipes.nemotron_h.pool import ContinuationPool
+    from hyperflare_recipes.recipes.nemotron_h.decoder import Scratch
+    from hyperflare_recipes.recipes.nemotron_h.dflash import PreparedContext, PreparedDraft
+    from hyperflare_recipes.recipes.nemotron_h.pool import ContinuationPool
 
     weights, raw = checkpoint_weights
     c, tokens = weights.config, 8 * batch

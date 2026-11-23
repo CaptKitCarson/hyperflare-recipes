@@ -10,12 +10,12 @@ import pytest
 import torch
 
 from ignition.preparation.execution import GraphSignature
-from ignition.recipes.deepseek41.bootstrap import PreparationConfig, _prepare_speculation_catalog
+from hyperflare_recipes.recipes.deepseek41.bootstrap import PreparationConfig, _prepare_speculation_catalog
 
 
 @pytest.fixture
 def register_catalog(monkeypatch):
-    from ignition.components import packed_speculation, parallel_draft
+    from hyperflare_recipes.components import packed_speculation, parallel_draft
 
     constructed = []
 

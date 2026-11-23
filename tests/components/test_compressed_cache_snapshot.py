@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from ignition.components import compressed_mla
+from hyperflare_recipes.components import compressed_mla
 
 
 @pytest.mark.parametrize("requests,width", [(1, 8), (3, 7)])

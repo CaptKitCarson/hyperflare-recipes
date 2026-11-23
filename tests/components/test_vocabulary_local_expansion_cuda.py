@@ -8,9 +8,9 @@ import os
 import pytest
 import torch
 
-from ignition.components.vocabulary import PreparedVocabularyProjection
-from ignition.components.vocabulary_logprobs import PreparedVocabularyParallelLogprobs
-from ignition.components.vocabulary_sampling import PreparedVocabularySoftmax
+from hyperflare_recipes.components.vocabulary import PreparedVocabularyProjection
+from hyperflare_recipes.components.vocabulary_logprobs import PreparedVocabularyParallelLogprobs
+from hyperflare_recipes.components.vocabulary_sampling import PreparedVocabularySoftmax
 from ignition.components.completion import CompletionOutputs
 from ignition.components.sampling import DeviceRequestState, RequestAdmission
 from ignition.preparation.compilation import compile_forward
@@ -80,8 +80,8 @@ def test_physical_rows_expand_to_eight_logical_rows_under_native_replay(physical
 
 @torch.no_grad()
 def test_expanded_local_rows_feed_target_probabilities_and_raw_logprobs():
-    from ignition.recipes.deepseek41.decoder import PreparedDecoder
-    from ignition.components.paged_batch import Metadata
+    from hyperflare_recipes.recipes.deepseek41.decoder import PreparedDecoder
+    from hyperflare_recipes.components.paged_batch import Metadata
     from types import SimpleNamespace
 
     b, w, physical, columns, hidden = 2, 4, 4, 64, 128
