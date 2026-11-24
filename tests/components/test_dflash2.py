@@ -106,9 +106,9 @@ def _context(compact):
 
     written = []
     context = object.__new__(PreparedContext)
-    context.compact, context.window = compact, WINDOW
+    context.compact, context.window, context.kv_heads = compact, WINDOW, 1
     context.weights = SimpleNamespace(shard=None, config=SimpleNamespace(draft=SimpleNamespace(
-        attention=SimpleNamespace(local=lambda shard: (1, 1), key_dim=KEY, value_dim=VALUE))))
+        attention=SimpleNamespace(key_dim=KEY, value_dim=VALUE))))
     context.project = context.gather = context.norm = context.project_kv = lambda value: value
     context.inverse = 1.0 / (10000 ** (torch.arange(0, KEY, 2, dtype=torch.float32) / KEY))
     context.layers = [(lambda value: value, lambda key, value, slots: written.append((key, value, slots)))]
@@ -160,3 +160,26 @@ def test_context_rotates_and_places_retained_tokens(chunk, metadata_type):
     if compact:
         assert not torch.equal(key, _rotary(source, torch.arange(rows), context.inverse))
     assert torch.equal(value, auxiliary[:, KEY:].view(rows, 1, VALUE))
+
+
+def test_context_forward_does_not_read_shard_rank():
+    """PreparedContext.__call__ uses cached kv_heads so compiled forwards do not guard on shard.rank."""
+    class _ForbiddenShard:
+        @property
+        def rank(self):
+            raise AssertionError("PreparedContext.__call__ must not read weights.shard.rank")
+
+    metadata = _chunk_metadata(1024, three_axis=False)
+    counts = torch.tensor([1024], dtype=torch.int32)
+    auxiliary = torch.randn((1024, KEY + VALUE), generator=torch.Generator().manual_seed(3)).bfloat16()
+    context, written = _context(compact=False)
+    context.weights = SimpleNamespace(
+        shard=_ForbiddenShard(),
+        config=SimpleNamespace(draft=SimpleNamespace(attention=SimpleNamespace(key_dim=KEY, value_dim=VALUE))),
+    )
+    context(auxiliary, counts, metadata)
+    assert len(written) == 1
+    key, value, slots = written[0]
+    assert key.shape == (1024, 1, KEY)
+    assert value.shape == (1024, 1, VALUE)
+    assert slots.shape == (1024,)

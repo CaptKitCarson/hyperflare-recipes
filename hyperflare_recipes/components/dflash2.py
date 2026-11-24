@@ -117,6 +117,7 @@ class PreparedContext:
                 raise ValueError("compact prefill context requires one retained window of auxiliary rows")
         self.compact = compact
         _, kv_heads = a.local(weights.shard)
+        self.kv_heads = kv_heads
         self.inverse = _inverse(a, auxiliary.device)
         local = declaration_tensor(examples, "dflash.context.local",
             (tokens, hidden // weights.shard.world_size), torch.bfloat16, auxiliary.device)
@@ -172,7 +173,7 @@ class PreparedContext:
         projected = self.norm(self.gather(self.project(auxiliary)))
         kv = self.project_kv(projected)
         a = self.weights.config.draft.attention
-        _, kv_heads = a.local(self.weights.shard)
+        kv_heads = self.kv_heads
         key_shape = (auxiliary.shape[0], kv_heads, a.key_dim)
         width = kv_heads * a.key_dim
         chunks = kv.view(auxiliary.shape[0], len(self.layers), width + kv_heads * a.value_dim)
